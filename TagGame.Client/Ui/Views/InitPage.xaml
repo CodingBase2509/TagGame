@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<v:PageBase xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:v="clr-namespace:TagGame.Client.Ui.Views"
+             xmlns:vm="clr-namespace:TagGame.Client.Ui.ViewModels"
+             xmlns:extensions="clr-namespace:TagGame.Client.Ui.Extensions"
+             x:Class="TagGame.Client.Ui.Views.InitPage"
+             x:DataType="vm:InitPageViewModel"
+             Padding="10, 60, 10, 20">
+   
+    <ContentPage.Resources>
+        <Style TargetType="Button">
+            <Setter Property="BackgroundColor" Value="Teal" />
+            <Setter Property="TextColor" Value="White" />
+            <Setter Property="CornerRadius" Value="5" />
+        </Style>
+        
+        <Style TargetType="Entry">
+            <Setter Property="PlaceholderColor" Value="LightGrey"/>
+            <Setter Property="TextColor" Value="Black"/>
+        </Style>
+    </ContentPage.Resources>
+    
+    <StackLayout Padding="50, 10"
+                 Spacing="2">
+        
+        <Label FontSize="30"
+               HorizontalOptions="Center"
+               Margin="0,100,0,0">
+            Tag Game
+        </Label>
+        
+        <BoxView HeightRequest="0"
+                 Margin="0,0,0, 150"/>
+        
+        <Label Text="{extensions:Localization Key=username, Page=InitPage}" />
+        <Entry Text="{Binding Username}"/>
+        
+        <Label Text="{extensions:Localization Key=server, Page=InitPage}"
+               Margin="0,10,0,0"/>
+        <Entry Text="{Binding ServerAddress}"/>
+        
+        <Label Text="{extensions:Localization Key=avatar-color, Page=InitPage}"
+               Margin="0,10,0,0" />
+        
+    </StackLayout>
+    
+</v:PageBase>
