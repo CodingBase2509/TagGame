@@ -11,17 +11,7 @@ public partial class App : Application
 	{
 		InitializeComponent();
 
-		if (VersionTracking.IsFirstLaunchEver)
-		{
-			var initPage = services.GetRequiredService<InitPage>();
-			MainPage = initPage;
-			var vm = initPage.BindingContext as InitPageViewModel;
-			if (vm is null)
-				return;
-			vm!.InitCompleted += (s, e) => MainPage = new AppShell();
-		}
-		else
-			MainPage = new AppShell();
+		MainPage = new AppShell();
 	}
 }
 

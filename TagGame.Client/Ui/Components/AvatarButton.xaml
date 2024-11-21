@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:tk="clr-namespace:CommunityToolkit.Maui.Behaviors;assembly=CommunityToolkit.Maui"
+             x:Class="TagGame.Client.Ui.Components.AvatarButton"
+             x:Name="This">
+    
+    <ImageButton x:Name="Button"
+                 Command="{Binding Source={x:Reference This}, Path=Command}"
+                 CommandParameter="{Binding Source={x:Reference This}, Path=Color}"
+                 Source="avatar.png"
+                 HeightRequest="60" WidthRequest="60"
+                 CornerRadius="20"
+                 Padding="10">
+        <ImageButton.Behaviors>
+            <tk:IconTintColorBehavior TintColor="{Binding Source={x:Reference This}, Path=Color}" />
+        </ImageButton.Behaviors>
+    </ImageButton>
+</ContentView>

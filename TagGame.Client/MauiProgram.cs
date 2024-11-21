@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using CommunityToolkit.Maui;
+using Microsoft.Extensions.Logging;
 using DotNet.Meteor.HotReload.Plugin;
 using TagGame.Client.Ui.Views;
 
@@ -11,6 +12,7 @@ public static class MauiProgram
 		var builder = MauiApp.CreateBuilder();
 		builder
 			.UseMauiApp<App>()
+			.UseMauiCommunityToolkit()
 			.ConfigureEssentials(essentials =>
 			{
 				essentials.UseVersionTracking();
@@ -23,9 +25,6 @@ public static class MauiProgram
 
 		// register views and view models
 		builder.Services.AddContentPages();
-		
-		Routing.RegisterRoute("start", typeof(StartPage));
-		Routing.RegisterRoute("lobby", typeof(LobbyPage));
 		
 		// register services
 		builder.Services.AddServices();

@@ -20,4 +20,7 @@
     <data name="avatar-color" xml:space="preserve">
         <value>Avatar Farbe wählen</value>
     </data>
+    <data name="save" xml:space="preserve">
+        <value>Daten speichern</value>
+    </data>
 </root>

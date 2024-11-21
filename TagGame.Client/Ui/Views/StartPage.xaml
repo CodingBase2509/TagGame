@@ -8,19 +8,6 @@
              x:Class="TagGame.Client.Ui.Views.StartPage"
              BackgroundColor="DarkSlateGray">
     
-    <ContentPage.Resources>
-        <Style TargetType="Button">
-            <Setter Property="BackgroundColor" Value="Teal" />
-            <Setter Property="TextColor" Value="White" />
-            <Setter Property="CornerRadius" Value="5" />
-        </Style>
-        
-        <Style TargetType="Entry">
-            <Setter Property="PlaceholderColor" Value="LightGrey"/>
-            <Setter Property="TextColor" Value="Black"/>
-        </Style>
-    </ContentPage.Resources>
-    
     <StackLayout Padding="50, 10"
                  Spacing="2">
         

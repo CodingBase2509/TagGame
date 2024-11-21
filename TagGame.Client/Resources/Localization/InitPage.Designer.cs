@@ -62,5 +62,11 @@ namespace TagGame.Client.Resources.Localization {
                 return ResourceManager.GetString("avatar-color", resourceCulture);
             }
         }
+        
+        internal static string save {
+            get {
+                return ResourceManager.GetString("save", resourceCulture);
+            }
+        }
     }
 }

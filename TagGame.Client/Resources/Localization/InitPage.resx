@@ -27,4 +27,7 @@
     <data name="avatar-color" xml:space="preserve">
         <value>Select avator color</value>
     </data>
+    <data name="save" xml:space="preserve">
+        <value>Save Data</value>
+    </data>
 </root>

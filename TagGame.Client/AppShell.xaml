@@ -10,8 +10,16 @@
     Title="TagGame">
 
     <ShellContent
+        ContentTemplate="{DataTemplate views:InitPage}"
+        Route="init"/>
+    
+    <ShellContent
         ContentTemplate="{DataTemplate views:StartPage}"
-        Route="MainPage" />
+        Route="start" />
 
+    <ShellContent
+        ContentTemplate="{DataTemplate views:LobbyPage}"
+        Route="lobby"/>
+    
 </Shell>
 

@@ -3,12 +3,24 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="TagGame.Client.App">
     <Application.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
-                <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
+
+        
+        <Style TargetType="Button" ApplyToDerivedTypes="True">
+            <Setter Property="BackgroundColor" Value="Teal" />
+            <Setter Property="TextColor" Value="White" />
+            <Setter Property="CornerRadius" Value="5" />
+        </Style>
+        
+        <Style TargetType="Entry" ApplyToDerivedTypes="True">
+            <Setter Property="PlaceholderColor" Value="LightGrey"/>
+            <Setter Property="TextColor" Value="Black"/>
+            <Setter Property="BackgroundColor" Value="Azure"/>
+        </Style>
+        
+        <Style TargetType="Label" ApplyToDerivedTypes="True">
+            <Setter Property="TextColor" Value="White"/>
+        </Style>
+
     </Application.Resources>
 </Application>
 
