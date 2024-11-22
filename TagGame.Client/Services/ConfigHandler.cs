@@ -11,6 +11,8 @@ public class ConfigHandler(Encryption crypt)
     private static string configDir = FileSystem.Current.AppDataDirectory;
     private readonly Dictionary<Type, ConfigBase> cachedConfigs = [];
     
+    public bool CanInteractWithFiles => crypt.HasKeysLoaded; 
+    
     public async Task InitAsync()
     {
         // generate encryption key
@@ -18,10 +20,6 @@ public class ConfigHandler(Encryption crypt)
         var aes = Aes.Create();
         await ss.SetAsync("crypt_key", JsonSerializer.Serialize(aes.Key, MappingOptions.JsonSerializerOptions));
         await ss.SetAsync("crypt_iv", JsonSerializer.Serialize(aes.IV, MappingOptions.JsonSerializerOptions));
-        
-        // generate default configs
-        await WriteAsync(new ServerConfig());
-        await WriteAsync(new UserConfig());
     }
     
     public async Task WriteAsync<TConfig>(TConfig config) where TConfig : ConfigBase

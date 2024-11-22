@@ -23,11 +23,12 @@
                  Margin="0,0,0, 150"/>
         
         <Label Text="{e:Localization Key=username, Page=InitPage}" />
-        <Entry Text="{Binding Username}"/>
+        <Entry Text="{Binding Username}" />
         
         <Label Text="{e:Localization Key=server, Page=InitPage}"
                Margin="0,20,0,0"/>
-        <Entry Text="{Binding ServerAddress}"/>
+        <Entry Text="{Binding ServerAddress}"
+               Placeholder="optional"/>
         
         <Label Text="{e:Localization Key=avatar-color, Page=InitPage}"
                Margin="0,20,0,0" />
@@ -82,7 +83,9 @@
         
         <Button Text="{e:Localization Key=save, Page=InitPage}"
                 Command="{Binding InitCommand}"
-                Margin="0,20"/>
+                IsEnabled="{Binding IsConfirmEnabled}"
+                Margin="0,20">
+        </Button>
         
     </StackLayout>
     

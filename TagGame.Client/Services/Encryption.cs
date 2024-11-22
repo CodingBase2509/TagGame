@@ -8,7 +8,8 @@ namespace TagGame.Client.Services;
 public class Encryption
 {
     private static Aes? aes;
-
+    public bool HasKeysLoaded { get; private set; }
+    
     public async Task<byte[]> EncryptAsync(string text)
     {
         if (aes is null)
@@ -54,6 +55,7 @@ public class Encryption
         {   
             aes.Key = key;
             aes.IV = iv;
+            HasKeysLoaded = true;
         }
     }
 }
