@@ -3,7 +3,6 @@
 	<PropertyGroup>
 		<TargetFrameworks>net8.0-android;net8.0-ios</TargetFrameworks>
 		
-		
 		<OutputType>Exe</OutputType>
 		<RootNamespace>TagGame.Client</RootNamespace>
 		<UseMaui>true</UseMaui>

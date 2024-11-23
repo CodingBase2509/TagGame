@@ -6,7 +6,14 @@ var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("TagGame.Api", new()
+    {
+        Title = "TagGame API",
+        Version = "v1",
+    });
+});
 builder.Services.AddCarter();
 
 builder.Services.AddDbLayer(config);
@@ -19,10 +26,12 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+        c.SwaggerEndpoint("swagger.json", "TagGame.Api"));
 }
 
 app.UseHttpsRedirection();
-app.MapCarter();
+app.MapGroup("v1")
+    .MapCarter();
 
 app.Run();

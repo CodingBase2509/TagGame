@@ -1,0 +1,24 @@
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+WORKDIR /app
+EXPOSE 8080
+
+FROM mcr.microsoft.com/dotnet/sdk:8.0 as build
+ARG BUILD_CONFIGURATION=Release
+WORKDIR /src
+# Restore Nuget Pageckages
+COPY ["TagGame.Api/TagGame.Api.csproj", "TagGame.Api/"]
+COPY ["TagGame.Shared/TagGame.Shared.csproj", "TagGame.Shared/"]
+RUN dotnet restore TagGame.Shared/TagGame.Shared.csproj
+RUN dotnet restore TagGame.Api/TagGame.Api.csproj
+# Copy Project
+COPY ["TagGame.Api/", "TagGame.Api/"]
+COPY ["TagGame.Shared/", "TagGame.Shared/"]
+# Build and Publish Api
+WORKDIR /src/TagGame.Api/
+RUN dotnet build "TagGame.Api.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet publish "TagGame.Api.csproj" -c $BUILD_CONFIGURATION -o /app/publish -f net8.0
+
+FROM base AS final
+WORKDIR /app
+COPY --from=build /app/publish .
+ENTRYPOINT ["dotnet", "TagGame.Api.dll"]

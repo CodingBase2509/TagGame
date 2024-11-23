@@ -1,0 +1,53 @@
+services:
+  api:
+    container_name: taggame-api
+    image: taggame-api:latest
+    build:
+      context: .
+      dockerfile: ./TagGame.Api/Dockerfile
+    networks:
+      - taggame
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection="Host=taggame-db;Port=5432;Database=${pgDb};Username=${pgUser};Password=${pgPassword};"
+    volumes:
+      - ${httpsDir}:/home/app/.aspnet/https:ro
+    depends_on:
+      - db
+
+  db:
+    container_name: taggame-db
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    networks:
+      - taggame
+    environment:
+      - POSTGRES_USER="${pgUser}"
+      - POSTGRES_PASSWORD=${pgPassword}
+      - POSTGRES_DB=${pgDb}
+    volumes:
+      - ./Data/pg:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  pgAdmin:
+    container_name: pg-admin
+    image: dpage/pgadmin4:latest
+    networks:
+      - taggame
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+    depends_on:
+      - db
+    restart: unless-stopped
+
+networks:
+  taggame:
+    driver: bridge
+    name: taggame
+    internal: true

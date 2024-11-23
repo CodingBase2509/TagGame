@@ -3,8 +3,8 @@
   <PropertyGroup>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <TargetFrameworks>net8.0</TargetFrameworks>
-    <LangVersion>13</LangVersion>
+    <TargetFrameworks>net8.0;</TargetFrameworks>
+    <LangVersion>12</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
