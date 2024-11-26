@@ -2,6 +2,7 @@ using System.Net.Mime;
 using Carter;
 using Microsoft.AspNetCore.Mvc;
 using TagGame.Api.Services;
+using TagGame.Api.Validation.User;
 using TagGame.Shared.Constants;
 using TagGame.Shared.Domain.Common;
 using TagGame.Shared.Domain.Players;
@@ -20,8 +21,15 @@ public class InitialEndpoints : ICarterModule
             .AllowAnonymous();
     }
 
-    public async Task<Response<User>> CreateUserAsync([FromServices] PlayerService player, CreateUser.CreateUserRequest createUserRequest)
+    public async Task<Response<User>> CreateUserAsync(
+        [FromServices] PlayerService player,
+        [FromServices] CreateUserValidator validator,
+        CreateUser.CreateUserRequest createUserRequest)
     {
+        var validationResult = await validator.ValidateAsync(createUserRequest);
+        if (!validationResult.IsValid)
+            return new Error(400, validationResult);
+        
         var user = await player.AddUserAsync(createUserRequest.Name, createUserRequest.AvatarColor);
         if (user is null)
             return new Error(500, "not-created-user");
