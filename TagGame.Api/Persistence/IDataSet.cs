@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace TagGame.Api.Persistence;
 
-public interface IDatabase
+public interface IDataSet
 {
     DbSet<T> Set<T>() where T : class;
 

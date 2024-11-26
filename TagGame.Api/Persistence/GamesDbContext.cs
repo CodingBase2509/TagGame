@@ -8,7 +8,7 @@ using TagGame.Shared.Domain.Players;
 
 namespace TagGame.Api.Persistence;
 
-public class GamesDbContext : DbContext, IDatabase
+public class GamesDbContext : DbContext, IDataSet
 {
     public DbSet<GameRoom> Rooms { get; set; }
 
