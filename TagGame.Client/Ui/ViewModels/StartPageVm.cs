@@ -19,7 +19,7 @@ public partial class StartPageVm(RestClient api) : ViewModelBase
     [RelayCommand]
     private async Task CreateNewRoomAsync()
     {
-        var request = new CreateGameRoom.Request()
+        var request = new CreateGameRoom.CreateGameRoomRequest()
         {
             UserId = Guid.NewGuid(),
             GameRoomName = NewGameRoomName,

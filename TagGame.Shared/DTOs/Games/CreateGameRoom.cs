@@ -2,14 +2,14 @@ namespace TagGame.Shared.DTOs.Games;
 
 public static class CreateGameRoom
 {
-    public class Request
+    public class CreateGameRoomRequest
     {
         public Guid UserId { get; set; }
 
         public string GameRoomName { get; set; } = string.Empty;
     }
 
-    public class Response
+    public class CreateGameRoomResponse
     {
         public Guid RoomId { get; set; }
 

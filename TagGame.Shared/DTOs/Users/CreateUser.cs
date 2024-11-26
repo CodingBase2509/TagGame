@@ -4,7 +4,7 @@ namespace TagGame.Shared.DTOs.Users;
 
 public class CreateUser
 {
-    public class Request
+    public class CreateUserRequest
     {
         public string Name { get; set; }
         

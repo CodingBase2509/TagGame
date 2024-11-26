@@ -14,15 +14,15 @@ public class InitialEndpoints : ICarterModule
     public void AddRoutes(IEndpointRouteBuilder app)
     {
         app.MapPut(ApiRoutes.Initial.CreateUser, CreateUserAsync)
-            .Accepts<CreateUser.Request>(MediaTypeNames.Application.Json)
+            .Accepts<CreateUser.CreateUserRequest>(MediaTypeNames.Application.Json)
             .Produces<Response<User>>(StatusCodes.Status200OK)
             .Produces<Response<User>>(StatusCodes.Status500InternalServerError)
             .AllowAnonymous();
     }
 
-    public async Task<Response<User>> CreateUserAsync([FromServices] PlayerService player, CreateUser.Request request)
+    public async Task<Response<User>> CreateUserAsync([FromServices] PlayerService player, CreateUser.CreateUserRequest createUserRequest)
     {
-        var user = await player.AddUserAsync(request.Name, request.AvatarColor);
+        var user = await player.AddUserAsync(createUserRequest.Name, createUserRequest.AvatarColor);
         if (user is null)
             return new Error(500, "not-created-user");
 

@@ -15,28 +15,28 @@ public class RestClient(ConfigHandler configHandler)
 {
     private HttpClient client;
     
-    public async Task<Response<CreateGameRoom.Response>?> CreateRoomAsync(CreateGameRoom.Request request)
+    public async Task<Response<CreateGameRoom.CreateGameRoomResponse>?> CreateRoomAsync(CreateGameRoom.CreateGameRoomRequest createGameRoomRequest)
     {
         await InitAsync();
         
-        var stringContent = JsonSerializer.Serialize(request, MappingOptions.JsonSerializerOptions);
+        var stringContent = JsonSerializer.Serialize(createGameRoomRequest, MappingOptions.JsonSerializerOptions);
         var response = client.PostAsync(ApiRoutes.GameRoom.CreateRoom,
             new StringContent(stringContent, Encoding.UTF8, MediaTypeNames.Application.Json));
         
         var content = await response.Result.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<Response<CreateGameRoom.Response>>(content, MappingOptions.JsonSerializerOptions);
+        return JsonSerializer.Deserialize<Response<CreateGameRoom.CreateGameRoomResponse>>(content, MappingOptions.JsonSerializerOptions);
     }
 
-    public async Task<Response<JoinGameRoom.Response>?> JoinRoomAsync(JoinGameRoom.Request request)
+    public async Task<Response<JoinGameRoom.JoinGameRoomResponse>?> JoinRoomAsync(JoinGameRoom.JoinGameRoomRequest joinGameRoomRequest)
     {
         await InitAsync();
         
-        var stringContent = JsonSerializer.Serialize(request, MappingOptions.JsonSerializerOptions);
+        var stringContent = JsonSerializer.Serialize(joinGameRoomRequest, MappingOptions.JsonSerializerOptions);
         var response = client.PostAsync(ApiRoutes.GameRoom.JoinRoom,
             new StringContent(stringContent, Encoding.UTF8, MediaTypeNames.Application.Json));
         
         var content = await response.Result.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<Response<JoinGameRoom.Response>>(content, MappingOptions.JsonSerializerOptions);
+        return JsonSerializer.Deserialize<Response<JoinGameRoom.JoinGameRoomResponse>>(content, MappingOptions.JsonSerializerOptions);
     }
 
     public async Task<Response<GameRoom>?> GetRoomAsync(Guid roomId)
@@ -62,10 +62,10 @@ public class RestClient(ConfigHandler configHandler)
         return result is not null && result.IsSuccess;
     }
 
-    public async Task<Response<User>?> CreateUserAsync(CreateUser.Request request)
+    public async Task<Response<User>?> CreateUserAsync(CreateUser.CreateUserRequest createUserRequest)
     {
         await InitAsync();
-        var stringContent = JsonSerializer.Serialize(request, MappingOptions.JsonSerializerOptions);
+        var stringContent = JsonSerializer.Serialize(createUserRequest, MappingOptions.JsonSerializerOptions);
         var response = client.PutAsync(ApiRoutes.GameRoom.UpdateSettings,
             new StringContent(stringContent, Encoding.UTF8, MediaTypeNames.Application.Json));
         

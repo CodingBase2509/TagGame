@@ -8,9 +8,9 @@ namespace TagGame.Api.Services;
 
 public class GameRoomService
 {
-    private readonly IDatabase _db;
+    private readonly IDataSet _db;
 
-    public GameRoomService(IDatabase dataSet)
+    public GameRoomService(IDataSet dataSet)
     {
         _db = dataSet;
     }

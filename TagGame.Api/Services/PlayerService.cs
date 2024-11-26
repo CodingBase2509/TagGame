@@ -8,9 +8,9 @@ namespace TagGame.Api.Services;
 
 public class PlayerService
 {
-    private readonly IDatabase _db;
+    private readonly IDataSet _db;
 
-    public PlayerService(IDatabase dataSet)
+    public PlayerService(IDataSet dataSet)
     {
         this._db = dataSet;
     }

@@ -4,7 +4,7 @@ public static class ApiRoutes
 {
     public static class Initial
     {
-        public const string CreateUser = "/users/{id:guid}";
+        public const string CreateUser = "users";
     }
     
     public static class GameRoom

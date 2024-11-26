@@ -4,7 +4,7 @@ using TagGame.Shared.DTOs.Games;
 
 namespace TagGame.Api.Validation.GameRoom;
 
-public class CreateGameRoomValidator : AbstractValidator<CreateGameRoom.Request>
+public class CreateGameRoomValidator : AbstractValidator<CreateGameRoom.CreateGameRoomRequest>
 {
     public CreateGameRoomValidator()
     {

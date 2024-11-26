@@ -3,9 +3,9 @@ using TagGame.Shared.Domain.Players;
 
 namespace TagGame.Shared.DTOs.Games;
 
-public class JoinGameRoom
+public static class JoinGameRoom
 {
-    public class Request
+    public class JoinGameRoomRequest
     {
         public Guid UserId { get; set; }
 
@@ -14,7 +14,7 @@ public class JoinGameRoom
         public string AccessCode { get; set; } = string.Empty;
     }
 
-    public class Response
+    public class JoinGameRoomResponse
     {
         public GameRoom Room { get; set; }
 
