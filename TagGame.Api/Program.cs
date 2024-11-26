@@ -1,37 +1,41 @@
-﻿using Carter;
+﻿using System.Reflection;
+using Carter;
 using FluentValidation;
 using TagGame.Api;
+using TagGame.Api.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("TagGame.Api", new()
-    {
-        Title = "TagGame API",
-        Version = "v1",
-    });
-});
+#region Service Registration
+// Endpoint configuration
+builder.Services.AddSwagger();
 builder.Services.AddCarter();
+builder.Services.AddAuthorization();
+builder.Services.AddMiddleware();
 
+// Register services
 builder.Services.AddDbLayer(config);
 builder.Services.AddServices();
 builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
+#endregion
 
+#region Request Pipeline
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+app.UseMiddleware<ExceptionHandlerMiddleware>();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI(c =>
-        c.SwaggerEndpoint("swagger.json", "TagGame.Api"));
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "TagGame API");
+    });
+    
 }
 
-app.UseHttpsRedirection();
-app.MapGroup("v1")
-    .MapCarter();
+app.UseAuthorization();
+app.MapCarter();
+#endregion
 
 app.Run();
