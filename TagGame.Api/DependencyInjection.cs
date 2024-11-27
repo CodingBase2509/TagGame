@@ -67,7 +67,8 @@ public static class DependencyInjection
     {
         services.AddScoped<GameRoomService>();
         services.AddScoped<PlayerService>();
-
+        services.AddScoped<UserService>();
+        
         return services;
     }
 

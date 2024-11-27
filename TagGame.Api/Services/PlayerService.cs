@@ -6,19 +6,11 @@ using TagGame.Shared.Domain.Players;
 
 namespace TagGame.Api.Services;
 
-public class PlayerService
+public class PlayerService(IDataSet dataSet)
 {
-    private readonly IDataSet _db;
-
-    public PlayerService(IDataSet dataSet)
-    {
-        this._db = dataSet;
-    }
-
-// --- Player-Management ---
     public async Task<Player?> CreatePlayerAsync(Guid userId)
     {
-        var user = await _db.Set<User>().FindAsync(userId);
+        var user = await dataSet.Set<User>().FindAsync(userId);
         if (user is null)
             return null;
         
@@ -29,11 +21,11 @@ public class PlayerService
             UserName = user.DefaultName,
         };
         
-        var entity = await _db.Set<Player>().AddAsync(player);
+        var entity = await dataSet.Set<Player>().AddAsync(player);
         if (entity.State != EntityState.Added)
             return null;
         
-        var changedEntities = await _db.SaveChangesAsync();
+        var changedEntities = await dataSet.SaveChangesAsync();
         return changedEntities == 0 ? null : player;
     }
 
@@ -46,18 +38,18 @@ public class PlayerService
         if (player is null)
             return false;
         
-        var entity = _db.Set<Player>()
+        var entity = dataSet.Set<Player>()
             .Remove(player);
         if (entity.State != EntityState.Deleted)
             return false;
         
-        var changedEntities = await _db.SaveChangesAsync();
+        var changedEntities = await dataSet.SaveChangesAsync();
         return changedEntities > 0;
     }
 
     public async Task<Player?> GetPlayerById(Guid playerId)
     {
-        var player = await _db.Set<Player>()
+        var player = await dataSet.Set<Player>()
             .FindAsync(playerId);
 
         return player;
@@ -65,91 +57,53 @@ public class PlayerService
 
     public async Task<bool> UpdatePlayerAsync(Player player)
     {
-        var dbPlayer = await _db.Set<Player>()
+        var dbPlayer = await dataSet.Set<Player>()
             .FindAsync(player.Id);
         
-        _db.Set<Player>()
+        dataSet.Set<Player>()
             .Entry(dbPlayer)
             .CurrentValues.SetValues(player);
         
-        var entry = _db.Set<Player>().Update(dbPlayer);
+        var entry = dataSet.Set<Player>().Update(dbPlayer);
         if (entry.State != EntityState.Modified)
             return false;
         
-        var changedEntities = await _db.SaveChangesAsync();
+        var changedEntities = await dataSet.SaveChangesAsync();
         return changedEntities > 0;
     }
 
     public async Task<bool> AddPlayerToRoomAsync(Guid playerId, Guid roomId)
     {
         var player = await GetPlayerById(playerId);
-        var room = await _db.Set<GameRoom>().FindAsync(roomId);
+        var room = await dataSet.Set<GameRoom>().FindAsync(roomId);
 
         if (player is null || room is null)
             return false;
 
         room.Players.Add(player);
 
-        var entry = _db.Set<GameRoom>().Update(room);
+        var entry = dataSet.Set<GameRoom>().Update(room);
         if (entry.State != EntityState.Modified)
             return false;
         
-        var changedEntities = await _db.SaveChangesAsync();
+        var changedEntities = await dataSet.SaveChangesAsync();
         return changedEntities > 0;
     }
 
     public async Task<bool> RemovePlayerFromRoomAsync(Guid playerId, Guid roomId)
     {
-        var room = await _db.Set<GameRoom>().FindAsync(roomId);
+        var room = await dataSet.Set<GameRoom>().FindAsync(roomId);
 
         if (room is null)
             return false;
 
         room.Players.RemoveAll(p => Equals(p.Id, playerId));
 
-        var entry = _db.Set<GameRoom>().Update(room);
+        var entry = dataSet.Set<GameRoom>().Update(room);
         if (entry.State != EntityState.Modified)
             return false;
         
-        var changedEntities = await _db.SaveChangesAsync();
-        return changedEntities > 0;
-    }
-
-// --- User-Management ---
-    public async Task<User?> AddUserAsync(string username, Color avatarColor)
-    {
-        var user = new User()
-        {
-            Id = Guid.NewGuid(),
-            DefaultName = username,
-            DefaultAvatarColor = avatarColor,
-        };
-        
-        var entity = await _db.Set<User>().AddAsync(user);
-        if (entity.State != EntityState.Added)
-            return null;
-        
-        var changedEntities = await _db.SaveChangesAsync();
-        return changedEntities == 0 ? null : user;
-    }
-
-    public async Task<bool> CheckIfUserExists(Guid userId)
-    {
-        var user = await _db.Set<User>().FindAsync(userId);
-        return user is null ? false : true;
-    }
-
-    public async Task<bool> DeleteUserAsync(Guid userId)
-    {
-        var user = await _db.Set<User>().FindAsync(userId);
-        if (user is null)
-            return false;
-        
-        var entity = _db.Set<User>().Remove(user);
-        if (entity.State != EntityState.Deleted)
-            return false;
-        
-        var changedEntities = await _db.SaveChangesAsync();
+        var changedEntities = await dataSet.SaveChangesAsync();
         return changedEntities > 0;
     }
 }

@@ -22,7 +22,7 @@ public class InitialEndpoints : ICarterModule
     }
 
     public async Task<Response<User>> CreateUserAsync(
-        [FromServices] PlayerService player,
+        [FromServices] UserService userService,
         [FromServices] CreateUserValidator validator,
         CreateUser.CreateUserRequest createUserRequest)
     {
@@ -30,7 +30,7 @@ public class InitialEndpoints : ICarterModule
         if (!validationResult.IsValid)
             return new Error(400, validationResult);
         
-        var user = await player.AddUserAsync(createUserRequest.Name, createUserRequest.AvatarColor);
+        var user = await userService.AddUserAsync(createUserRequest.Name, createUserRequest.AvatarColor);
         if (user is null)
             return new Error(500, "not-created-user");
 
