@@ -8,15 +8,15 @@ using TagGame.Shared.Domain.Players;
 
 namespace TagGame.Api.Persistence;
 
-public class GamesDbContext : DbContext, IDataSet
+public class GamesDbContext : DbContext
 {
-    public DbSet<GameRoom> Rooms { get; set; }
+    internal DbSet<GameRoom> Rooms { get; set; }
 
-    public DbSet<GameSettings> Settings { get; set; }
+    internal DbSet<GameSettings> Settings { get; set; }
 
-    public DbSet<GameArea> Areas { get; set; }
-
-    public DbSet<Player> Players { get; set; }
+    internal DbSet<Player> Players { get; set; }
+    
+    internal DbSet<User> Users { get; set; }
 
     public GamesDbContext(DbContextOptions<GamesDbContext> options)
         : base(options)
@@ -73,10 +73,5 @@ public class GamesDbContext : DbContext, IDataSet
         });
 
         base.OnModelCreating(builder);
-    }
-
-    public Task<int> SaveChangesAsync()
-    {
-        return this.SaveChangesAsync();
     }
 }

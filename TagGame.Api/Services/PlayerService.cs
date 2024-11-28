@@ -1,16 +1,13 @@
-using System.Drawing;
-using Microsoft.EntityFrameworkCore;
 using TagGame.Api.Persistence;
-using TagGame.Shared.Domain.Games;
 using TagGame.Shared.Domain.Players;
 
 namespace TagGame.Api.Services;
 
-public class PlayerService(IDataSet dataSet)
+public class PlayerService(IDataAccess db)
 {
     public async Task<Player?> CreatePlayerAsync(Guid userId)
     {
-        var user = await dataSet.Set<User>().FindAsync(userId);
+        var user = await db.Users.GetByIdAsync(userId, false);
         if (user is null)
             return null;
         
@@ -21,12 +18,12 @@ public class PlayerService(IDataSet dataSet)
             UserName = user.DefaultName,
         };
         
-        var entity = await dataSet.Set<Player>().AddAsync(player);
-        if (entity.State != EntityState.Added)
+        var success = await db.Players.AddAsync(player);
+        if (!success)
             return null;
         
-        var changedEntities = await dataSet.SaveChangesAsync();
-        return changedEntities == 0 ? null : player;
+        success = await db.SaveChangesAsync();
+        return success ? player : null;
     }
 
     public async Task<bool> DeletePlayerAsync(Guid playerId)
@@ -38,72 +35,61 @@ public class PlayerService(IDataSet dataSet)
         if (player is null)
             return false;
         
-        var entity = dataSet.Set<Player>()
-            .Remove(player);
-        if (entity.State != EntityState.Deleted)
+        var success = await db.Players
+            .DeleteAsync(player);
+        if (!success)
             return false;
         
-        var changedEntities = await dataSet.SaveChangesAsync();
-        return changedEntities > 0;
+        return await db.SaveChangesAsync();
     }
 
     public async Task<Player?> GetPlayerById(Guid playerId)
     {
-        var player = await dataSet.Set<Player>()
-            .FindAsync(playerId);
+        var player = await db.Players
+            .GetByIdAsync(playerId, false);
 
         return player;
     }
 
     public async Task<bool> UpdatePlayerAsync(Player player)
     {
-        var dbPlayer = await dataSet.Set<Player>()
-            .FindAsync(player.Id);
-        
-        dataSet.Set<Player>()
-            .Entry(dbPlayer)
-            .CurrentValues.SetValues(player);
-        
-        var entry = dataSet.Set<Player>().Update(dbPlayer);
-        if (entry.State != EntityState.Modified)
+        var success = await db.Players.UpdateAsync(player);
+        if (!success)
             return false;
         
-        var changedEntities = await dataSet.SaveChangesAsync();
-        return changedEntities > 0;
+        return await db.SaveChangesAsync();
     }
 
     public async Task<bool> AddPlayerToRoomAsync(Guid playerId, Guid roomId)
     {
         var player = await GetPlayerById(playerId);
-        var room = await dataSet.Set<GameRoom>().FindAsync(roomId);
+        var room = await db.Rooms.GetByIdAsync(roomId);
 
         if (player is null || room is null)
             return false;
 
         room.Players.Add(player);
 
-        var entry = dataSet.Set<GameRoom>().Update(room);
-        if (entry.State != EntityState.Modified)
+        var success = await db.Rooms.UpdateAsync(room);
+        if (!success)
             return false;
         
-        var changedEntities = await dataSet.SaveChangesAsync();
-        return changedEntities > 0;
+        return await db.SaveChangesAsync();
     }
 
     public async Task<bool> RemovePlayerFromRoomAsync(Guid playerId, Guid roomId)
     {
-        var room = await dataSet.Set<GameRoom>().FindAsync(roomId);
+        var room = await db.Rooms.GetByIdAsync(roomId);
 
         if (room is null)
             return false;
 
         room.Players.RemoveAll(p => Equals(p.Id, playerId));
 
-        var entry = dataSet.Set<GameRoom>().Update(room);
-        if (entry.State != EntityState.Modified)
+        var success = await db.Rooms.UpdateAsync(room);
+        if (!success)
             return false;
         
-        var changedEntities = await dataSet.SaveChangesAsync();
-        return changedEntities > 0;
+        return await db.SaveChangesAsync();
     }
 }

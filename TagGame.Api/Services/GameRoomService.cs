@@ -1,30 +1,17 @@
-using Microsoft.EntityFrameworkCore;
 using TagGame.Api.Persistence;
 using TagGame.Shared.Constants;
 using TagGame.Shared.Domain.Games;
-using TagGame.Shared.DTOs.Games;
 
 namespace TagGame.Api.Services;
 
-public class GameRoomService
+public class GameRoomService(IDataAccess db)
 {
-    private readonly IDataSet _db;
-
-    public GameRoomService(IDataSet dataSet)
-    {
-        _db = dataSet;
-    }
-
     public async Task<GameRoom?> GetRoomAsync(Guid roomId)
     {
         if (Equals(roomId, Guid.Empty))
             return null;
 
-        var room = await _db.Set<GameRoom>()
-            .AsNoTracking()
-            .Include(r => r.Settings)
-            .Include(r => r.Players)
-            .FirstOrDefaultAsync(r => Equals(r.Id, roomId));
+        var room = await db.Rooms.GetByIdAsync(roomId, false);
 
         return room;
     }
@@ -34,11 +21,9 @@ public class GameRoomService
         if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(accessCode))
             return null;
 
-        var room = await _db.Set<GameRoom>()
-            .AsNoTracking()
-            .Include(r => r.Players)
+        var room = db.Rooms
             .Where(r => Equals(r.Name, name) && Equals(r.AccessCode, accessCode))
-            .FirstOrDefaultAsync();
+            .FirstOrDefault();
 
         return room;
     }
@@ -69,18 +54,14 @@ public class GameRoomService
             }
         };
 
-        var settingsEntry = await _db.Set<GameSettings>().AddAsync(room.Settings);
-        var roomEntity = await _db.Set<GameRoom>().AddAsync(room);
+        var settingsSuccess = await db.Settings.AddAsync(room.Settings);
+        var roomSuccess = await db.Rooms.AddAsync(room);
 
-        if (settingsEntry.State != EntityState.Added &&
-            roomEntity.State != EntityState.Added)
+        if (!settingsSuccess && !roomSuccess)
             return null;
 
-        var changedEntites = await _db.SaveChangesAsync();
-        if (changedEntites == 0)
-            return null;
-
-        return room;
+        var saveSuccess = await db.SaveChangesAsync();
+        return saveSuccess ? room : null;
     }
 
     public async Task<bool> DeleteRoomAsync(Guid roomId)
@@ -89,12 +70,11 @@ public class GameRoomService
         if (room is null)
             return false;
         
-        var entry = _db.Set<GameRoom>().Remove(room);
-        if (entry.State != EntityState.Detached)
+        var success = await db.Rooms.DeleteAsync(room);
+        if (!success)
             return false;
         
-        var changedEntites = await _db.SaveChangesAsync();
-        return changedEntites > 0;
+        return await db.SaveChangesAsync();
     }
 
     public async Task<bool> UpdateSettingsAsync(Guid roomId, GameSettings settings)
@@ -105,12 +85,11 @@ public class GameRoomService
         
         room.Settings = settings;
         
-        var entry = _db.Set<GameSettings>().Update(room.Settings);
-        if (entry.State != EntityState.Modified)
+        var success = await db.Settings.UpdateAsync(room.Settings);
+        if (!success)
             return false;
         
-        var changedEntites = await _db.SaveChangesAsync();
-        return changedEntites > 0;
+        return await db.SaveChangesAsync();
     }
 
     private static string GenerateAccessCode()

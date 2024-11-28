@@ -2,6 +2,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using TagGame.Api.Persistence;
+using TagGame.Api.Services;
 using TagGame.Shared.Domain.Players;
 
 namespace TagGame.Api.Middleware;
@@ -60,11 +61,9 @@ public class CustomAuthorizationHandler(IServiceProvider services) : Authorizati
     private async Task<bool> IsUserValidAsync(Guid userId)
     {
         using var scope = services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<IDataSet>();
+        var db = scope.ServiceProvider.GetRequiredService<IDataAccess>();
         
-        User? user = await db.Set<User>()
-            .FirstOrDefaultAsync(u => Equals(u.Id, userId));
-        
+        var user = await db.Users.GetByIdAsync(userId);
         return user is not null;
     }
 }

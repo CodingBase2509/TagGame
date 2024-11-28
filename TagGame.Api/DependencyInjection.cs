@@ -58,8 +58,8 @@ public static class DependencyInjection
         services.AddDbContext<GamesDbContext>(options => 
             options.UseNpgsql(config.GetConnectionString("DefaultConnection")));
 
-        services.AddScoped<IDataSet, GamesDbContext>();
-
+        services.AddScoped<IDataAccess, DataService>();
+        
         return services;
     }
 
