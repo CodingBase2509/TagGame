@@ -3,7 +3,7 @@ using TagGame.Shared.Domain.Common;
 
 namespace TagGame.Shared.Domain.Players;
 
-public class Player
+public class Player : IIdentifiable
 {
     public Guid Id { get; set; }
 

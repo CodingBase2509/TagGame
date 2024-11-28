@@ -1,8 +1,9 @@
-﻿using TagGame.Shared.Domain.Players;
+﻿using TagGame.Shared.Domain.Common;
+using TagGame.Shared.Domain.Players;
 
 namespace TagGame.Shared.Domain.Games;
 
-public class GameRoom
+public class GameRoom : IIdentifiable
 {
     public Guid Id { get; set; }
 

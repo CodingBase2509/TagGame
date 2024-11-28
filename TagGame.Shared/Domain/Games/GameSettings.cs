@@ -2,7 +2,7 @@
 
 namespace TagGame.Shared.Domain.Games;
 
-public class GameSettings
+public class GameSettings : IIdentifiable
 {
     public Guid Id { get; set; }
 
