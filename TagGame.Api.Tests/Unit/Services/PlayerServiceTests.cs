@@ -3,7 +3,7 @@ using TagGame.Api.Services;
 using TagGame.Shared.Domain.Games;
 using TagGame.Shared.Domain.Players;
 
-namespace TagGameApi.Tests.Unit.Services;
+namespace TagGame.Api.Tests.Unit.Services;
 
 public class PlayerServiceTests : TestBase
 {

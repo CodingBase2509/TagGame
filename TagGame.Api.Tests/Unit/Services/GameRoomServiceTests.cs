@@ -2,7 +2,7 @@ using TagGame.Api.Persistence;
 using TagGame.Api.Services;
 using TagGame.Shared.Domain.Games;
 
-namespace TagGameApi.Tests.Unit.Services;
+namespace TagGame.Api.Tests.Unit.Services;
 
 public class GameRoomServiceTests : TestBase
 {

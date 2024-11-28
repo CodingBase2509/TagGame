@@ -2,7 +2,7 @@ using FluentValidation.TestHelper;
 using TagGame.Api.Validation.GameRoom;
 using TagGame.Shared.Domain.Games;
 
-namespace TagGameApi.Tests.Unit.Validation;
+namespace TagGame.Api.Tests.Unit.Validation;
 
 public class GameRoomSettingsValidatorTests : TestBase
 {

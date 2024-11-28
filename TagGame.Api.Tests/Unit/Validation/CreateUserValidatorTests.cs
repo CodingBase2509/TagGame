@@ -3,7 +3,7 @@ using FluentValidation.TestHelper;
 using TagGame.Api.Validation.User;
 using TagGame.Shared.DTOs.Users;
 
-namespace TagGameApi.Tests.Unit.Validation;
+namespace TagGame.Api.Tests.Unit.Validation;
 
 public class CreateUserValidatorTests : TestBase
 {
