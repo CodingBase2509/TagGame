@@ -4,10 +4,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace TagGame.Api.Migrations
+namespace TagGame.Api.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class initial : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -18,6 +18,8 @@ namespace TagGame.Api.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     RoomId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Area_Shape = table.Column<int>(type: "integer", nullable: false),
+                    Area_Boundary = table.Column<string>(type: "jsonb", nullable: false),
                     SeekerIds = table.Column<List<Guid>>(type: "uuid[]", nullable: false),
                     HideTimeout = table.Column<TimeSpan>(type: "interval", nullable: false),
                     IsPingEnabled = table.Column<bool>(type: "boolean", nullable: false),
@@ -29,22 +31,16 @@ namespace TagGame.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Areas",
+                name: "Users",
                 columns: table => new
                 {
-                    GameSettingsId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Area_Shape = table.Column<int>(type: "integer", nullable: false),
-                    Area_Boundary = table.Column<string>(type: "jsonb", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    DefaultName = table.Column<string>(type: "text", nullable: false),
+                    DefaultAvatarColor = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Areas", x => x.GameSettingsId);
-                    table.ForeignKey(
-                        name: "FK_Areas_Settings_GameSettingsId",
-                        column: x => x.GameSettingsId,
-                        principalTable: "Settings",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                    table.PrimaryKey("PK_Users", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -53,6 +49,7 @@ namespace TagGame.Api.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     AccessCode = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
                     State = table.Column<int>(type: "integer", nullable: false),
                     SettingsId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatorId = table.Column<Guid>(type: "uuid", nullable: false)
@@ -96,6 +93,16 @@ namespace TagGame.Api.Migrations
                 column: "GameRoomId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Rooms_AccessCode",
+                table: "Rooms",
+                column: "AccessCode");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Rooms_Name",
+                table: "Rooms",
+                column: "Name");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Rooms_SettingsId",
                 table: "Rooms",
                 column: "SettingsId");
@@ -105,10 +112,10 @@ namespace TagGame.Api.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Areas");
+                name: "Players");
 
             migrationBuilder.DropTable(
-                name: "Players");
+                name: "Users");
 
             migrationBuilder.DropTable(
                 name: "Rooms");

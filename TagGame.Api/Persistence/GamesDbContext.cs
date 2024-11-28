@@ -1,6 +1,7 @@
 using System.Drawing;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using TagGame.Shared.Constants;
 using TagGame.Shared.Domain.Common;
 using TagGame.Shared.Domain.Games;
@@ -46,15 +47,10 @@ public class GamesDbContext : DbContext
                     .HasColumnName("Area_Boundary")
                     .HasConversion(
                         v => JsonSerializer.Serialize(v, MappingOptions.JsonSerializerOptions),
-                        v => JsonSerializer.Deserialize<Location[]>(v, MappingOptions.JsonSerializerOptions) ?? new Location[1])
+                        v => JsonSerializer.Deserialize<Location[]>(v, MappingOptions.JsonSerializerOptions) ??
+                             new Location[1])
                     .HasColumnType("jsonb");
             });
-
-            entity.Property(s => s.SeekerIds)
-                .HasConversion(
-                        v => JsonSerializer.Serialize(v, MappingOptions.JsonSerializerOptions),
-                        v => JsonSerializer.Deserialize<List<Guid>>(v, MappingOptions.JsonSerializerOptions) ?? new List<Guid>())
-                    .HasColumnType("jsonb");
         });
 
         builder.Entity<Player>(entity => 
@@ -72,6 +68,15 @@ public class GamesDbContext : DbContext
                 );
         });
 
+        builder.Entity<User>(entity =>
+        {
+            entity.Property(e => e.DefaultAvatarColor)
+                .HasConversion(
+                    v => v.ToKnownColor(),
+                    v => Color.FromKnownColor(v)
+                );
+        });
+        
         base.OnModelCreating(builder);
     }
 }

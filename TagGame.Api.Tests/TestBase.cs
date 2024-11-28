@@ -18,16 +18,17 @@ public class TestBase : IAsyncLifetime
         _fixture.Customize(customization);
     }
 
-    void UseDbTestContainer()
+    protected void UseDbTestContainer()
     {
         _dbContainer = new PostgreSqlBuilder()
+            .WithName("test-db")
             .WithDatabase("TestDb")
             .WithUsername("testuser")
             .WithPassword("testpassword")
             .Build();
     }
 
-    public async Task InitializeAsync()
+    public virtual async Task InitializeAsync()
     {
         if (_dbContainer is null)
             return;
@@ -36,7 +37,7 @@ public class TestBase : IAsyncLifetime
         Environment.SetEnvironmentVariable("ConnectionStrings:DefaultConnection", _dbContainer.GetConnectionString());
     }
 
-    public async Task DisposeAsync()
+    public virtual async Task DisposeAsync()
     {
         if (_dbContainer is null)
             return;

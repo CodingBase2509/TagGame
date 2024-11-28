@@ -30,6 +30,10 @@
   <ItemGroup>
     <ProjectReference Include="..\TagGame.Shared\TagGame.Shared.csproj" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <Folder Include="Persistence\Migrations\" />
+  </ItemGroup>
 
   <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>

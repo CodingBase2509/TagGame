@@ -14,7 +14,7 @@ public class InitialEndpoints : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPut(ApiRoutes.Initial.CreateUser, CreateUserAsync)
+        app.MapPost(ApiRoutes.Initial.CreateUser, CreateUserAsync)
             .Accepts<CreateUser.CreateUserRequest>(MediaTypeNames.Application.Json)
             .Produces<Response<User>>(StatusCodes.Status200OK)
             .Produces<Response<User>>(StatusCodes.Status500InternalServerError)

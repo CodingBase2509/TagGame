@@ -10,7 +10,7 @@ using TagGame.Api.Persistence;
 
 #nullable disable
 
-namespace TagGame.Api.Migrations
+namespace TagGame.Api.Persistence.Migrations
 {
     [DbContext(typeof(GamesDbContext))]
     partial class GamesDbContextModelSnapshot : ModelSnapshot
@@ -19,7 +19,7 @@ namespace TagGame.Api.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.10")
+                .HasAnnotation("ProductVersion", "8.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -37,6 +37,10 @@ namespace TagGame.Api.Migrations
                     b.Property<Guid>("CreatorId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<Guid>("SettingsId")
                         .HasColumnType("uuid");
 
@@ -44,6 +48,10 @@ namespace TagGame.Api.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AccessCode");
+
+                    b.HasIndex("Name");
 
                     b.HasIndex("SettingsId");
 
@@ -109,6 +117,24 @@ namespace TagGame.Api.Migrations
                     b.ToTable("Players");
                 });
 
+            modelBuilder.Entity("TagGame.Shared.Domain.Players.User", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<KnownColor>("DefaultAvatarColor")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("DefaultName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
+                });
+
             modelBuilder.Entity("TagGame.Shared.Domain.Games.GameRoom", b =>
                 {
                     b.HasOne("TagGame.Shared.Domain.Games.GameSettings", "Settings")
@@ -138,7 +164,7 @@ namespace TagGame.Api.Migrations
 
                             b1.HasKey("GameSettingsId");
 
-                            b1.ToTable("Areas");
+                            b1.ToTable("Settings");
 
                             b1.WithOwner()
                                 .HasForeignKey("GameSettingsId");

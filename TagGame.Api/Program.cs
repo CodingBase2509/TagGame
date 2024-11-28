@@ -39,3 +39,8 @@ app.MapCarter();
 #endregion
 
 app.Run();
+
+/// <summary>
+/// The partial class is for accessibility for the integration tests. 
+/// </summary>
+public partial class Program { }
