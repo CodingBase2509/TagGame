@@ -72,7 +72,7 @@ public partial class InitPageViewModel(ConfigHandler config, RestClient api) : V
         var response = await api.CreateUserAsync(new()
         {
             Name = username,
-            AvatarColor = avatarColor.ToSystemColor(),
+            AvatarColor = avatarColor.ToColorDTO(),
         });
 
         if (!response.IsSuccess)

@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using TagGame.Api.Persistence;
+using TagGame.Api.Services;
 using TagGame.Shared.Constants;
 using TagGame.Shared.Domain.Common;
 using TagGame.Shared.Domain.Players;
+using TagGame.Shared.DTOs.Common;
 using TagGame.Shared.DTOs.Users;
 
 namespace TagGame.Api.Tests.Integration;
@@ -47,11 +49,7 @@ public class CreateUserEndpointTests : TestBase, IClassFixture<WebApplicationFac
     {
         // Arrange
         var client = _factory.CreateClient();
-        var request = new CreateUser.CreateUserRequest
-        {
-            Name = "TestUser",
-            AvatarColor = Color.Blue
-        };
+        var request = _fixture.Create<CreateUser.CreateUserRequest>();
 
         // Act
         var jsonResponse = await client.PostAsync(ApiRoutes.Initial.CreateUser, 
@@ -66,8 +64,11 @@ public class CreateUserEndpointTests : TestBase, IClassFixture<WebApplicationFac
         response.Should().NotBeNull();
         response.Value.Should().NotBeNull();
         response.Error.Should().BeNull();
-        response.Value.DefaultName.Should().Be("TestUser");
-        response.Value.DefaultAvatarColor.Should().Be(Color.Blue);
+        response.Value.DefaultName.Should().Be(request.Name);
+        response.Value.DefaultAvatarColor.A.Should().Be(request.AvatarColor.A);
+        response.Value.DefaultAvatarColor.R.Should().Be(request.AvatarColor.R);
+        response.Value.DefaultAvatarColor.G.Should().Be(request.AvatarColor.G);
+        response.Value.DefaultAvatarColor.B.Should().Be(request.AvatarColor.B);
     }
 
     [Fact]
@@ -79,7 +80,13 @@ public class CreateUserEndpointTests : TestBase, IClassFixture<WebApplicationFac
         var request = new CreateUser.CreateUserRequest
         {
             Name = string.Empty,
-            AvatarColor = Color.Blue
+            AvatarColor = new ColorDTO()
+            {
+                A = Color.Blue.A,
+                R = Color.Blue.R,
+                G = Color.Blue.G,
+                B = Color.Blue.B
+            }
         };
 
         // Act
@@ -93,6 +100,6 @@ public class CreateUserEndpointTests : TestBase, IClassFixture<WebApplicationFac
         
         response.Should().NotBeNull();
         response.Error.Should().NotBeNull();
-        response.Error.Message.Should().Contain("not-created-user");
+        response.Error.Message.Should().Contain("empty-name");
     }
 }

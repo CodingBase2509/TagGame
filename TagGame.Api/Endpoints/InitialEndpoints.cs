@@ -17,23 +17,26 @@ public class InitialEndpoints : ICarterModule
         app.MapPost(ApiRoutes.Initial.CreateUser, CreateUserAsync)
             .Accepts<CreateUser.CreateUserRequest>(MediaTypeNames.Application.Json)
             .Produces<Response<User>>(StatusCodes.Status200OK)
+            .Produces<Response<User>>(StatusCodes.Status400BadRequest)
             .Produces<Response<User>>(StatusCodes.Status500InternalServerError)
             .AllowAnonymous();
     }
 
-    public async Task<Response<User>> CreateUserAsync(
+    public async Task<IResult> CreateUserAsync(
         [FromServices] UserService userService,
         [FromServices] CreateUserValidator validator,
         CreateUser.CreateUserRequest createUserRequest)
     {
         var validationResult = await validator.ValidateAsync(createUserRequest);
         if (!validationResult.IsValid)
-            return new Error(400, validationResult);
+            return new Error(400, validationResult)
+                .ToHttpResult();
         
         var user = await userService.AddUserAsync(createUserRequest.Name, createUserRequest.AvatarColor);
         if (user is null)
-            return new Error(500, "not-created-user");
+            return new Error(500, "not-created-user")
+                .ToHttpResult();
 
-        return user;
+        return user.ToHttpResult();
     }
 }

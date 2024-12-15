@@ -1,6 +1,6 @@
-using System.Drawing;
 using FluentValidation.TestHelper;
 using TagGame.Api.Validation.User;
+using TagGame.Shared.DTOs.Common;
 using TagGame.Shared.DTOs.Users;
 
 namespace TagGame.Api.Tests.Unit.Validation;
@@ -44,7 +44,7 @@ public class CreateUserValidatorTests : TestBase
     public void ShouldHaveError_WhenAvatarColorIsInvalid()
     {
         // Arrange
-        Action invalidColor = () => Color.FromArgb(300, 255, 255, 255); // Ungültiges A
+        Action invalidColor = () => ColorDTO.FromArgb(300, 255, 255, 255); // Ungültiges A
 
         // Act & Assert
         invalidColor.Should().Throw<ArgumentException>();
@@ -55,7 +55,7 @@ public class CreateUserValidatorTests : TestBase
     {
         // Arrange
         var request = _fixture.Build<CreateUser.CreateUserRequest>()
-                              .With(x => x.AvatarColor, Color.FromArgb(255, 255, 128, 64))
+                              .With(x => x.AvatarColor, ColorDTO.FromArgb(255, 255, 128, 64))
                               .Create();
 
         // Act
@@ -77,7 +77,7 @@ public class CreateUserValidatorTests : TestBase
     public void ShouldHaveError_ForInvalidColorChannels(int r, int g, int b, int a)
     {
         // Arrange
-        Action createInvalidColor = () => Color.FromArgb(a, r, g, b);
+        Action createInvalidColor = () => ColorDTO.FromArgb(a, r, g, b);
 
         // Act & Assert
         createInvalidColor.Should().Throw<ArgumentException>();

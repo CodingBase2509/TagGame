@@ -58,7 +58,7 @@ public class RestClient(ConfigHandler configHandler)
             new StringContent(stringContent, Encoding.UTF8, MediaTypeNames.Application.Json));
         
         var content = await response.Result.Content.ReadAsStringAsync();
-        var result = JsonSerializer.Deserialize<Response>(content, MappingOptions.JsonSerializerOptions);
+        var result = JsonSerializer.Deserialize<Response<string>>(content, MappingOptions.JsonSerializerOptions);
         return result is not null && result.IsSuccess;
     }
 

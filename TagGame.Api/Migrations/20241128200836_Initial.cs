@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace TagGame.Api.Persistence.Migrations
+namespace TagGame.Api.Migrations
 {
     /// <inheritdoc />
     public partial class Initial : Migration
@@ -36,7 +36,7 @@ namespace TagGame.Api.Persistence.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     DefaultName = table.Column<string>(type: "text", nullable: false),
-                    DefaultAvatarColor = table.Column<int>(type: "integer", nullable: false)
+                    DefaultAvatarColor = table.Column<string>(type: "jsonb", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -72,7 +72,7 @@ namespace TagGame.Api.Persistence.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     ConnectionId = table.Column<string>(type: "text", nullable: true),
                     UserName = table.Column<string>(type: "text", nullable: false),
-                    AvatarColor = table.Column<int>(type: "integer", nullable: false),
+                    AvatarColor = table.Column<string>(type: "jsonb", nullable: false),
                     Type = table.Column<int>(type: "integer", nullable: false),
                     Location = table.Column<string>(type: "jsonb", nullable: true),
                     GameRoomId = table.Column<Guid>(type: "uuid", nullable: true)

@@ -1,4 +1,4 @@
-using System.Drawing;
+using TagGame.Shared.DTOs.Common;
 
 namespace TagGame.Shared.DTOs.Users;
 
@@ -8,6 +8,6 @@ public class CreateUser
     {
         public string Name { get; set; }
         
-        public Color AvatarColor { get; set; }
+        public ColorDTO AvatarColor { get; set; }
     }
 }

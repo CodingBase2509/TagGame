@@ -1,12 +1,12 @@
-using System.Drawing;
 using TagGame.Api.Persistence;
 using TagGame.Shared.Domain.Players;
+using TagGame.Shared.DTOs.Common;
 
 namespace TagGame.Api.Services;
 
 public class UserService(IDataAccess db)
 {
-    public async Task<User?> AddUserAsync(string username, Color avatarColor)
+    public async Task<User?> AddUserAsync(string username, ColorDTO avatarColor)
     {
         var user = new User()
         {

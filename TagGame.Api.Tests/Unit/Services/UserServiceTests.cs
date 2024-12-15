@@ -1,7 +1,7 @@
-using System.Drawing;
 using TagGame.Api.Persistence;
 using TagGame.Api.Services;
 using TagGame.Shared.Domain.Players;
+using TagGame.Shared.DTOs.Common;
 
 namespace TagGame.Api.Tests.Unit.Services;
 
@@ -23,7 +23,7 @@ public class UserServiceTests : TestBase
     {
         // Arrange
         var username = _fixture.Create<string>();
-        var avatarColor = Color.FromArgb(255, 100, 150, 200);
+        var avatarColor = ColorDTO.FromArgb(255, 100, 150, 200);
 
         var user = new User
         {
@@ -53,7 +53,7 @@ public class UserServiceTests : TestBase
     {
         // Arrange
         var username = _fixture.Create<string>();
-        var avatarColor = Color.FromArgb(255, 50, 50, 50);
+        var avatarColor = ColorDTO.FromArgb(255, 50, 50, 50);
 
         _dataServiceMock.Setup(db => db.Users.AddAsync(It.IsAny<User>()))
             .ReturnsAsync(false);
@@ -70,7 +70,7 @@ public class UserServiceTests : TestBase
     {
         // Arrange
         var username = _fixture.Create<string>();
-        var avatarColor = Color.FromArgb(255, 200, 200, 200);
+        var avatarColor = ColorDTO.FromArgb(255, 200, 200, 200);
 
         _dataServiceMock.Setup(db => db.Users.AddAsync(It.IsAny<User>()))
             .ReturnsAsync(true);
