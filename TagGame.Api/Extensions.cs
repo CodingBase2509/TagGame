@@ -20,7 +20,7 @@ public static class Extensions
                 400 => Results.BadRequest((Response<TObject>)error),
                 404 => Results.NotFound((Response<TObject>)error),
                 500 => Results.Content(
-                    JsonSerializer.Serialize(error, MappingOptions.JsonSerializerOptions),
+                    JsonSerializer.Serialize((Response<TObject>)error, MappingOptions.JsonSerializerOptions),
                     MediaTypeNames.Application.Json,
                     Encoding.UTF8,
                     StatusCodes.Status500InternalServerError),

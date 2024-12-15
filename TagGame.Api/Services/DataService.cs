@@ -36,7 +36,8 @@ file class DataService<T>(DbSet<T> entities) : IDataSet<T> where T : class, IIde
         else
             return await entities
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => Equals(x.Id, id));
+                .Where(x => Equals(x.Id, id))
+                .FirstOrDefaultAsync();
     }
 
     public IEnumerable<T> Where(Func<T, bool> predicate, bool isTracking = true)

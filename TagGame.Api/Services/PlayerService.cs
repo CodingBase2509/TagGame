@@ -60,9 +60,9 @@ public class PlayerService(IDataAccess db)
         return await db.SaveChangesAsync();
     }
 
-    public async Task<bool> AddPlayerToRoomAsync(Guid playerId, Guid roomId)
+    public async Task<bool> AddPlayerToRoomAsync(Guid roomId, Guid playerId)
     {
-        var player = await GetPlayerById(playerId);
+        var player = await db.Players.GetByIdAsync(playerId);
         var room = await db.Rooms.GetByIdAsync(roomId);
 
         if (player is null || room is null)

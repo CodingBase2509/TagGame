@@ -19,32 +19,32 @@ public class GameRoomEndpoints : ICarterModule
         gameroom.MapPost(ApiRoutes.GameRoom.CreateRoom, CreateRoom)
             .Accepts<CreateGameRoom.CreateGameRoomRequest>(MediaTypeNames.Application.Json)
             .Produces<Response<CreateGameRoom.CreateGameRoomResponse>>(StatusCodes.Status201Created)
-            .Produces<Response<CreateGameRoom.CreateGameRoomResponse>>(StatusCodes.Status400BadRequest)
-            .Produces<Response<CreateGameRoom.CreateGameRoomResponse>>(StatusCodes.Status500InternalServerError)
+            .Produces<Response<Error>>(StatusCodes.Status400BadRequest)
+            .Produces<Response<Error>>(StatusCodes.Status500InternalServerError)
             .AllowAnonymous()
             .WithOpenApi();
 
         gameroom.MapPost(ApiRoutes.GameRoom.JoinRoom, JoinRoom)
             .Accepts<JoinGameRoom.JoinGameRoomRequest>(MediaTypeNames.Application.Json)
             .Produces<Response<JoinGameRoom.JoinGameRoomResponse>>(StatusCodes.Status201Created)
-            .Produces<Response<JoinGameRoom.JoinGameRoomResponse>>(StatusCodes.Status400BadRequest)
-            .Produces<Response<JoinGameRoom.JoinGameRoomResponse>>(StatusCodes.Status404NotFound)
-            .Produces<Response<JoinGameRoom.JoinGameRoomResponse>>(StatusCodes.Status500InternalServerError)
+            .Produces<Response<Error>>(StatusCodes.Status400BadRequest)
+            .Produces<Response<Error>>(StatusCodes.Status404NotFound)
+            .Produces<Response<Error>>(StatusCodes.Status500InternalServerError)
             .AllowAnonymous()
             .WithOpenApi();
 
         gameroom.MapGet(ApiRoutes.GameRoom.GetRoom, GetRoom)
             .Produces<Response<GameRoom>>(StatusCodes.Status200OK)
-            .Produces<Response<GameRoom>>(StatusCodes.Status400BadRequest)
-            .Produces<Response<GameRoom>>(StatusCodes.Status404NotFound)
+            .Produces<Response<Error>>(StatusCodes.Status400BadRequest)
+            .Produces<Response<Error>>(StatusCodes.Status404NotFound)
             .RequireAuthorization()
             .WithOpenApi();
 
         gameroom.MapPut(ApiRoutes.GameRoom.UpdateSettings, UpdateSettings)
             .Accepts<Response<string>>(MediaTypeNames.Application.Json)
-            .Produces<Response<string>>(StatusCodes.Status400BadRequest)
-            .Produces<Response<string>>(StatusCodes.Status404NotFound)
-            .Produces<Response<string>>(StatusCodes.Status500InternalServerError)
+            .Produces<Response<Error>>(StatusCodes.Status400BadRequest)
+            .Produces<Response<Error>>(StatusCodes.Status404NotFound)
+            .Produces<Response<Error>>(StatusCodes.Status500InternalServerError)
             .RequireAuthorization()
             .WithOpenApi();
     }
@@ -55,10 +55,6 @@ public class GameRoomEndpoints : ICarterModule
         [FromServices] CreateGameRoomValidator validator,
         CreateGameRoom.CreateGameRoomRequest createGameRoomRequest)
     {
-        if (createGameRoomRequest is null)
-            return new Error(400, "request-null")
-                .ToHttpResult();
-
         var validationResult = await validator.ValidateAsync(createGameRoomRequest);
         if (!validationResult.IsValid)
             return new Error(400, validationResult)
@@ -93,10 +89,6 @@ public class GameRoomEndpoints : ICarterModule
         [FromServices] JoinRoomValidator validator,
         JoinGameRoom.JoinGameRoomRequest joinGameRoomRequest)
     {
-        if (joinGameRoomRequest is null)
-            return new Error(400, "request-null")
-                .ToHttpResult();
-
         var validationResult = await validator.ValidateAsync(joinGameRoomRequest);
         if (!validationResult.IsValid)
             return new Error(400, validationResult)
@@ -112,7 +104,7 @@ public class GameRoomEndpoints : ICarterModule
             return new Error(500, "not-created-player")
                 .ToHttpResult();
 
-        var addSuccess = await playerService.AddPlayerToRoomAsync(player.Id, room.Id);
+        var addSuccess = await playerService.AddPlayerToRoomAsync(room.Id, player.Id);
         if (!addSuccess)
             return new Error(500, "player-not-joined-room")
                 .ToHttpResult();
