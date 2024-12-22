@@ -215,12 +215,14 @@ public class PlayerServiceTests : TestBase
         var playerId = _fixture.Create<Guid>();
         var roomId = _fixture.Create<Guid>();
 
-        var player = _fixture.Create<Player>();
+        var player = _fixture.Build<Player>()
+            .With(p => p.Id, playerId)
+            .Create();
         var room = _fixture.Build<GameRoom>()
             .With(r => r.Id, roomId)
             .Create();
-
-        _dataAccessMock.Setup(db => db.Players.GetByIdAsync(playerId, false))
+        
+        _dataAccessMock.Setup(db => db.Players.GetByIdAsync(playerId, It.IsAny<bool>()))
             .ReturnsAsync(player);
 
         _dataAccessMock.Setup(db => db.Rooms.GetByIdAsync(roomId, It.IsAny<bool>()))
@@ -233,7 +235,7 @@ public class PlayerServiceTests : TestBase
             .ReturnsAsync(true);
 
         // Act
-        var result = await _playerService.AddPlayerToRoomAsync(playerId, roomId);
+        var result = await _playerService.AddPlayerToRoomAsync(roomId, playerId);
 
         // Assert
         result.Should().BeTrue();

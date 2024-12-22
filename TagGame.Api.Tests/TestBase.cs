@@ -21,7 +21,7 @@ public class TestBase : IAsyncLifetime
     protected void UseDbTestContainer()
     {
         _dbContainer = new PostgreSqlBuilder()
-            .WithName("test-db")
+            .WithName(Guid.NewGuid().ToString())
             .WithDatabase("TestDb")
             .WithUsername("testuser")
             .WithPassword("testpassword")
