@@ -105,14 +105,14 @@ public class GameRoomService(IDataAccess db)
             var number = Random.Shared.Next(numRange[0], numRange[1]);
             var c = Random.Shared.Next(charRange[0], charRange[1]);
 
-            var random = Random.Shared.Next(0, 1);
+            var random = Random.Shared.Next(0, 2);
 
-            if (random == 0)
-                accessCode += number;
-            else if (random == 1)
-                accessCode += c;
-            else
-                accessCode += string.Empty;
+            accessCode += random switch
+            {
+                0 => (char)number,
+                1 => (char)c,
+                _ => string.Empty
+            };
         } 
 
         return accessCode;

@@ -15,16 +15,18 @@ using TagGame.Shared.DTOs.Games;
 
 namespace TagGame.Api.Tests.Integration;
 
-public class CreateRoomEndpointTests : TestBase, IClassFixture<WebApplicationFactory<Program>>
+public class JoinRoomEndpointTests : TestBase, IClassFixture<WebApplicationFactory<Program>>
 {
     private WebApplicationFactory<Program> _factory;
-    private const string route = $"{ApiRoutes.GameRoom.GroupName}{ApiRoutes.GameRoom.CreateRoom}";
+    private const string route = $"{ApiRoutes.GameRoom.GroupName}{ApiRoutes.GameRoom.JoinRoom}";
 
-    public CreateRoomEndpointTests(WebApplicationFactory<Program> factory)
+    public JoinRoomEndpointTests(WebApplicationFactory<Program> factory)
     {
         _factory = factory;
         UseDbTestContainer();
     }
+    
+    string GetRoute(Guid roomid) => route.Replace("{roomId:guid}", roomid.ToString());
     
     public override async Task InitializeAsync()
     {
@@ -45,50 +47,54 @@ public class CreateRoomEndpointTests : TestBase, IClassFixture<WebApplicationFac
     }
     
     [Fact]
-    public async Task CreateRoom_ValidRequest_ReturnsRoomDetails()
+    public async Task JoinRoom_ValidRequest_ReturnsRoomAndPlayerDetails()
     {
         // Arrange
         var scope = _factory.Services.CreateScope();
+        var roomService = scope.ServiceProvider.GetRequiredService<GameRoomService>();
         var userService = scope.ServiceProvider.GetRequiredService<UserService>();
-        var user = await userService.AddUserAsync("Test", ColorDTO.FromArgb(255, 0, 0, 255));
         
-        var client = _factory.CreateClient();
-        var validRequest = new CreateGameRoom.CreateGameRoomRequest
+        var room = await roomService.CreateAsync(Guid.NewGuid(), "Test Room");
+        var user = await userService.AddUserAsync("Test User", ColorDTO.FromArgb(13,153,153,159));
+        var validRequest = new JoinGameRoom.JoinGameRoomRequest
         {
             UserId = user.Id,
-            GameRoomName = "Test Room"
+            GameName = room.Name,
+            AccessCode = room.AccessCode
         };
 
+        var client = _factory.CreateClient();
+
         // Act
-        var response = await client.PostAsync(route,
+        var response = await client.PostAsync(GetRoute(room.Id),
             new StringContent(JsonSerializer.Serialize(validRequest), Encoding.UTF8, "application/json"));
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var stringResponse = await response.Content.ReadAsStringAsync();
-        var result = JsonSerializer.Deserialize<Response<CreateGameRoom.CreateGameRoomResponse>>(
+        var result = JsonSerializer.Deserialize<Response<JoinGameRoom.JoinGameRoomResponse>>(
             stringResponse, MappingOptions.JsonSerializerOptions);
 
         result.Should().NotBeNull();
-        result.Value.RoomId.Should().NotBeEmpty();
-        result.Value.RoomName.Should().Be("Test Room");
-        result.Value.AccessCode.Should().NotBeNullOrWhiteSpace();
+        result.Value.Room.Id.Should().Be(room.Id);
+        result.Value.Player.Id.Should().NotBeEmpty();
     }
 
     [Fact]
-    public async Task CreateRoom_InvalidRequest_ReturnsValidationError()
+    public async Task JoinRoom_InvalidRequest_ReturnsValidationError()
     {
         // Arrange
         var client = _factory.CreateClient();
-        var invalidRequest = new CreateGameRoom.CreateGameRoomRequest
+        var invalidRequest = new JoinGameRoom.JoinGameRoomRequest
         {
             UserId = Guid.Empty, // Invalid UserId
-            GameRoomName = string.Empty // Invalid Room Name
+            GameName = string.Empty, // Invalid Game Name
+            AccessCode = string.Empty // Invalid Access Code
         };
 
         // Act
-        var response = await client.PostAsync(route,
+        var response = await client.PostAsync(GetRoute(Guid.NewGuid()),
             new StringContent(JsonSerializer.Serialize(invalidRequest), Encoding.UTF8, "application/json"));
 
         // Assert
@@ -98,57 +104,59 @@ public class CreateRoomEndpointTests : TestBase, IClassFixture<WebApplicationFac
         var result = JsonSerializer.Deserialize<Response<Error>>(stringResponse, MappingOptions.JsonSerializerOptions);
 
         result.Should().NotBeNull();
-        result.Error.Message.Should().Contain("empty-id");
         result.Error.Message.Should().Contain("empty-name");
+        result.Error.Message.Should().Contain("empty-accesscode");
     }
 
     [Fact]
-    public async Task CreateRoom_ServiceFailsToCreateRoom_ReturnsServerError()
+    public async Task JoinRoom_RoomNotFound_ReturnsNotFound()
     {
         // Arrange
-        var validRequest = new CreateGameRoom.CreateGameRoomRequest
+        var validRequest = new JoinGameRoom.JoinGameRoomRequest
         {
             UserId = Guid.NewGuid(),
-            GameRoomName = "Test Room"
+            GameName = "Nonexistent",
+            AccessCode = "12345"
         };
 
-        var dbMock = Utility.CreateDbMockForRooms();
-        dbMock.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(false);
-        
-        var client = _factory.WithWebHostBuilder(builder =>
-        {
-            builder.ConfigureServices(services =>
-            services.AddScoped<IDataAccess>(_ => dbMock.Object));
-        }).CreateClient();
+        var client = _factory.CreateClient();
 
         // Act
-        var response = await client.PostAsync(route,
+        var response = await client.PostAsync(GetRoute(Guid.NewGuid()),
             new StringContent(JsonSerializer.Serialize(validRequest), Encoding.UTF8, "application/json"));
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
         var stringResponse = await response.Content.ReadAsStringAsync();
         var result = JsonSerializer.Deserialize<Response<Error>>(stringResponse, MappingOptions.JsonSerializerOptions);
 
-        result.Error.Should().NotBeNull();
-        result.Error.Message.Should().Contain("not-created-room");
+        result.Should().NotBeNull();
+        result.Error.Message.Should().Contain("not-found-room");
     }
-    
+
     [Fact]
-    public async Task CreateRoom_ServiceFailsToCreatePlayer_ReturnsServerError()
+    public async Task JoinRoom_ServiceFailsToCreatePlayer_ReturnsServerError()
     {
         // Arrange
-        var validRequest = new CreateGameRoom.CreateGameRoomRequest
+        var scope = _factory.Services.CreateScope();
+        var roomService = scope.ServiceProvider.GetRequiredService<GameRoomService>();
+        
+        var room = await roomService.CreateAsync(Guid.NewGuid(), "Test Room");
+        
+        var validRequest = new JoinGameRoom.JoinGameRoomRequest
         {
             UserId = Guid.NewGuid(),
-            GameRoomName = "Test Room"
+            GameName = room.Name,
+            AccessCode = room.AccessCode
         };
 
         var dbMock = Utility.CreateDbMockForRooms();
         dbMock.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
+        
+        dbMock.Setup(r => r.Rooms.Where(It.IsAny<Func<GameRoom, bool>>(), It.IsAny<bool>()))
+            .Returns([room]);
         
         var userMock = new Mock<IDataSet<User>>();
         dbMock.Setup(x => x.Users).Returns(userMock.Object);
@@ -163,7 +171,7 @@ public class CreateRoomEndpointTests : TestBase, IClassFixture<WebApplicationFac
         }).CreateClient();
 
         // Act
-        var response = await client.PostAsync(route,
+        var response = await client.PostAsync(GetRoute(room.Id),
             new StringContent(JsonSerializer.Serialize(validRequest), Encoding.UTF8, "application/json"));
 
         // Assert
@@ -175,21 +183,29 @@ public class CreateRoomEndpointTests : TestBase, IClassFixture<WebApplicationFac
         result.Error.Should().NotBeNull();
         result.Error.Message.Should().Contain("not-created-player");
     }
-    
+
     [Fact]
-    public async Task CreateRoom_ServiceFailsToAddPlayerToRoom_ReturnsServerError()
+    public async Task JoinRoom_ServiceFailsToAddPlayerToRoom_ReturnsServerError()
     {
         // Arrange
-        var validRequest = new CreateGameRoom.CreateGameRoomRequest
+        var scope = _factory.Services.CreateScope();
+        var roomService = scope.ServiceProvider.GetRequiredService<GameRoomService>();
+        
+        var room = await roomService.CreateAsync(Guid.NewGuid(), "Test Room");
+        
+        var validRequest = new JoinGameRoom.JoinGameRoomRequest
         {
             UserId = Guid.NewGuid(),
-            GameRoomName = "Test Room"
+            GameName = room.Name,
+            AccessCode = room.AccessCode
         };
 
         var dbMock = Utility.CreateDbMockForPlayers();
         dbMock.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
-        
+
+        dbMock.Setup(r => r.Rooms.Where(It.IsAny<Func<GameRoom, bool>>(), It.IsAny<bool>()))
+            .Returns([room]);
         
         var client = _factory.WithWebHostBuilder(builder =>
         {
@@ -198,7 +214,7 @@ public class CreateRoomEndpointTests : TestBase, IClassFixture<WebApplicationFac
         }).CreateClient();
 
         // Act
-        var response = await client.PostAsync(route,
+        var response = await client.PostAsync(GetRoute(room.Id),
             new StringContent(JsonSerializer.Serialize(validRequest), Encoding.UTF8, "application/json"));
 
         // Assert
