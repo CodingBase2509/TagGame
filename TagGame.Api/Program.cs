@@ -1,6 +1,8 @@
-﻿using System.Reflection;
+﻿using System.Net;
+using System.Reflection;
 using Carter;
 using FluentValidation;
+using Microsoft.AspNetCore.Authentication;
 using TagGame.Api;
 using TagGame.Api.Middleware;
 
@@ -11,6 +13,8 @@ var config = builder.Configuration;
 // Endpoint configuration
 builder.Services.AddSwagger();
 builder.Services.AddCarter();
+builder.Services.AddAuthentication("Basic")
+    .AddScheme<AuthenticationSchemeOptions, UserIdAuthenticationHandler>("Basic", null);
 builder.Services.AddAuthorization();
 builder.Services.AddMiddleware();
 
@@ -35,6 +39,7 @@ if (app.Environment.IsDevelopment())
     
 }
 
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapCarter();
 #endregion

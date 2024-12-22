@@ -74,7 +74,7 @@ public static class DependencyInjection
 
     public static IServiceCollection AddMiddleware(this IServiceCollection services)
     {
-        services.AddSingleton<IAuthorizationHandler, CustomAuthorizationHandler>();
+        //services.AddSingleton<IAuthorizationHandler, CustomAuthorizationHandler>();
         services.AddSingleton<ExceptionHandlerMiddleware>();
         return services;
     }
