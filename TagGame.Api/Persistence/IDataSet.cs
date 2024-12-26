@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using TagGame.Shared.Domain.Common;
 
 namespace TagGame.Api.Persistence;
@@ -9,4 +10,5 @@ public interface IDataSet<T> where T : class, IIdentifiable
     public Task<bool> AddAsync(T entity);
     public Task<bool> UpdateAsync(T entity);
     public Task<bool> DeleteAsync(T entity);
+    public IDataSet<T> Include<TProperty>(Expression<Func<T, TProperty>> predicate);
 }

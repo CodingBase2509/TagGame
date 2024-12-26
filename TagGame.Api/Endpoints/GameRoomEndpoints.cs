@@ -141,7 +141,7 @@ public class GameRoomEndpoints : ICarterModule
         var success = await roomService.UpdateSettingsAsync(roomId, settings);
 
         return !success ? 
-            new Error(500, "settings-invalid")
+            new Error(500, "not-updated-settings")
                 .ToHttpResult()
             : Response<string>.Empty
                 .ToHttpResult();

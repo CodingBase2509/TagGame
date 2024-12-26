@@ -11,8 +11,10 @@ public class GameRoomService(IDataAccess db)
         if (Equals(roomId, Guid.Empty))
             return null;
 
-        var room = await db.Rooms.GetByIdAsync(roomId, false);
-
+        var room = await db.Rooms
+            .Include(r => r.Settings)
+            .GetByIdAsync(roomId, false);
+        
         return room;
     }
 
@@ -22,6 +24,7 @@ public class GameRoomService(IDataAccess db)
             return null;
 
         var room = db.Rooms
+            .Include(r => r.Settings)
             .Where(r => Equals(r.Name, name) && Equals(r.AccessCode, accessCode))
             .FirstOrDefault();
 
@@ -79,10 +82,15 @@ public class GameRoomService(IDataAccess db)
 
     public async Task<bool> UpdateSettingsAsync(Guid roomId, GameSettings settings)
     {
+        if (settings is null)
+            return false;
+        
         var room = await GetRoomAsync(roomId);
         if (room is null)
             return false;
         
+        settings.RoomId = room.Id;
+        settings.Id = room.Settings.Id;
         room.Settings = settings;
         
         var success = await db.Settings.UpdateAsync(room.Settings);

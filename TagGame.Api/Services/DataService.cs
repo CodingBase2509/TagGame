@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using TagGame.Api.Persistence;
 using TagGame.Shared.Domain.Common;
@@ -29,12 +30,14 @@ public class DataService(GamesDbContext context) : IDataAccess
 
 file class DataService<T>(DbSet<T> entities) : IDataSet<T> where T : class, IIdentifiable
 {
+    IQueryable<T> _queryableEntites = entities.AsQueryable();
+    
     public async Task<T?> GetByIdAsync(Guid id, bool isTracking = true)
     {
         if (isTracking)
-            return await entities.FindAsync(id);
+            return await _queryableEntites.FirstOrDefaultAsync(x => Equals(x.Id, id));
         else
-            return await entities
+            return await _queryableEntites
                 .AsNoTracking()
                 .Where(x => Equals(x.Id, id))
                 .FirstOrDefaultAsync();
@@ -42,8 +45,8 @@ file class DataService<T>(DbSet<T> entities) : IDataSet<T> where T : class, IIde
 
     public IEnumerable<T> Where(Func<T, bool> predicate, bool isTracking = true)
     {
-        var set = isTracking ? entities.AsQueryable() 
-            : entities.AsNoTracking();
+        var set = isTracking ? _queryableEntites.AsQueryable() 
+            : _queryableEntites.AsNoTracking();
         
         return set
             .Where(predicate);
@@ -52,14 +55,16 @@ file class DataService<T>(DbSet<T> entities) : IDataSet<T> where T : class, IIde
     public async Task<bool> AddAsync(T entity)
     {
         var entry = await entities.AddAsync(entity);
+        
         return entry.State == EntityState.Added;
     }
 
     public async Task<bool> UpdateAsync(T entity)
     {
-        var dbEntity = await entities.FindAsync(entity.Id);
+        var dbEntity = await GetByIdAsync(entity.Id);
         entities.Entry(dbEntity).CurrentValues.SetValues(entity);
-        var entry = entities.Update(entity);
+        var entry = entities.Update(dbEntity);
+        
         return entry.State == EntityState.Modified;
     }
 
@@ -67,6 +72,14 @@ file class DataService<T>(DbSet<T> entities) : IDataSet<T> where T : class, IIde
     {
         var dbEntity = await entities.FindAsync(entity.Id);
         var entry = entities.Remove(dbEntity);
+        
         return entry.State == EntityState.Deleted;
+    }
+
+    public IDataSet<T> Include<TProperty>(Expression<Func<T, TProperty>> predicate)
+    {
+        _queryableEntites = _queryableEntites
+            .Include(predicate);
+        return this;
     }
 }
