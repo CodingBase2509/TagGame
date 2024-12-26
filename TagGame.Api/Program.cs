@@ -1,6 +1,4 @@
-﻿using System.Net;
-using System.Reflection;
-using Carter;
+﻿using Carter;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication;
 using TagGame.Api;

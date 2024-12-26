@@ -7,6 +7,7 @@ using TagGame.Shared.Domain.Players;
 
 namespace TagGame.Api.Middleware;
 
+[Obsolete]
 public class CustomAuthorizationHandler(IServiceProvider services) : AuthorizationHandler<IAuthorizationRequirement>
 {
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, IAuthorizationRequirement requirement)

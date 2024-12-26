@@ -13,9 +13,9 @@ public class UserIdAuthenticationHandler : AuthenticationHandler<AuthenticationS
     private readonly IServiceProvider services;
     
     public UserIdAuthenticationHandler(
-        IOptionsMonitor<AuthenticationSchemeOptions> options, 
-        ILoggerFactory logger, 
-        UrlEncoder encoder, 
+        IOptionsMonitor<AuthenticationSchemeOptions> options,
+        ILoggerFactory logger,
+        UrlEncoder encoder,
         ISystemClock clock,
         IServiceProvider services) 
         : base(options, logger, encoder, clock)

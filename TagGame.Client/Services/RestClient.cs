@@ -13,14 +13,14 @@ namespace TagGame.Client.Services;
 
 public class RestClient(ConfigHandler configHandler)
 {
-    private HttpClient client;
+    private HttpClient _client;
     
     public async Task<Response<CreateGameRoom.CreateGameRoomResponse>?> CreateRoomAsync(CreateGameRoom.CreateGameRoomRequest createGameRoomRequest)
     {
         await InitAsync();
         
         var stringContent = JsonSerializer.Serialize(createGameRoomRequest, MappingOptions.JsonSerializerOptions);
-        var response = client.PostAsync(ApiRoutes.GameRoom.CreateRoom,
+        var response = _client.PostAsync(ApiRoutes.GameRoom.CreateRoom,
             new StringContent(stringContent, Encoding.UTF8, MediaTypeNames.Application.Json));
         
         var content = await response.Result.Content.ReadAsStringAsync();
@@ -32,7 +32,7 @@ public class RestClient(ConfigHandler configHandler)
         await InitAsync();
         
         var stringContent = JsonSerializer.Serialize(joinGameRoomRequest, MappingOptions.JsonSerializerOptions);
-        var response = client.PostAsync(ApiRoutes.GameRoom.JoinRoom,
+        var response = _client.PostAsync(ApiRoutes.GameRoom.JoinRoom,
             new StringContent(stringContent, Encoding.UTF8, MediaTypeNames.Application.Json));
         
         var content = await response.Result.Content.ReadAsStringAsync();
@@ -44,7 +44,7 @@ public class RestClient(ConfigHandler configHandler)
         await InitAsync();
         string route = ApiRoutes.GameRoom.GroupName 
                        + ApiRoutes.GameRoom.GetRoom.Replace("{roomId:guid}", roomId.ToString());
-        var response = client.GetAsync(route);
+        var response = _client.GetAsync(route);
         
         var content = await response.Result.Content.ReadAsStringAsync();
         return JsonSerializer.Deserialize<Response<GameRoom>>(content, MappingOptions.JsonSerializerOptions);
@@ -54,7 +54,7 @@ public class RestClient(ConfigHandler configHandler)
     {
         await InitAsync();
         var stringContent = JsonSerializer.Serialize(settings, MappingOptions.JsonSerializerOptions);
-        var response = client.PutAsync(ApiRoutes.GameRoom.UpdateSettings,
+        var response = _client.PutAsync(ApiRoutes.GameRoom.UpdateSettings,
             new StringContent(stringContent, Encoding.UTF8, MediaTypeNames.Application.Json));
         
         var content = await response.Result.Content.ReadAsStringAsync();
@@ -66,7 +66,7 @@ public class RestClient(ConfigHandler configHandler)
     {
         await InitAsync();
         var stringContent = JsonSerializer.Serialize(createUserRequest, MappingOptions.JsonSerializerOptions);
-        var response = client.PutAsync(ApiRoutes.GameRoom.UpdateSettings,
+        var response = _client.PutAsync(ApiRoutes.GameRoom.UpdateSettings,
             new StringContent(stringContent, Encoding.UTF8, MediaTypeNames.Application.Json));
         
         var content = await response.Result.Content.ReadAsStringAsync();
@@ -75,7 +75,7 @@ public class RestClient(ConfigHandler configHandler)
 
     private async Task InitAsync()
     {
-        if (client is not null)
+        if (_client is not null)
             return;
             
         var serverConfig = await configHandler.ReadAsync<ServerConfig>();
@@ -86,13 +86,13 @@ public class RestClient(ConfigHandler configHandler)
         
         var baseAddressString = serverConfig?.Port is null ? serverConfig?.Host : $"{serverConfig.Host}:{serverConfig.Port}";
         
-        client = new HttpClient()
+        _client = new HttpClient()
         {
             BaseAddress = new Uri(baseAddressString),
             DefaultRequestHeaders =
             {
                 Accept = { new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json) },
-                Authorization = new AuthenticationHeaderValue("Bearer", userId)
+                Authorization = new AuthenticationHeaderValue("Basic", userId)
             }
         };
     }
