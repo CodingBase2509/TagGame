@@ -16,6 +16,9 @@ public static class Utility
         var settingsMock = new Mock<IDataSet<GameSettings>>();
         dbMock.Setup(x => x.Settings)
             .Returns(() => settingsMock.Object);
+        
+        roomMock.Setup(x => x.Include(r => r.Settings))
+            .Returns(() => roomMock.Object);
 
         roomMock.Setup(x => x.AddAsync(It.IsAny<GameRoom>()))
             .ReturnsAsync(true);

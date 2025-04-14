@@ -1,17 +1,22 @@
 using System.Security.Cryptography;
 using System.Text.Json;
+using Microsoft.Maui.Storage;
 using TagGame.Shared.Constants;
-using Color = System.Drawing.Color;
 
 namespace TagGame.Client.Services;
 
-public class ConfigHandler(Encryption crypt)
+public class ConfigHandler(Encryption crypt, string configDir)
 {
     private const string encryptedFileExtension = ".enc";
-    private static string configDir = FileSystem.Current.AppDataDirectory;
     private readonly Dictionary<Type, ConfigBase> cachedConfigs = [];
     
-    public bool CanInteractWithFiles => crypt.HasKeysLoaded; 
+    public bool CanInteractWithFiles => crypt.HasKeysLoaded;
+
+    public ConfigHandler()
+        : this(null, string.Empty)
+    {
+        
+    }
     
     public async Task InitAsync()
     {
@@ -22,7 +27,7 @@ public class ConfigHandler(Encryption crypt)
         await ss.SetAsync("crypt_iv", JsonSerializer.Serialize(aes.IV, MappingOptions.JsonSerializerOptions));
     }
     
-    public async Task WriteAsync<TConfig>(TConfig config) where TConfig : ConfigBase
+    public virtual async Task WriteAsync<TConfig>(TConfig config) where TConfig : ConfigBase
     {
         if (!cachedConfigs.ContainsKey(config.GetType()))
             cachedConfigs.TryAdd(typeof(TConfig), config);
@@ -37,7 +42,7 @@ public class ConfigHandler(Encryption crypt)
         await File.WriteAllBytesAsync(fileName, encrypted);
     }
 
-    public async Task<TConfig?> ReadAsync<TConfig>() where TConfig : ConfigBase
+    public virtual async Task<TConfig?> ReadAsync<TConfig>() where TConfig : ConfigBase
     {
         var fileName = Path.Combine(configDir, typeof(TConfig).Name + encryptedFileExtension);
         if (!File.Exists(fileName))

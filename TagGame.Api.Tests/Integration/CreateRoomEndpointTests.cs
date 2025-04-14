@@ -41,7 +41,8 @@ public class CreateRoomEndpointTests : TestBase, IClassFixture<WebApplicationFac
         
         using var scope = _factory.Services.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<GamesDbContext>();
-        await context.Database.MigrateAsync();
+        if ((await context.Database.GetPendingMigrationsAsync()).Any())
+            await context.Database.MigrateAsync();
     }
     
     [Fact]

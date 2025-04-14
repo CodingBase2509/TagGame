@@ -1,3 +1,4 @@
+using Microsoft.Maui.Controls.Xaml;
 using TagGame.Client.Services;
 
 namespace TagGame.Client.Ui.Extensions;

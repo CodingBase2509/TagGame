@@ -5,7 +5,7 @@ using TagGame.Shared.DTOs.Games;
 
 namespace TagGame.Client.Ui.ViewModels;
 
-public partial class StartPageVm(RestClient api) : ViewModelBase
+public partial class StartPageVm(RestClient api, INavigation nav) : ViewModelBase
 {
     [ObservableProperty]
     private string _newGameRoomName = string.Empty;
@@ -29,7 +29,7 @@ public partial class StartPageVm(RestClient api) : ViewModelBase
         if (!response.IsSuccess || response.Value is null)
             return;
         
-        await Shell.Current.GoToAsync("lobby", new Dictionary<string, object>(){
+        await nav.GoToLobby(NavigationMode.Forward, new Dictionary<string, object>(){
             { "roomId", response.Value.RoomId },
             { "roomName", response.Value.RoomName },
             { "accessCode", response.Value.AccessCode }

@@ -2,8 +2,8 @@
 <v:PageBase xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:v="clr-namespace:TagGame.Client.Ui.Views"
-             xmlns:vm="clr-namespace:TagGame.Client.Ui.ViewModels"
-             xmlns:e="clr-namespace:TagGame.Client.Ui.Extensions"
+             xmlns:vm="clr-namespace:TagGame.Client.Ui.ViewModels;assembly=TagGame.Client.Testables"
+             xmlns:e="clr-namespace:TagGame.Client.Ui.Extensions;assembly=TagGame.Client.Testables"
              x:DataType="vm:StartPageVm"
              x:Class="TagGame.Client.Ui.Views.StartPage"
              BackgroundColor="DarkSlateGray">

@@ -14,15 +14,15 @@ public class TestBase : IAsyncLifetime
     public TestBase()
     {
         _fixture = new Fixture();
-        var customization = new SupportMutableValueTypesCustomization();
-        _fixture.Customize(customization);
+        _fixture.Customize(new SupportMutableValueTypesCustomization());
     }
 
     protected void UseDbTestContainer()
     {
+        var dbGuid = Guid.NewGuid();
         _dbContainer = new PostgreSqlBuilder()
-            .WithName(Guid.NewGuid().ToString())
-            .WithDatabase("TestDb")
+            .WithName("TestDb" + dbGuid)
+            .WithDatabase("TestDb" + dbGuid)
             .WithUsername("testuser")
             .WithPassword("testpassword")
             .Build();

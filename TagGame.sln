@@ -16,6 +16,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagGame.Api.Tests", "TagGam
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagGame.Client.Tests", "TagGame.Client.Tests\TagGame.Client.Tests.csproj", "{D4B2F3D9-5431-4E22-8288-81E25E52F5EF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagGame.Client.Testables", "TagGame.Client.Testables\TagGame.Client.Testables.csproj", "{A964F6DE-1B4D-4A51-9E28-F85684607763}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,6 +44,10 @@ Global
 		{D4B2F3D9-5431-4E22-8288-81E25E52F5EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D4B2F3D9-5431-4E22-8288-81E25E52F5EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D4B2F3D9-5431-4E22-8288-81E25E52F5EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A964F6DE-1B4D-4A51-9E28-F85684607763}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A964F6DE-1B4D-4A51-9E28-F85684607763}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A964F6DE-1B4D-4A51-9E28-F85684607763}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A964F6DE-1B4D-4A51-9E28-F85684607763}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -55,5 +61,6 @@ Global
 		{9435F3F0-06E4-44C1-B776-89CBC49ED6F0} = {DA52D961-E672-448C-8776-FC118B24C00D}
 		{D5B7A558-8E90-46B7-9256-FF4DFF561A19} = {A20699E4-BFB2-46F0-AA89-D29C3B7F801E}
 		{D4B2F3D9-5431-4E22-8288-81E25E52F5EF} = {A20699E4-BFB2-46F0-AA89-D29C3B7F801E}
+		{A964F6DE-1B4D-4A51-9E28-F85684607763} = {DA52D961-E672-448C-8776-FC118B24C00D}
 	EndGlobalSection
 EndGlobal

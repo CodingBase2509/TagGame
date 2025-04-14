@@ -24,6 +24,9 @@ public class GameRoomServiceTests : TestBase
         var roomId = _fixture.Create<Guid>();
         var room = _fixture.Build<GameRoom>().With(r => r.Id, roomId).Create();
 
+        _dataAccessMock.Setup(db => db.Rooms.Include(r => r.Settings))
+            .Returns(_dataAccessMock.Object.Rooms);
+        
         _dataAccessMock.Setup(db => db.Rooms.GetByIdAsync(roomId, It.IsAny<bool>()))
             .ReturnsAsync(room);
 
@@ -51,6 +54,9 @@ public class GameRoomServiceTests : TestBase
         // Arrange
         var roomId = _fixture.Create<Guid>();
 
+        _dataAccessMock.Setup(db => db.Rooms.Include(r => r.Settings))
+            .Returns(_dataAccessMock.Object.Rooms);
+        
         _dataAccessMock.Setup(db => db.Rooms.GetByIdAsync(roomId, It.IsAny<bool>()))
             .ReturnsAsync((GameRoom?)null);
 
@@ -72,6 +78,9 @@ public class GameRoomServiceTests : TestBase
             .With(r => r.AccessCode, accessCode)
             .Create();
 
+        _dataAccessMock.Setup(db => db.Rooms.Include(r => r.Settings))
+            .Returns(_dataAccessMock.Object.Rooms);
+        
         _dataAccessMock.Setup(db => db.Rooms.Where(It.IsAny<Func<GameRoom, bool>>(), It.IsAny<bool>()))
             .Returns(new[] { room }.AsQueryable());
 
@@ -157,6 +166,9 @@ public class GameRoomServiceTests : TestBase
         var roomId = _fixture.Create<Guid>();
         var room = _fixture.Create<GameRoom>();
 
+        _dataAccessMock.Setup(db => db.Rooms.Include(r => r.Settings))
+            .Returns(_dataAccessMock.Object.Rooms);
+        
         _dataAccessMock.Setup(db => db.Rooms.GetByIdAsync(roomId, It.IsAny<bool>()))
             .ReturnsAsync(room);
 
@@ -179,6 +191,9 @@ public class GameRoomServiceTests : TestBase
         // Arrange
         var roomId = _fixture.Create<Guid>();
 
+        _dataAccessMock.Setup(db => db.Rooms.Include(r => r.Settings))
+            .Returns(_dataAccessMock.Object.Rooms);
+        
         _dataAccessMock.Setup(db => db.Rooms.GetByIdAsync(roomId, It.IsAny<bool>()))
             .ReturnsAsync((GameRoom?)null);
 
@@ -203,6 +218,9 @@ public class GameRoomServiceTests : TestBase
             .With(r => r.Id, roomId)
             .Create();
 
+        _dataAccessMock.Setup(db => db.Rooms.Include(r => r.Settings))
+            .Returns(_dataAccessMock.Object.Rooms);
+        
         _dataAccessMock.Setup(db => db.Rooms.GetByIdAsync(roomId, It.IsAny<bool>()))
             .ReturnsAsync(room);
 
@@ -226,6 +244,9 @@ public class GameRoomServiceTests : TestBase
         var roomId = _fixture.Create<Guid>();
         var settings = _fixture.Create<GameSettings>();
 
+        _dataAccessMock.Setup(db => db.Rooms.Include(r => r.Settings))
+            .Returns(_dataAccessMock.Object.Rooms);
+        
         _dataAccessMock.Setup(db => db.Rooms.GetByIdAsync(roomId, It.IsAny<bool>()))
             .ReturnsAsync((GameRoom?)null);
 

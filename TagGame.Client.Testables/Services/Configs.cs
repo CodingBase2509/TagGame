@@ -1,3 +1,7 @@
+using System.Runtime.CompilerServices;
+using Microsoft.Maui.Graphics;
+
+[assembly: InternalsVisibleTo("TagGame.Client.Tests")]
 namespace TagGame.Client.Services;
 
 public abstract class ConfigBase

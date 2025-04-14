@@ -1,10 +1,11 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Maui.Graphics;
 using TagGame.Client.Services;
 
 namespace TagGame.Client.Ui.ViewModels;
 
-public partial class InitPageViewModel(ConfigHandler config, RestClient api) : ViewModelBase
+public partial class InitPageViewModel(ConfigHandler config, RestClient api, INavigation nav) : ViewModelBase
 {
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsConfirmEnabled))]
@@ -25,7 +26,7 @@ public partial class InitPageViewModel(ConfigHandler config, RestClient api) : V
         var userConfig = await config.ReadAsync<UserConfig>();
         var serverConfig = await config.ReadAsync<ServerConfig>();
         if (userConfig is not null && serverConfig is not null && config.CanInteractWithFiles)
-            await Shell.Current.GoToAsync("//start");
+            await nav.GoToStart(NavigationMode.Parallel);
     }
 
     [RelayCommand]
@@ -43,7 +44,7 @@ public partial class InitPageViewModel(ConfigHandler config, RestClient api) : V
             return;
         }
         
-        await Shell.Current.GoToAsync("//start");
+        await nav.GoToStart(NavigationMode.Parallel);
     }
 
     private async Task CreateAndWriteServerConfigAsync()

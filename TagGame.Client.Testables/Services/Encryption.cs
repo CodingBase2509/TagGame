@@ -1,6 +1,7 @@
 using System.Security.Cryptography;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Microsoft.Maui.Storage;
 using TagGame.Shared.Constants;
 
 namespace TagGame.Client.Services;

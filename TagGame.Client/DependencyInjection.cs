@@ -1,7 +1,9 @@
 using TagGame.Client.Services;
+using TagGame.Client.Ui;
 using TagGame.Client.Ui.Extensions;
 using TagGame.Client.Ui.ViewModels;
 using TagGame.Client.Ui.Views;
+using INavigation = TagGame.Client.Ui.INavigation;
 
 namespace TagGame.Client;
 
@@ -21,6 +23,7 @@ public static class DependencyInjection
     public static IServiceCollection AddServices(this IServiceCollection services)
     {
         services.AddSingleton<LocalizationExtension>();
+        services.AddSingleton<INavigation, Navigation>();
         
         services.AddSingleton<ConfigHandler>();
         services.AddSingleton<Encryption>();

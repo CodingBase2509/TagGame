@@ -57,6 +57,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\TagGame.Client.Testables\TagGame.Client.Testables.csproj" />
 	  <ProjectReference Include="..\TagGame.Shared\TagGame.Shared.csproj" />
 	</ItemGroup>
 

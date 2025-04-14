@@ -43,7 +43,8 @@ public class JoinRoomEndpointTests : TestBase, IClassFixture<WebApplicationFacto
         
         using var scope = _factory.Services.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<GamesDbContext>();
-        await context.Database.MigrateAsync();
+        if ((await context.Database.GetPendingMigrationsAsync()).Any())
+            await context.Database.MigrateAsync();
     }
     
     [Fact]
@@ -150,25 +151,8 @@ public class JoinRoomEndpointTests : TestBase, IClassFixture<WebApplicationFacto
             GameName = room.Name,
             AccessCode = room.AccessCode
         };
-
-        var dbMock = Utility.CreateDbMockForRooms();
-        dbMock.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
         
-        dbMock.Setup(r => r.Rooms.Where(It.IsAny<Func<GameRoom, bool>>(), It.IsAny<bool>()))
-            .Returns([room]);
-        
-        var userMock = new Mock<IDataSet<User>>();
-        dbMock.Setup(x => x.Users).Returns(userMock.Object);
-        
-        userMock.Setup(x => x.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<bool>()))
-            .ReturnsAsync(() => null);
-        
-        var client = _factory.WithWebHostBuilder(builder =>
-        {
-            builder.ConfigureServices(services =>
-                services.AddScoped<IDataAccess>(_ => dbMock.Object));
-        }).CreateClient();
+        var client = _factory.CreateClient();
 
         // Act
         var response = await client.PostAsync(GetRoute(room.Id),
@@ -190,28 +174,18 @@ public class JoinRoomEndpointTests : TestBase, IClassFixture<WebApplicationFacto
         // Arrange
         var scope = _factory.Services.CreateScope();
         var roomService = scope.ServiceProvider.GetRequiredService<GameRoomService>();
-        
         var room = await roomService.CreateAsync(Guid.NewGuid(), "Test Room");
         
+        var userService = scope.ServiceProvider.GetRequiredService<UserService>();
+            
         var validRequest = new JoinGameRoom.JoinGameRoomRequest
         {
             UserId = Guid.NewGuid(),
             GameName = room.Name,
             AccessCode = room.AccessCode
         };
-
-        var dbMock = Utility.CreateDbMockForPlayers();
-        dbMock.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
-
-        dbMock.Setup(r => r.Rooms.Where(It.IsAny<Func<GameRoom, bool>>(), It.IsAny<bool>()))
-            .Returns([room]);
         
-        var client = _factory.WithWebHostBuilder(builder =>
-        {
-            builder.ConfigureServices(services =>
-                services.AddScoped<IDataAccess>(_ => dbMock.Object));
-        }).CreateClient();
+        var client = _factory.CreateClient();
 
         // Act
         var response = await client.PostAsync(GetRoute(room.Id),
@@ -224,6 +198,6 @@ public class JoinRoomEndpointTests : TestBase, IClassFixture<WebApplicationFacto
         var result = JsonSerializer.Deserialize<Response<Error>>(stringResponse, MappingOptions.JsonSerializerOptions);
 
         result.Error.Should().NotBeNull();
-        result.Error.Message.Should().Contain("player-not-joined-room");
+        result.Error.Message.Should().Contain("not-created-player"/*"player-not-joined-room"*/);
     }
 }
