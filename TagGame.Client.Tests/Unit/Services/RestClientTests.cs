@@ -25,7 +25,12 @@ public class RestClientTests : TestBase
         _httpMessageHandlerMock = new Mock<HttpMessageHandler>();
         
         InitClient();
-        _restClient = new RestClient(_configHandlerMock.Object);
+        
+        var httpClient = new HttpClient(_httpMessageHandlerMock.Object)
+        {
+            BaseAddress = new Uri("http://127.0.0.1:5000")
+        };
+        _restClient = new RestClient(_configHandlerMock.Object, httpClient);
     }
 
     [Fact]
@@ -63,10 +68,12 @@ public class RestClientTests : TestBase
         SetupHttpResponse(HttpStatusCode.InternalServerError);
 
         // Act
-        Func<Task> act = async () => await _restClient.CreateRoomAsync(request);
+        var result = await _restClient.CreateRoomAsync(request);
 
         // Assert
-        await act.Should().ThrowAsync<HttpRequestException>();
+        result.Should().NotBeNull();
+        result.Error.Should().NotBeNull();
+        result.Error.Message.Should().Be("Error on sending request");
     }
 
     [Fact]
@@ -87,12 +94,17 @@ public class RestClientTests : TestBase
     [Fact]
     public async Task JoinRoomAsync_ShouldThrowException_WhenHttpRequestFails()
     {
+        // Arrange
         var request = _fixture.Create<JoinGameRoom.JoinGameRoomRequest>();
         SetupHttpResponse(HttpStatusCode.InternalServerError);
 
-        Func<Task> act = async () => await _restClient.JoinRoomAsync(request);
+        // Act
+        var result = await _restClient.JoinRoomAsync(request);
 
-        await act.Should().ThrowAsync<HttpRequestException>();
+        // Assert
+        result.Should().NotBeNull();
+        result.Error.Should().NotBeNull();
+        result.Error.Message.Should().Be("Error on sending request");
     }
 
     [Fact]
@@ -113,12 +125,17 @@ public class RestClientTests : TestBase
     [Fact]
     public async Task GetRoomAsync_ShouldThrowException_WhenHttpRequestFails()
     {
+        // Arrange
         var roomId = Guid.NewGuid();
         SetupHttpResponse(HttpStatusCode.InternalServerError);
 
-        Func<Task> act = async () => await _restClient.GetRoomAsync(roomId);
+        // Act
+        var result = await _restClient.GetRoomAsync(roomId);
 
-        await act.Should().ThrowAsync<HttpRequestException>();
+        // Assert
+        result.Should().NotBeNull();
+        result.Error.Should().NotBeNull();
+        result.Error.Message.Should().Be("Error on sending request");
     }
 
     [Fact]
@@ -167,12 +184,17 @@ public class RestClientTests : TestBase
     [Fact]
     public async Task CreateUserAsync_ShouldThrowException_WhenHttpRequestFails()
     {
+        // Arrange
         var request = _fixture.Create<CreateUser.CreateUserRequest>();
         SetupHttpResponse(HttpStatusCode.InternalServerError);
 
-        Func<Task> act = async () => await _restClient.CreateUserAsync(request);
+        // Act
+        var result = await _restClient.CreateUserAsync(request);
 
-        await act.Should().ThrowAsync<HttpRequestException>();
+        // Assert
+        result.Should().NotBeNull();
+        result.Error.Should().NotBeNull();
+        result.Error.Message.Should().Be("Error on sending request");
     }
 
     private void InitClient()
@@ -188,7 +210,7 @@ public class RestClientTests : TestBase
         _configHandlerMock.Setup(x => x.ReadAsync<UserConfig>()).ReturnsAsync(userConfig);
     }
     
-    private void SetupHttpResponse(HttpStatusCode statusCode, string method = "SendAsync", string content = "")
+    private void SetupHttpResponse(HttpStatusCode statusCode, string content = "", string method = "SendAsync")
     {
         _httpMessageHandlerMock.Protected()
             .Setup<Task<HttpResponseMessage>>(method, ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
