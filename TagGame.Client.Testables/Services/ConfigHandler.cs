@@ -11,7 +11,7 @@ public class ConfigHandler (Encryption crypt, ISecureStorage secureStorage, stri
     private const string storageKey = "config_crypt";
     private readonly Dictionary<Type, ConfigBase> cachedConfigs = [];
 
-    private readonly Encryption _crypt = crypt.WithStorageKey(storageKey);
+    private readonly Encryption _crypt = crypt is not null ? crypt.WithStorageKey(storageKey) : crypt;
 
     public bool CanInteractWithFiles => _crypt.HasKeysLoaded;
 
@@ -23,8 +23,8 @@ public class ConfigHandler (Encryption crypt, ISecureStorage secureStorage, stri
     {
         // generate encryption key
         var aes = Aes.Create();
-        await secureStorage.SetAsync("config_crypt_key", JsonSerializer.Serialize(aes.Key, MappingOptions.JsonSerializerOptions));
-        await secureStorage.SetAsync("config_crypt_iv", JsonSerializer.Serialize(aes.IV, MappingOptions.JsonSerializerOptions));
+        await secureStorage.SetAsync(storageKey + "_key", JsonSerializer.Serialize(aes.Key, MappingOptions.JsonSerializerOptions));
+        await secureStorage.SetAsync(storageKey + "_iv", JsonSerializer.Serialize(aes.IV, MappingOptions.JsonSerializerOptions));
     }
     
     public virtual async Task WriteAsync<TConfig>(TConfig config) where TConfig : ConfigBase

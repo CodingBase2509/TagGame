@@ -1,19 +1,24 @@
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using Microsoft.Maui.Storage;
 using TagGame.Shared.Constants;
 
+[assembly: InternalsVisibleTo("TagGame.Client.Tests")]
 namespace TagGame.Client.Services;
 
 public class Encryption(ISecureStorage secureStorage)
 {
     private Aes? aes;
     private string storageKey = string.Empty;
-    public bool HasKeysLoaded { get; private set; }
+    public virtual bool HasKeysLoaded { get; private set; }
 
-    public Encryption WithStorageKey(string storageKey)
+    public Encryption()
+        : this(null)
+    { }
+    
+    public virtual Encryption WithStorageKey(string storageKey)
     {
         this.storageKey = storageKey;
         if (aes is null) 
@@ -24,7 +29,7 @@ public class Encryption(ISecureStorage secureStorage)
         return this;
     }
     
-    public async Task<string> EncryptAsync(string text)
+    public virtual async Task<string> EncryptAsync(string text)
     {
         if (string.IsNullOrEmpty(storageKey))
             return string.Empty;
@@ -46,7 +51,7 @@ public class Encryption(ISecureStorage secureStorage)
         }
     }
 
-    public async Task<string> DecryptAsync(string encrypted)
+    public virtual async Task<string> DecryptAsync(string encrypted)
     {
         if (string.IsNullOrEmpty(storageKey))
             return string.Empty;
