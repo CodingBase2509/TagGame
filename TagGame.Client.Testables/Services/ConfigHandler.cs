@@ -5,26 +5,26 @@ using TagGame.Shared.Constants;
 
 namespace TagGame.Client.Services;
 
-public class ConfigHandler(Encryption crypt, string configDir)
+public class ConfigHandler (Encryption crypt, ISecureStorage secureStorage, string configDir)
 {
     private const string encryptedFileExtension = ".enc";
+    private const string storageKey = "config_crypt";
     private readonly Dictionary<Type, ConfigBase> cachedConfigs = [];
-    
-    public bool CanInteractWithFiles => crypt.HasKeysLoaded;
+
+    private readonly Encryption _crypt = crypt.WithStorageKey(storageKey);
+
+    public bool CanInteractWithFiles => _crypt.HasKeysLoaded;
 
     public ConfigHandler()
-        : this(null, string.Empty)
-    {
-        
-    }
+        : this(null, null, string.Empty)
+    { }
     
     public async Task InitAsync()
     {
         // generate encryption key
-        var ss = SecureStorage.Default;
         var aes = Aes.Create();
-        await ss.SetAsync("crypt_key", JsonSerializer.Serialize(aes.Key, MappingOptions.JsonSerializerOptions));
-        await ss.SetAsync("crypt_iv", JsonSerializer.Serialize(aes.IV, MappingOptions.JsonSerializerOptions));
+        await secureStorage.SetAsync("config_crypt_key", JsonSerializer.Serialize(aes.Key, MappingOptions.JsonSerializerOptions));
+        await secureStorage.SetAsync("config_crypt_iv", JsonSerializer.Serialize(aes.IV, MappingOptions.JsonSerializerOptions));
     }
     
     public virtual async Task WriteAsync<TConfig>(TConfig config) where TConfig : ConfigBase
@@ -37,9 +37,9 @@ public class ConfigHandler(Encryption crypt, string configDir)
         var jsonString = JsonSerializer.Serialize(config, MappingOptions.JsonSerializerOptions);
         var fileName = Path.Combine(configDir, config.GetType().Name + encryptedFileExtension);
 
-        var encrypted = await crypt.EncryptAsync(jsonString);
+        var encrypted = await _crypt.EncryptAsync(jsonString);
         
-        await File.WriteAllBytesAsync(fileName, encrypted);
+        await File.WriteAllTextAsync(fileName, encrypted);
     }
 
     public virtual async Task<TConfig?> ReadAsync<TConfig>() where TConfig : ConfigBase
@@ -48,7 +48,7 @@ public class ConfigHandler(Encryption crypt, string configDir)
         if (!File.Exists(fileName))
             return null;
         
-        var decrypted = await crypt.DecryptAsync(await File.ReadAllBytesAsync(fileName));
+        var decrypted = await _crypt.DecryptAsync(await File.ReadAllTextAsync(fileName));
         var config = JsonSerializer.Deserialize<TConfig>(decrypted, MappingOptions.JsonSerializerOptions);
         
         if (!cachedConfigs.ContainsKey(config.GetType()))

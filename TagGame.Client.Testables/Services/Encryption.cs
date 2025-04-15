@@ -1,4 +1,5 @@
 using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Maui.Storage;
@@ -6,36 +7,65 @@ using TagGame.Shared.Constants;
 
 namespace TagGame.Client.Services;
 
-public class Encryption
+public class Encryption(ISecureStorage secureStorage)
 {
-    private static Aes? aes;
+    private Aes? aes;
+    private string storageKey = string.Empty;
     public bool HasKeysLoaded { get; private set; }
-    
-    public async Task<byte[]> EncryptAsync(string text)
+
+    public Encryption WithStorageKey(string storageKey)
     {
-        if (aes is null)
-            await LoadKeyAsync();
+        this.storageKey = storageKey;
+        if (aes is null) 
+            return this;
         
-        var encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
-        using var ms = new MemoryStream();
-        await using var cs = new CryptoStream(ms, encryptor, CryptoStreamMode.Write);
-        await using var sw = new StreamWriter(cs);
+        aes.Dispose();
+        aes = null;
+        return this;
+    }
+    
+    public async Task<string> EncryptAsync(string text)
+    {
+        if (string.IsNullOrEmpty(storageKey))
+            return string.Empty;
         
-        await sw.WriteAsync(text);
-        return ms.ToArray();
+        try
+        {
+            if (aes is null)
+                await LoadKeyAsync();
+
+            using var encryptor = aes!.CreateEncryptor(aes.Key, aes.IV);
+            byte[] textBuffer = Encoding.UTF8.GetBytes(text);
+
+            var encryptedBuffer = encryptor.TransformFinalBlock(textBuffer, 0, textBuffer.Length);
+            return Convert.ToBase64String(encryptedBuffer);
+        }
+        catch (Exception _)
+        {
+            return string.Empty;
+        }
     }
 
-    public async Task<string> DecryptAsync(byte[] encrypted)
+    public async Task<string> DecryptAsync(string encrypted)
     {
-        if (aes is null)
-            await LoadKeyAsync();
+        if (string.IsNullOrEmpty(storageKey))
+            return string.Empty;
         
-        var decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
-        using var ms = new MemoryStream(encrypted);
-        await using var cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read);
-        using var sr = new StreamReader(cs);
-        
-        return await sr.ReadToEndAsync();
+        try
+        {
+            if (aes is null)
+                await LoadKeyAsync();
+
+            var decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
+            var encryptedBuffer = Convert.FromBase64String(encrypted);
+
+            var decryptedBuffer = decryptor.TransformFinalBlock(encryptedBuffer, 0, encryptedBuffer.Length);
+            return Encoding.UTF8.GetString(decryptedBuffer);
+        }
+        catch (Exception _)
+        {
+            return string.Empty;
+        }
     }
     
     private async Task LoadKeyAsync()
@@ -44,13 +74,10 @@ public class Encryption
             return;
 
         aes = Aes.Create();
-        
-        var ss = SecureStorage.Default;
-        
         var key = JsonSerializer.Deserialize<byte[]>(
-            await ss.GetAsync("crypt_key") ?? string.Empty, MappingOptions.JsonSerializerOptions);
+            await secureStorage.GetAsync(storageKey + "_key") ?? string.Empty, MappingOptions.JsonSerializerOptions);
         var iv = JsonSerializer.Deserialize<byte[]>(
-            await ss.GetAsync("crypt_iv") ?? string.Empty, MappingOptions.JsonSerializerOptions);
+            await secureStorage.GetAsync( storageKey + "_iv") ?? string.Empty, MappingOptions.JsonSerializerOptions);
 
         if (key is not null && iv is not null)
         {   

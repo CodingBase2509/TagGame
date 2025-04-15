@@ -25,8 +25,17 @@ public static class DependencyInjection
         services.AddSingleton<LocalizationExtension>();
         services.AddSingleton<INavigation, Navigation>();
         
-        services.AddSingleton<ConfigHandler>();
         services.AddSingleton<Encryption>();
+        services.AddSingleton<ConfigHandler>(sp =>
+        {
+            var crypt = sp.GetRequiredService<Encryption>();
+            var secureStorage = sp.GetRequiredService<ISecureStorage>();
+            var configDir = FileSystem.Current.AppDataDirectory;
+            
+            return new ConfigHandler(crypt, secureStorage, configDir);
+        });
+     
+        services.AddSingleton<ISecureStorage>(_ => SecureStorage.Default);
         
         return services;
     }
