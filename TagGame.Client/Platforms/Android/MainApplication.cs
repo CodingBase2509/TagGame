@@ -1,9 +1,16 @@
-﻿using Android.App;
+﻿using System;
+using Android.App;
 using Android.Runtime;
+using Microsoft.Maui;
+using Microsoft.Maui.Hosting;
 
 namespace TagGame.Client;
 
+#if DEBUG
+[Application(UsesCleartextTraffic = true)]
+#else
 [Application]
+#endif
 public class MainApplication : MauiApplication
 {
 	public MainApplication(IntPtr handle, JniHandleOwnership ownership)

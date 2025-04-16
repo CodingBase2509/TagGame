@@ -3,8 +3,8 @@
     <PropertyGroup>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <TargetFramework>net8.0</TargetFramework>
-        <LangVersion>12</LangVersion>
+        <TargetFramework>net9.0</TargetFramework>
+        <LangVersion>13</LangVersion>
         <RootNamespace>TagGame.Client</RootNamespace>
     </PropertyGroup>
 
@@ -13,10 +13,10 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
-      <PackageReference Include="Microsoft.Maui.Controls.Core" Version="8.0.100" />
-      <PackageReference Include="Microsoft.Maui.Essentials" Version="8.0.100" />
-      <PackageReference Include="Microsoft.Maui.Graphics" Version="8.0.100" />
+      <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+      <PackageReference Include="Microsoft.Maui.Controls.Core" Version="9.0.60" />
+      <PackageReference Include="Microsoft.Maui.Essentials" Version="9.0.60" />
+      <PackageReference Include="Microsoft.Maui.Graphics" Version="9.0.60" />
     </ItemGroup>
 
 </Project>

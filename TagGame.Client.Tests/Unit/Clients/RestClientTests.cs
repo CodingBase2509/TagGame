@@ -2,6 +2,7 @@ using System.Net;
 using System.Text;
 using System.Text.Json;
 using Moq.Protected;
+using TagGame.Client.Clients;
 using TagGame.Client.Services;
 using TagGame.Shared.Domain.Common;
 using TagGame.Shared.Domain.Games;
@@ -9,7 +10,7 @@ using TagGame.Shared.Domain.Players;
 using TagGame.Shared.DTOs.Games;
 using TagGame.Shared.DTOs.Users;
 
-namespace TagGame.Client.Tests.Unit.Services;
+namespace TagGame.Client.Tests.Unit.Clients;
 
 public class RestClientTests : TestBase
 {

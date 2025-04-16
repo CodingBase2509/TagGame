@@ -23,7 +23,7 @@ public static class Extentions
         int blue = (int)(mauiColor.Blue * 255);
         int alpha = (int)(mauiColor.Alpha * 255);
         
-        return ColorDTO.FromArgb(red, green, blue, alpha);
+        return ColorDTO.FromArgb(alpha, red, green, blue);
     }
 
     public static Color ToMauiColor(this ColorDTO systemColor)

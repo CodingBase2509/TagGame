@@ -79,10 +79,16 @@ public class Encryption(ISecureStorage secureStorage)
             return;
 
         aes = Aes.Create();
-        var key = JsonSerializer.Deserialize<byte[]>(
-            await secureStorage.GetAsync(storageKey + "_key") ?? string.Empty, MappingOptions.JsonSerializerOptions);
-        var iv = JsonSerializer.Deserialize<byte[]>(
-            await secureStorage.GetAsync( storageKey + "_iv") ?? string.Empty, MappingOptions.JsonSerializerOptions);
+        var jsonKey = await secureStorage.GetAsync(storageKey + "_key");
+        var jsonIv = await secureStorage.GetAsync(storageKey + "_iv");
+
+        if (jsonKey is null || jsonIv is null)
+        {
+            return;
+        }
+        
+        var key = JsonSerializer.Deserialize<byte[]>(jsonKey, MappingOptions.JsonSerializerOptions);
+        var iv = JsonSerializer.Deserialize<byte[]>(jsonIv, MappingOptions.JsonSerializerOptions);
 
         if (key is not null && iv is not null)
         {   

@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Maui.Graphics;
+using TagGame.Client.Clients;
 using TagGame.Client.Services;
 
 namespace TagGame.Client.Ui.ViewModels;
@@ -23,8 +24,17 @@ public partial class InitPageViewModel(ConfigHandler config, RestClient api, INa
 
     public async Task IsInitializedAsync()
     {
+        await config.InitAsync();
+        
         var userConfig = await config.ReadAsync<UserConfig>();
         var serverConfig = await config.ReadAsync<ServerConfig>();
+        if (serverConfig is not null)
+        {
+            ServerAddress = serverConfig.Host;
+            if (serverConfig.Port is not null && serverConfig.Port.Value > 0)
+                ServerAddress += $":{serverConfig.Port}";
+        }
+        
         if (userConfig is not null && serverConfig is not null && config.CanInteractWithFiles)
             await nav.GoToStart(NavigationMode.Parallel);
     }
@@ -55,11 +65,19 @@ public partial class InitPageViewModel(ConfigHandler config, RestClient api, INa
         if (string.IsNullOrEmpty(serverAddress))
             host = ServerConfig.Default.Host;
         
-        var splitAddress = serverAddress.Split(':');
-        host = splitAddress[0];
+        var splitAddress = serverAddress.Split(':'); 
+        host = splitAddress.Length switch
+        {
+            1 when !splitAddress[0].StartsWith("http") => splitAddress[0].Replace("/", ""),
+            > 1 when splitAddress[0].StartsWith("http") => string.Join(':', splitAddress[0], splitAddress[1]),
+            > 1 when !splitAddress[0].StartsWith("http") => splitAddress[0].Replace("/", ""),
+            _ => string.Empty
+        };
 
-        if (splitAddress.Length > 1 && int.TryParse(splitAddress[1], out var portValue))
+        if (splitAddress.Length > 1 && int.TryParse(splitAddress[^1], out var portValue))
             port = portValue;
+        else
+            port = ServerConfig.Default.Port;
         
         await config.WriteAsync(new ServerConfig()
         {
@@ -67,7 +85,7 @@ public partial class InitPageViewModel(ConfigHandler config, RestClient api, INa
             Port = port,
         });
     }
-
+    
     private async Task<bool> SetupUserAsync()
     {
         var response = await api.CreateUserAsync(new()

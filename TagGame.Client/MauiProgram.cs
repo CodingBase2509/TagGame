@@ -1,7 +1,9 @@
 ﻿using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
 using DotNet.Meteor.HotReload.Plugin;
-using TagGame.Client.Ui.Views;
+using Microsoft.Maui.Controls.Hosting;
+using Microsoft.Maui.Hosting;
+using TagGame.Client.Services;
 
 namespace TagGame.Client;
 
@@ -34,8 +36,10 @@ public static class MauiProgram
 		builder.Logging.AddDebug();
 		builder.EnableHotReload();
 #endif
-		
-		return builder.Build();
+		var app = builder.Build();
+		ServiceHelper.SetProvider(app.Services);
+
+		return app;
 	}
 }
 

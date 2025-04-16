@@ -22,8 +22,8 @@ internal class ServerConfig : ConfigBase
 internal class UserConfig : ConfigBase
 {
     public Guid UserId { get; set; }
-    public string Username { get; set; }
-    public Color AvatarColor { get; set; }
+    public string Username { get; set; } = string.Empty;
+    public Color AvatarColor { get; set; } = Colors.White;
 
     public static UserConfig Default = new()
     {

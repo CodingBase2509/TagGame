@@ -5,17 +5,15 @@ using System.Runtime.CompilerServices;
 
 namespace TagGame.Client.Services;
 
-public static class Localization
+public class Localization(Assembly assembly)
 {
-    private static readonly Dictionary<string, ResourceManager> _resourceManagers = new()
+    private readonly Dictionary<string, ResourceManager> _resourceManagers = new()
     {
-        { "StartPage", new ResourceManager("TagGame.Client.Resources.Localization.StartPage", 
-            typeof(Localization).Assembly) },
-        { "InitPage", new ResourceManager("TagGame.Client.Resources.Localization.InitPage",
-            typeof(Localization).Assembly)}
+        { "StartPage", new ResourceManager("TagGame.Client.Resources.Localization.StartPage", assembly: assembly) },
+        { "InitPage", new ResourceManager("TagGame.Client.Resources.Localization.InitPage", assembly: assembly)}
     };
 
-    public static string Get(string key, string pageName)
+    public string Get(string key, string pageName)
     {
         if (_resourceManagers.TryGetValue(pageName, out var resourceManager))
         {

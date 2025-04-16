@@ -1,17 +1,20 @@
-﻿using TagGame.Client.Services;
-using TagGame.Client.Ui.ViewModels;
-using TagGame.Client.Ui.Views;
-using TagGame.Shared.DTOs.Users;
+﻿using Microsoft.Maui;
+using Microsoft.Maui.Controls;
+using Application = Microsoft.Maui.Controls.Application;
 
 namespace TagGame.Client;
 
 public partial class App : Application
 {
-	public App(IServiceProvider services)
+	public App()
 	{
 		InitializeComponent();
+		// MainPage = new AppShell();
+	}
 
-		MainPage = new AppShell();
+	protected override Window CreateWindow(IActivationState? activationState)
+	{
+		return new Window(new AppShell());
 	}
 }
 

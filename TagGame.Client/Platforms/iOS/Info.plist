@@ -33,5 +33,12 @@
 	<string>en</string>
 	<key>NSDocumentsFolderUsageDescription</key>
 	<string>Store application data</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
+	<key>CFBundleIdentifier</key>
+	<string>com.dasler.taggame</string>
 </dict>
 </plist>

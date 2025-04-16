@@ -1,5 +1,6 @@
 using System.Windows.Input;
-using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui.Graphics;
 
 namespace TagGame.Client.Ui.Components;
 

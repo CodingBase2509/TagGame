@@ -3,7 +3,8 @@ using TagGame.Client.Services;
 
 namespace TagGame.Client.Ui.Extensions;
 
-public class LocalizationExtension() : IMarkupExtension<string>
+[RequireService([typeof(Localization)])]
+public class LocalizationExtension : IMarkupExtension<string>
 {
     /// <summary>
     /// The Key from the localization resource.
@@ -14,10 +15,8 @@ public class LocalizationExtension() : IMarkupExtension<string>
 
     public string ProvideValue(IServiceProvider serviceProvider)
     {
-        if (string.IsNullOrEmpty(Key))
-            return $"[Key not set]";
-        
-        return Localization.Get(Key, Page);
+        var loc = ServiceHelper.GetService<Localization>();
+        return string.IsNullOrEmpty(Key) ? $"[Key not set]" : loc.Get(Key, Page);
     }
 
     object IMarkupExtension.ProvideValue(IServiceProvider serviceProvider)

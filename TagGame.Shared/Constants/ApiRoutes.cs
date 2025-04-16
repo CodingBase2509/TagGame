@@ -4,12 +4,12 @@ public static class ApiRoutes
 {
     public static class Initial
     {
-        public const string CreateUser = "users";
+        public const string CreateUser = "/users";
     }
     
     public static class GameRoom
     {
-        public const string GroupName = "gameroom";
+        public const string GroupName = "/gameroom";
 
         public const string CreateRoom = "/";
 

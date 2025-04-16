@@ -21,10 +21,17 @@ public class ConfigHandler (Encryption crypt, ISecureStorage secureStorage, stri
     
     public async Task InitAsync()
     {
+        // check if config key exists
+        var key = await secureStorage.GetAsync(storageKey + "_key");
+        if (key is not null)
+            return;
+        
         // generate encryption key
         var aes = Aes.Create();
-        await secureStorage.SetAsync(storageKey + "_key", JsonSerializer.Serialize(aes.Key, MappingOptions.JsonSerializerOptions));
-        await secureStorage.SetAsync(storageKey + "_iv", JsonSerializer.Serialize(aes.IV, MappingOptions.JsonSerializerOptions));
+        var jsonKey = JsonSerializer.Serialize(aes.Key, MappingOptions.JsonSerializerOptions);
+        await secureStorage.SetAsync(storageKey + "_key", jsonKey);
+        var jsonIv = JsonSerializer.Serialize(aes.IV, MappingOptions.JsonSerializerOptions);
+        await secureStorage.SetAsync(storageKey + "_iv", jsonIv);
     }
     
     public virtual async Task WriteAsync<TConfig>(TConfig config) where TConfig : ConfigBase
@@ -35,6 +42,9 @@ public class ConfigHandler (Encryption crypt, ISecureStorage secureStorage, stri
             cachedConfigs[typeof(TConfig)] = config;
         
         var jsonString = JsonSerializer.Serialize(config, MappingOptions.JsonSerializerOptions);
+        if (string.IsNullOrEmpty(jsonString))
+            return;
+        
         var fileName = Path.Combine(configDir, config.GetType().Name + encryptedFileExtension);
 
         var encrypted = await _crypt.EncryptAsync(jsonString);
@@ -44,11 +54,20 @@ public class ConfigHandler (Encryption crypt, ISecureStorage secureStorage, stri
 
     public virtual async Task<TConfig?> ReadAsync<TConfig>() where TConfig : ConfigBase
     {
+        if (cachedConfigs.TryGetValue(typeof(TConfig), out var existingConfig))
+        {
+            return existingConfig as TConfig;
+        }
+        
         var fileName = Path.Combine(configDir, typeof(TConfig).Name + encryptedFileExtension);
         if (!File.Exists(fileName))
             return null;
+
+        var file = await File.ReadAllTextAsync(fileName);
+        var decrypted = await _crypt.DecryptAsync(file);
+        if (string.IsNullOrEmpty(decrypted))
+            return null;
         
-        var decrypted = await _crypt.DecryptAsync(await File.ReadAllTextAsync(fileName));
         var config = JsonSerializer.Deserialize<TConfig>(decrypted, MappingOptions.JsonSerializerOptions);
         
         if (!cachedConfigs.ContainsKey(config.GetType()))

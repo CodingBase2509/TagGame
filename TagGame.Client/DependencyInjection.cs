@@ -1,3 +1,6 @@
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Maui.Storage;
+using TagGame.Client.Clients;
 using TagGame.Client.Services;
 using TagGame.Client.Ui;
 using TagGame.Client.Ui.Extensions;
@@ -22,8 +25,11 @@ public static class DependencyInjection
 
     public static IServiceCollection AddServices(this IServiceCollection services)
     {
-        services.AddSingleton<LocalizationExtension>();
         services.AddSingleton<INavigation, Navigation>();
+        services.AddSingleton<ISecureStorage>(_ => SecureStorage.Default);
+        
+        services.AddSingleton<Localization>(_ => new Localization(typeof(App).Assembly));
+        services.AddSingleton<LocalizationExtension>();
         
         services.AddSingleton<Encryption>();
         services.AddSingleton<ConfigHandler>(sp =>
@@ -34,8 +40,6 @@ public static class DependencyInjection
             
             return new ConfigHandler(crypt, secureStorage, configDir);
         });
-     
-        services.AddSingleton<ISecureStorage>(_ => SecureStorage.Default);
         
         return services;
     }
