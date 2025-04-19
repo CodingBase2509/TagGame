@@ -1,4 +1,5 @@
 using System.Net;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using Moq.Protected;
@@ -25,12 +26,14 @@ public class RestClientTests : TestBase
         _configHandlerMock = new Mock<ConfigHandler>();
         _httpMessageHandlerMock = new Mock<HttpMessageHandler>();
         
-        InitClient();
+        var userId = InitClient();
+        var base64Id = Convert.ToBase64String(Encoding.UTF8.GetBytes(userId.ToString())) ?? string.Empty;
         
         var httpClient = new HttpClient(_httpMessageHandlerMock.Object)
         {
             BaseAddress = new Uri("http://127.0.0.1:5000")
         };
+        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", base64Id);
         _restClient = new RestClient(_configHandlerMock.Object, httpClient);
     }
 
@@ -198,7 +201,7 @@ public class RestClientTests : TestBase
         result.Error.Message.Should().Be("Error on sending request");
     }
 
-    private void InitClient()
+    private Guid InitClient()
     {
         var serverConfig = new ServerConfig()
         {
@@ -209,6 +212,8 @@ public class RestClientTests : TestBase
         
         _configHandlerMock.Setup(x => x.ReadAsync<ServerConfig>()).ReturnsAsync(serverConfig);
         _configHandlerMock.Setup(x => x.ReadAsync<UserConfig>()).ReturnsAsync(userConfig);
+        
+        return userConfig.UserId;
     }
     
     private void SetupHttpResponse(HttpStatusCode statusCode, string content = "", string method = "SendAsync")

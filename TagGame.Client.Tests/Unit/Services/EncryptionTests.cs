@@ -105,7 +105,7 @@ public class EncryptionTests : TestBase
     [Fact]
     public async Task EncryptAsync_ShouldReturnEmpty_WhenStorageKeyNotSet()
     {
-        var encryption = new Encryption(_secureStorageMock.Object); // Ohne .WithStorageKey
+        var encryption = new Encryption(_secureStorageMock.Object);
 
         var encrypted = await encryption.EncryptAsync("data");
 
@@ -115,7 +115,7 @@ public class EncryptionTests : TestBase
     [Fact]
     public async Task DecryptAsync_ShouldReturnEmpty_WhenStorageKeyNotSet()
     {
-        var encryption = new Encryption(_secureStorageMock.Object); // Ohne .WithStorageKey
+        var encryption = new Encryption(_secureStorageMock.Object);
 
         var decrypted = await encryption.DecryptAsync("dummy");
 

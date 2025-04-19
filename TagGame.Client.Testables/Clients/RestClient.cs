@@ -124,15 +124,11 @@ public class RestClient(ConfigHandler configHandler)
     {
         var serverConfig = await configHandler.ReadAsync<ServerConfig>();
         var userConfig = await configHandler.ReadAsync<UserConfig>();
-        
-        var baseAddressString = serverConfig?.Port is null ? serverConfig?.Host : $"{serverConfig.Host}:{serverConfig.Port}";
-        if (_client is not null && Equals(baseAddressString, _client.BaseAddress!.ToString()))
-            return;
-        
-        var plainTextBytes = Encoding.UTF8.GetBytes(userConfig?.UserId.ToString() ?? Guid.Empty.ToString());
-        var userId = Convert.ToBase64String(plainTextBytes);
 
-        if (_client is not null && Equals(userId, _client.DefaultRequestHeaders.Authorization?.ToString().Replace("Basic ", "")))
+        var baseAddressChanged = BaseAddressHasChanged(serverConfig.Host, serverConfig.Port, out var baseAddress);
+        var userIdChanged = UserIdHasChanged(userConfig?.UserId.ToString());
+
+        if (!baseAddressChanged && !userIdChanged)
             return;
         
         var handler = new HttpClientHandler();
@@ -148,12 +144,31 @@ public class RestClient(ConfigHandler configHandler)
         
         _client = new HttpClient(handler)
         {
-            BaseAddress = new Uri(baseAddressString),
+            BaseAddress = new Uri(baseAddress),
             DefaultRequestHeaders =
             {
                 Accept = { new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json) },
-                Authorization = new AuthenticationHeaderValue("Basic", userId)
+                Authorization = new AuthenticationHeaderValue("Basic", userConfig?.UserId.ToString())
             }
         };
+    }
+
+    private bool BaseAddressHasChanged(string host, int? port, out string baseAddress)
+    {
+        var currentBaseAddress = _client.BaseAddress!.AbsoluteUri.TrimEnd('/');
+        var baseAddressString = port is null ? host : $"{host}:{port}";
+        baseAddress = baseAddressString;
+        
+        return !Equals(baseAddressString, currentBaseAddress);
+    }
+
+    private bool UserIdHasChanged(string? userId)
+    {
+        var headerId = _client.DefaultRequestHeaders.Authorization?.Parameter;
+        
+        var plainTextBytes = Encoding.UTF8.GetBytes(userId ?? string.Empty);
+        var configId = Convert.ToBase64String(plainTextBytes);
+
+        return !Equals(headerId, configId);
     }
 }

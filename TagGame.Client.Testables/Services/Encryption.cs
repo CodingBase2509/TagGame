@@ -39,8 +39,11 @@ public class Encryption(ISecureStorage secureStorage)
             if (aes is null)
                 await LoadKeyAsync();
 
+            if (!HasKeysLoaded)
+                return string.Empty;
+            
             using var encryptor = aes!.CreateEncryptor(aes.Key, aes.IV);
-            byte[] textBuffer = Encoding.UTF8.GetBytes(text);
+            var textBuffer = Encoding.UTF8.GetBytes(text);
 
             var encryptedBuffer = encryptor.TransformFinalBlock(textBuffer, 0, textBuffer.Length);
             return Convert.ToBase64String(encryptedBuffer);
@@ -60,6 +63,9 @@ public class Encryption(ISecureStorage secureStorage)
         {
             if (aes is null)
                 await LoadKeyAsync();
+            
+            if (!HasKeysLoaded)
+                return string.Empty;
 
             var decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
             var encryptedBuffer = Convert.FromBase64String(encrypted);
@@ -79,6 +85,8 @@ public class Encryption(ISecureStorage secureStorage)
             return;
 
         aes = Aes.Create();
+        aes.Key = new byte[32];
+        aes.IV = new byte[16];
         var jsonKey = await secureStorage.GetAsync(storageKey + "_key");
         var jsonIv = await secureStorage.GetAsync(storageKey + "_iv");
 
