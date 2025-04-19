@@ -1,5 +1,7 @@
 using System.Text.Json;
+using Microsoft.Extensions.Options;
 using Microsoft.Maui.Storage;
+using TagGame.Client.Common;
 using TagGame.Client.Services;
 using TagGame.Shared.Constants;
 
@@ -30,7 +32,14 @@ public class ConfigHandlerTests : TestBase, IAsyncLifetime
     public Task InitializeAsync()
     {
         _encryptionMock.Setup(e => e.WithStorageKey(It.IsAny<string>())).Returns(_encryptionMock.Object);
-        _configHandler = new ConfigHandler(_encryptionMock.Object, _secureStorageMock.Object, _configDir);
+        var jsonOptions = new Mock<IOptions<JsonSerializerOptions>>();
+        jsonOptions.Setup(x => x.Value)
+            .Returns(() =>
+            {
+                MappingOptions.JsonSerializerOptions.Converters.Add(new MauiColorJsonConverter());
+                return MappingOptions.JsonSerializerOptions;
+            });
+        _configHandler = new ConfigHandler(_encryptionMock.Object, _secureStorageMock.Object, jsonOptions.Object, _configDir);
         return Task.CompletedTask;
     }
 

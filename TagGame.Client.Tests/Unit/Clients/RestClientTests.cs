@@ -2,9 +2,12 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using Microsoft.Extensions.Options;
 using Moq.Protected;
 using TagGame.Client.Clients;
+using TagGame.Client.Common;
 using TagGame.Client.Services;
+using TagGame.Shared.Constants;
 using TagGame.Shared.Domain.Common;
 using TagGame.Shared.Domain.Games;
 using TagGame.Shared.Domain.Players;
@@ -29,12 +32,20 @@ public class RestClientTests : TestBase
         var userId = InitClient();
         var base64Id = Convert.ToBase64String(Encoding.UTF8.GetBytes(userId.ToString())) ?? string.Empty;
         
+        var jsonOptions = new Mock<IOptions<JsonSerializerOptions>>();
+        jsonOptions.Setup(x => x.Value)
+            .Returns(() =>
+            {
+                MappingOptions.JsonSerializerOptions.Converters.Add(new MauiColorJsonConverter());
+                return MappingOptions.JsonSerializerOptions;
+            });
+        
         var httpClient = new HttpClient(_httpMessageHandlerMock.Object)
         {
             BaseAddress = new Uri("http://127.0.0.1:5000")
         };
         httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", base64Id);
-        _restClient = new RestClient(_configHandlerMock.Object, httpClient);
+        _restClient = new RestClient(_configHandlerMock.Object, httpClient, jsonOptions.Object);
     }
 
     [Fact]

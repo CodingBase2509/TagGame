@@ -1,11 +1,12 @@
 using System.Security.Cryptography;
 using System.Text.Json;
+using Microsoft.Extensions.Options;
 using Microsoft.Maui.Storage;
 using TagGame.Shared.Constants;
 
 namespace TagGame.Client.Services;
 
-public class ConfigHandler (Encryption crypt, ISecureStorage secureStorage, string configDir)
+public class ConfigHandler (Encryption crypt, ISecureStorage secureStorage, IOptions<JsonSerializerOptions> jsonOptions, string configDir)
 {
     private const string encryptedFileExtension = ".enc";
     private const string storageKey = "config_crypt";
@@ -16,7 +17,7 @@ public class ConfigHandler (Encryption crypt, ISecureStorage secureStorage, stri
     public bool CanInteractWithFiles => _crypt.HasKeysLoaded;
 
     public ConfigHandler()
-        : this(null, null, string.Empty)
+        : this(null, null, null, string.Empty)
     { }
     
     public async Task InitAsync()
@@ -28,9 +29,9 @@ public class ConfigHandler (Encryption crypt, ISecureStorage secureStorage, stri
         
         // generate encryption key
         var aes = Aes.Create();
-        var jsonKey = JsonSerializer.Serialize(aes.Key, MappingOptions.JsonSerializerOptions);
+        var jsonKey = JsonSerializer.Serialize(aes.Key, jsonOptions.Value);
         await secureStorage.SetAsync(storageKey + "_key", jsonKey);
-        var jsonIv = JsonSerializer.Serialize(aes.IV, MappingOptions.JsonSerializerOptions);
+        var jsonIv = JsonSerializer.Serialize(aes.IV, jsonOptions.Value);
         await secureStorage.SetAsync(storageKey + "_iv", jsonIv);
     }
     
@@ -41,7 +42,7 @@ public class ConfigHandler (Encryption crypt, ISecureStorage secureStorage, stri
         else
             cachedConfigs[typeof(TConfig)] = config;
         
-        var jsonString = JsonSerializer.Serialize(config, MappingOptions.JsonSerializerOptions);
+        var jsonString = JsonSerializer.Serialize(config, jsonOptions.Value);
         if (string.IsNullOrEmpty(jsonString))
             return;
         
@@ -68,7 +69,7 @@ public class ConfigHandler (Encryption crypt, ISecureStorage secureStorage, stri
         if (string.IsNullOrEmpty(decrypted))
             return null;
         
-        var config = JsonSerializer.Deserialize<TConfig>(decrypted, MappingOptions.JsonSerializerOptions);
+        var config = JsonSerializer.Deserialize<TConfig>(decrypted, jsonOptions.Value);
         
         if (!cachedConfigs.ContainsKey(config.GetType()))
             cachedConfigs.TryAdd(typeof(TConfig), config);

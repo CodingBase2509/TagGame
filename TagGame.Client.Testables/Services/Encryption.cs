@@ -2,20 +2,21 @@ using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using Microsoft.Extensions.Options;
 using Microsoft.Maui.Storage;
 using TagGame.Shared.Constants;
 
 [assembly: InternalsVisibleTo("TagGame.Client.Tests")]
 namespace TagGame.Client.Services;
 
-public class Encryption(ISecureStorage secureStorage)
+public class Encryption(ISecureStorage secureStorage, IOptions<JsonSerializerOptions> jsonOptions)
 {
     private Aes? aes;
     private string storageKey = string.Empty;
     public virtual bool HasKeysLoaded { get; private set; }
 
     public Encryption()
-        : this(null)
+        : this(null, null)
     { }
     
     public virtual Encryption WithStorageKey(string storageKey)

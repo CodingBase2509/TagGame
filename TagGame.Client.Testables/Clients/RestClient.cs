@@ -7,6 +7,7 @@ using System.Net.Mime;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
+using Microsoft.Extensions.Options;
 using TagGame.Client.Services;
 using TagGame.Shared.Constants;
 using TagGame.Shared.DTOs.Users;
@@ -14,12 +15,12 @@ using TagGame.Shared.DTOs.Users;
 [assembly: InternalsVisibleTo("TagGame.Client.Tests")]
 namespace TagGame.Client.Clients;
 
-public class RestClient(ConfigHandler configHandler)
+public class RestClient(ConfigHandler configHandler, IOptions<JsonSerializerOptions> jsonOptions)
 {
-    private HttpClient _client;
+    private HttpClient? _client;
 
-    internal RestClient(ConfigHandler configHandler, HttpClient client)
-        : this(configHandler)
+    internal RestClient(ConfigHandler configHandler, HttpClient client, IOptions<JsonSerializerOptions> jsonOptions)
+        : this(configHandler, jsonOptions)
     {
         _client = client;
     }
@@ -30,12 +31,12 @@ public class RestClient(ConfigHandler configHandler)
         {
             await InitAsync();
 
-            var stringContent = JsonSerializer.Serialize(createGameRoomRequest, MappingOptions.JsonSerializerOptions);
-            var response = await _client.PostAsync(ApiRoutes.GameRoom.CreateRoom,
+            var stringContent = JsonSerializer.Serialize(createGameRoomRequest, jsonOptions.Value);
+            var response = await _client!.PostAsync(ApiRoutes.GameRoom.CreateRoom,
                 new StringContent(stringContent, Encoding.UTF8, MediaTypeNames.Application.Json));
             
             var content = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<Response<CreateGameRoom.CreateGameRoomResponse>>(content, MappingOptions.JsonSerializerOptions);
+            return JsonSerializer.Deserialize<Response<CreateGameRoom.CreateGameRoomResponse>>(content, jsonOptions.Value);
         }
         catch (Exception ex)
         {
@@ -49,12 +50,12 @@ public class RestClient(ConfigHandler configHandler)
         {
             await InitAsync();
 
-            var stringContent = JsonSerializer.Serialize(joinGameRoomRequest, MappingOptions.JsonSerializerOptions);
-            var response = await _client.PostAsync(ApiRoutes.GameRoom.JoinRoom,
+            var stringContent = JsonSerializer.Serialize(joinGameRoomRequest, jsonOptions.Value);
+            var response = await _client!.PostAsync(ApiRoutes.GameRoom.JoinRoom,
                 new StringContent(stringContent, Encoding.UTF8, MediaTypeNames.Application.Json));
             
             var content = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<Response<JoinGameRoom.JoinGameRoomResponse>>(content, MappingOptions.JsonSerializerOptions);
+            return JsonSerializer.Deserialize<Response<JoinGameRoom.JoinGameRoomResponse>>(content, jsonOptions.Value);
         }
         catch (Exception ex)
         {
@@ -70,10 +71,10 @@ public class RestClient(ConfigHandler configHandler)
 
             string route = ApiRoutes.GameRoom.GroupName 
                            + ApiRoutes.GameRoom.GetRoom.Replace("{roomId:guid}", roomId.ToString());
-            var response = await _client.GetAsync(route);
+            var response = await _client!.GetAsync(route);
             
             var content = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<Response<GameRoom>>(content, MappingOptions.JsonSerializerOptions);
+            return JsonSerializer.Deserialize<Response<GameRoom>>(content, jsonOptions.Value);
         }
         catch (Exception ex)
         {
@@ -87,12 +88,12 @@ public class RestClient(ConfigHandler configHandler)
         {
             await InitAsync();
         
-            var stringContent = JsonSerializer.Serialize(settings, MappingOptions.JsonSerializerOptions);
-            var response = await _client.PutAsync(ApiRoutes.GameRoom.UpdateSettings,
+            var stringContent = JsonSerializer.Serialize(settings, jsonOptions.Value);
+            var response = await _client!.PutAsync(ApiRoutes.GameRoom.UpdateSettings,
                 new StringContent(stringContent, Encoding.UTF8, MediaTypeNames.Application.Json));
             
             var content = await response.Content.ReadAsStringAsync();
-            var result = JsonSerializer.Deserialize<Response<string>>(content, MappingOptions.JsonSerializerOptions);
+            var result = JsonSerializer.Deserialize<Response<string>>(content, jsonOptions.Value);
             return result is not null && result.IsSuccess;
         }
         catch (Exception ex)
@@ -107,12 +108,12 @@ public class RestClient(ConfigHandler configHandler)
         {
             await InitAsync();
 
-            var stringContent = JsonSerializer.Serialize(createUserRequest, MappingOptions.JsonSerializerOptions);
-            var response = await _client.PostAsync(ApiRoutes.Initial.CreateUser,
+            var stringContent = JsonSerializer.Serialize(createUserRequest, jsonOptions.Value);
+            var response = await _client!.PostAsync(ApiRoutes.Initial.CreateUser,
                 new StringContent(stringContent, Encoding.UTF8, MediaTypeNames.Application.Json));
             
             var content = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<Response<User>>(content, MappingOptions.JsonSerializerOptions);
+            return JsonSerializer.Deserialize<Response<User>>(content, jsonOptions.Value);
         }
         catch (Exception ex)
         {
@@ -125,10 +126,13 @@ public class RestClient(ConfigHandler configHandler)
         var serverConfig = await configHandler.ReadAsync<ServerConfig>();
         var userConfig = await configHandler.ReadAsync<UserConfig>();
 
-        var baseAddressChanged = BaseAddressHasChanged(serverConfig.Host, serverConfig.Port, out var baseAddress);
+        var baseAddressChanged = BaseAddressHasChanged(
+            serverConfig?.Host ?? string.Empty,
+            serverConfig?.Port,
+            out var newBaseAddress);
         var userIdChanged = UserIdHasChanged(userConfig?.UserId.ToString());
 
-        if (!baseAddressChanged && !userIdChanged)
+        if (_client is not null && !baseAddressChanged && !userIdChanged)
             return;
         
         var handler = new HttpClientHandler();
@@ -136,7 +140,7 @@ public class RestClient(ConfigHandler configHandler)
 #if DEBUG
         handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) =>
         {
-            if (cert != null && cert.Issuer.Equals("CN=localhost"))
+            if (cert is { Issuer: "CN=localhost" })
                 return true;
             return errors == System.Net.Security.SslPolicyErrors.None;
         };
@@ -144,7 +148,7 @@ public class RestClient(ConfigHandler configHandler)
         
         _client = new HttpClient(handler)
         {
-            BaseAddress = new Uri(baseAddress),
+            BaseAddress = new Uri(newBaseAddress),
             DefaultRequestHeaders =
             {
                 Accept = { new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json) },
@@ -155,16 +159,15 @@ public class RestClient(ConfigHandler configHandler)
 
     private bool BaseAddressHasChanged(string host, int? port, out string baseAddress)
     {
-        var currentBaseAddress = _client.BaseAddress!.AbsoluteUri.TrimEnd('/');
-        var baseAddressString = port is null ? host : $"{host}:{port}";
-        baseAddress = baseAddressString;
+        var currentBaseAddress = _client?.BaseAddress!.AbsoluteUri.TrimEnd('/');
+        baseAddress = port is null ? host : $"{host}:{port}";
         
-        return !Equals(baseAddressString, currentBaseAddress);
+        return !Equals(baseAddress, currentBaseAddress);
     }
 
     private bool UserIdHasChanged(string? userId)
     {
-        var headerId = _client.DefaultRequestHeaders.Authorization?.Parameter;
+        var headerId = _client?.DefaultRequestHeaders.Authorization?.Parameter;
         
         var plainTextBytes = Encoding.UTF8.GetBytes(userId ?? string.Empty);
         var configId = Convert.ToBase64String(plainTextBytes);

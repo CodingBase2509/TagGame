@@ -31,6 +31,7 @@ public static class MauiProgram
 		// register services
 		builder.Services.AddServices();
 		builder.Services.AddApiClients();
+		builder.Services.ConfigureJsonOptions();
 		
 #if DEBUG
 		builder.Logging.AddDebug();
