@@ -151,7 +151,7 @@ public class RestClient(ConfigHandler configHandler, IOptions<JsonSerializerOpti
 #endif
 
 
-        var idString = userConfig?.UserId.ToString();
+        var idString = userConfig?.UserId.ToString() ?? string.Empty;
         var b64Id = Convert.ToBase64String(Encoding.UTF8.GetBytes(idString));
         
         _client = new HttpClient(handler)
