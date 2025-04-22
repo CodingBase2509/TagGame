@@ -1,3 +1,5 @@
+using TagGame.Shared.Domain.Players;
+
 namespace TagGame.Shared.DTOs.Games;
 
 public static class CreateGameRoom
@@ -16,5 +18,7 @@ public static class CreateGameRoom
         public string AccessCode { get; set; } = string.Empty;
 
         public string RoomName { get; set; } = string.Empty;
+        
+        public Guid PlayerId { get; set; }
     }
 }

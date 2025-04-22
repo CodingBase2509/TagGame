@@ -26,6 +26,9 @@ public static class DependencyInjection
         
         services.AddTransient<StartPage>();
         services.AddTransient<StartPageVm>();
+
+        services.AddTransient<LobbyPage>();
+        services.AddTransient<LobbyPageVm>();
         
         return services;
     }

@@ -80,6 +80,7 @@ public class GameRoomEndpoints : ICarterModule
             RoomId = room.Id,
             AccessCode = room.AccessCode,
             RoomName = room.Name,
+            PlayerId = player.Id,
         }.ToHttpResult();
     }
 
@@ -99,7 +100,15 @@ public class GameRoomEndpoints : ICarterModule
             return new Error(404, "not-found-room")
                 .ToHttpResult();
 
-        var player = await playerService.CreatePlayerAsync(joinGameRoomRequest.UserId);
+        var player = await playerService.GetPlayerByUserId(joinGameRoomRequest.UserId);
+        if (player is not null)
+            return new JoinGameRoom.JoinGameRoomResponse()
+            {
+                Room = room,
+                PlayerId = player.Id,
+            }.ToHttpResult();
+        
+        player = await playerService.CreatePlayerAsync(joinGameRoomRequest.UserId);
         if (player is null)
             return new Error(500, "not-created-player")
                 .ToHttpResult();
@@ -112,7 +121,7 @@ public class GameRoomEndpoints : ICarterModule
         return new JoinGameRoom.JoinGameRoomResponse()
         {
             Room = room,
-            Player = player,
+            PlayerId = player.Id,
         }.ToHttpResult();
     }
 

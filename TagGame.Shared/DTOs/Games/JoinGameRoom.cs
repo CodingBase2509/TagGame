@@ -18,6 +18,6 @@ public static class JoinGameRoom
     {
         public GameRoom Room { get; set; }
 
-        public Player Player { get; set; }
+        public Guid PlayerId { get; set; }
     }
 }

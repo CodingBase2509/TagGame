@@ -13,9 +13,10 @@ public class PlayerService(IDataAccess db)
         
         var player = new Player()
         {
-            Id = user.Id,
+            Id = Guid.NewGuid(),
             AvatarColor = user.DefaultAvatarColor,
             UserName = user.DefaultName,
+            UserId = user.Id,
         };
         
         var success = await db.Players.AddAsync(player);
@@ -49,6 +50,15 @@ public class PlayerService(IDataAccess db)
             .GetByIdAsync(playerId, false);
 
         return player;
+    }
+
+    public Task<Player?> GetPlayerByUserId(Guid userId)
+    {
+        var player = db.Players
+            .Where(p => Equals(p.UserId, userId))
+            .FirstOrDefault();
+        
+        return Task.FromResult(player);
     }
 
     public async Task<bool> UpdatePlayerAsync(Player player)

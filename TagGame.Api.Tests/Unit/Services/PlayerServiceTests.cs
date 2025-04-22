@@ -41,7 +41,7 @@ public class PlayerServiceTests : TestBase
 
         // Assert
         result.Should().NotBeNull();
-        result?.Id.Should().Be(userId);
+        result?.UserId.Should().Be(userId);
         result?.AvatarColor.Should().Be(user.DefaultAvatarColor);
         result?.UserName.Should().Be(user.DefaultName);
     }
@@ -167,6 +167,48 @@ public class PlayerServiceTests : TestBase
 
     #endregion
 
+    #region GetPlayerByUserId
+
+    [Fact]
+    public async Task GetPlayerByUserId_ShouldReturnPlayer_WhenPlayerExists()
+    {
+        // Arrange
+        var userId = _fixture.Create<Guid>();
+        var player = _fixture.Build<Player>()
+            .With(p => p.UserId, userId)
+            .Create();
+
+        var players = new List<Player> { player }.AsQueryable();
+        _dataAccessMock.Setup(db => db.Players.Where(It.IsAny<Func<Player, bool>>(), It.IsAny<bool>()))
+            .Returns(players);
+
+        // Act
+        var result = await _playerService.GetPlayerByUserId(userId);
+
+        // Assert
+        result.Should().NotBeNull();
+        result?.UserId.Should().Be(userId);
+    }
+
+    [Fact]
+    public async Task GetPlayerByUserId_ShouldReturnNull_WhenPlayerDoesNotExist()
+    {
+        // Arrange
+        var userId = _fixture.Create<Guid>();
+        var players = new List<Player>().AsQueryable();
+        
+        _dataAccessMock.Setup(db => db.Players.Where(It.IsAny<Func<Player, bool>>(), It.IsAny<bool>()))
+            .Returns(players);
+
+        // Act
+        var result = await _playerService.GetPlayerByUserId(userId);
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    #endregion
+    
     #region UpdatePlayerAsync Tests
 
     [Fact]

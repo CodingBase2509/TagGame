@@ -75,6 +75,7 @@ public class CreateRoomEndpointTests : TestBase, IClassFixture<WebApplicationFac
         result.Value.RoomId.Should().NotBeEmpty();
         result.Value.RoomName.Should().Be("Test Room");
         result.Value.AccessCode.Should().NotBeNullOrWhiteSpace();
+        result.Value.PlayerId.Should().NotBeEmpty();
     }
 
     [Fact]

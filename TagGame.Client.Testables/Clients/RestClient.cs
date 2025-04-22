@@ -32,7 +32,8 @@ public class RestClient(ConfigHandler configHandler, IOptions<JsonSerializerOpti
             await InitAsync();
 
             var stringContent = JsonSerializer.Serialize(createGameRoomRequest, jsonOptions.Value);
-            var response = await _client!.PostAsync(ApiRoutes.GameRoom.CreateRoom,
+            var response = await _client!.PostAsync(ApiRoutes.GameRoom.GroupName 
+                                                    + ApiRoutes.GameRoom.CreateRoom,
                 new StringContent(stringContent, Encoding.UTF8, MediaTypeNames.Application.Json));
             
             var content = await response.Content.ReadAsStringAsync();
@@ -51,7 +52,8 @@ public class RestClient(ConfigHandler configHandler, IOptions<JsonSerializerOpti
             await InitAsync();
 
             var stringContent = JsonSerializer.Serialize(joinGameRoomRequest, jsonOptions.Value);
-            var response = await _client!.PostAsync(ApiRoutes.GameRoom.JoinRoom,
+            var response = await _client!.PostAsync(ApiRoutes.GameRoom.GroupName 
+                                                    + ApiRoutes.GameRoom.JoinRoom.Replace("{roomId:guid}", Guid.Empty.ToString()),
                 new StringContent(stringContent, Encoding.UTF8, MediaTypeNames.Application.Json));
             
             var content = await response.Content.ReadAsStringAsync();
@@ -89,7 +91,9 @@ public class RestClient(ConfigHandler configHandler, IOptions<JsonSerializerOpti
             await InitAsync();
         
             var stringContent = JsonSerializer.Serialize(settings, jsonOptions.Value);
-            var response = await _client!.PutAsync(ApiRoutes.GameRoom.UpdateSettings,
+            var response = await _client!.PutAsync(ApiRoutes.GameRoom.GroupName 
+                                                   + ApiRoutes.GameRoom.UpdateSettings
+                                                       .Replace("{roomId:guid}", settings.RoomId.ToString()),
                 new StringContent(stringContent, Encoding.UTF8, MediaTypeNames.Application.Json));
             
             var content = await response.Content.ReadAsStringAsync();
@@ -145,6 +149,10 @@ public class RestClient(ConfigHandler configHandler, IOptions<JsonSerializerOpti
             return errors == System.Net.Security.SslPolicyErrors.None;
         };
 #endif
+
+
+        var idString = userConfig?.UserId.ToString();
+        var b64Id = Convert.ToBase64String(Encoding.UTF8.GetBytes(idString));
         
         _client = new HttpClient(handler)
         {
@@ -152,7 +160,7 @@ public class RestClient(ConfigHandler configHandler, IOptions<JsonSerializerOpti
             DefaultRequestHeaders =
             {
                 Accept = { new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json) },
-                Authorization = new AuthenticationHeaderValue("Basic", userConfig?.UserId.ToString())
+                Authorization = new AuthenticationHeaderValue("Basic", b64Id)
             }
         };
     }

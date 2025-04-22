@@ -16,4 +16,6 @@ public class Player : IIdentifiable
     public PlayerType Type { get; set; } = PlayerType.Hider;
 
     public Location? Location { get; set; }
+    
+    public Guid UserId { get; set; }
 }

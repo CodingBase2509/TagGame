@@ -8,5 +8,7 @@ public partial class StartPage : PageBase
     {
         InitializeComponent();
         BindingContext = vm;
+
+        Appearing += async (s, e) => await vm.InitializeAsync();
     }
 }

@@ -4,10 +4,10 @@ namespace TagGame.Client.Ui;
 
 public enum NavigationMode
 {
-    [Description(@"///")]
+    [Description(@"../")]
     Backward,
     [Description(@"//")]
     Parallel,
-    [Description(@"/")]
+    [Description(@"")]
     Forward
 }

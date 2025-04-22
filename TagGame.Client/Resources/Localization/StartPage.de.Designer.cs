@@ -28,7 +28,7 @@ namespace TagGame.Client.Ui.LocalizationRessource {
         internal static System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.Equals(null, resourceMan)) {
-                    System.Resources.ResourceManager temp = new System.Resources.ResourceManager("TagGame.Client.Ui.LocalizationRessource.StartPage_de", typeof(StartPage_de).Assembly);
+                    System.Resources.ResourceManager temp = new System.Resources.ResourceManager("TagGame.Client.Resources.Localization.StartPage_de", typeof(StartPage_de).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -54,6 +54,12 @@ namespace TagGame.Client.Ui.LocalizationRessource {
         internal static string join_room {
             get {
                 return ResourceManager.GetString("join-room", resourceCulture);
+            }
+        }
+        
+        internal static string greeting {
+            get {
+                return ResourceManager.GetString("greeting", resourceCulture);
             }
         }
     }

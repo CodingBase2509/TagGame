@@ -24,4 +24,7 @@
     <data name="join-room" xml:space="preserve">
         <value>Raum beitreten</value>
     </data>
+    <data name="greeting" xml:space="preserve">
+        <value>Hallo</value>
+    </data>
 </root>

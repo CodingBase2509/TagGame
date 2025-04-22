@@ -79,7 +79,45 @@ public class JoinRoomEndpointTests : TestBase, IClassFixture<WebApplicationFacto
 
         result.Should().NotBeNull();
         result.Value.Room.Id.Should().Be(room.Id);
-        result.Value.Player.Id.Should().NotBeEmpty();
+        result.Value.PlayerId.Should().NotBeEmpty();
+    }
+
+    [Fact]
+    public async Task JoinRoom_ValidRequest_JoinsRoomWithExistingPlayer_ReturnRoomAndPlayerDetails()
+    {
+        // Arrange
+        var scope = _factory.Services.CreateScope();
+        var roomService = scope.ServiceProvider.GetRequiredService<GameRoomService>();
+        var userService = scope.ServiceProvider.GetRequiredService<UserService>();
+        var playerService = scope.ServiceProvider.GetRequiredService<PlayerService>();
+        
+        var room = await roomService.CreateAsync(Guid.NewGuid(), "Test Room");
+        var user = await userService.AddUserAsync("Test User", ColorDTO.FromArgb(13,153,153,159));
+        var player = await playerService.CreatePlayerAsync(user.Id);
+        
+        var validRequest = new JoinGameRoom.JoinGameRoomRequest
+        {
+            UserId = user.Id,
+            GameName = room.Name,
+            AccessCode = room.AccessCode
+        };
+
+        var client = _factory.CreateClient();
+
+        // Act
+        var response = await client.PostAsync(GetRoute(room.Id),
+            new StringContent(JsonSerializer.Serialize(validRequest), Encoding.UTF8, "application/json"));
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var stringResponse = await response.Content.ReadAsStringAsync();
+        var result = JsonSerializer.Deserialize<Response<JoinGameRoom.JoinGameRoomResponse>>(
+            stringResponse, MappingOptions.JsonSerializerOptions);
+
+        result.Should().NotBeNull();
+        result.Value.Room.Id.Should().Be(room.Id);
+        result.Value.PlayerId.Should().Be(player.Id);
     }
 
     [Fact]
