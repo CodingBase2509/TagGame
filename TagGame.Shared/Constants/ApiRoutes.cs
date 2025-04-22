@@ -1,3 +1,6 @@
+using TagGame.Shared.Domain.Games;
+using TagGame.Shared.Domain.Players;
+
 namespace TagGame.Shared.Constants;
 
 public static class ApiRoutes
@@ -20,13 +23,30 @@ public static class ApiRoutes
         public const string UpdateSettings = "/{roomId:guid}/settings";
     }
 
-    public static class GameHub
+    public interface GameClient
     {
         
     }
 
-    public static class LobbyHub
+    public interface GameHub
     {
-
+        
     }
+
+    public interface ILobbyClient
+    {
+        Task ReceiveGameRoomInfo(Domain.Games.GameRoom gameRoom);
+        Task ReceivePlayerJoined(Player player);
+        Task ReceivePlayerLeft(Guid playerId);
+        Task ReceiveGameSettingsUpdated(GameSettings settings);
+        Task StartCountdown(int seconds);
+    }
+
+
+    public interface ILobbyHub
+    {
+        Task UpdateGameSettings(GameSettings settings);
+        Task StartGame();
+    }
+
 }

@@ -2,6 +2,7 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication;
 using TagGame.Api;
+using TagGame.Api.Endpoints;
 using TagGame.Api.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +12,7 @@ var config = builder.Configuration;
 // Endpoint configuration
 builder.Services.AddSwagger();
 builder.Services.AddCarter();
+builder.Services.AddSignalR();
 builder.Services.AddAuthentication("Basic")
     .AddScheme<AuthenticationSchemeOptions, UserIdAuthenticationHandler>("Basic", null);
 builder.Services.AddAuthorization();
@@ -39,7 +41,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapCarter();
+app.MapHub<LobbyHub>("/lobby");
+
 #endregion
 
 app.Run();
