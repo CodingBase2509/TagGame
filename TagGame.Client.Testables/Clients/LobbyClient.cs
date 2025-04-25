@@ -1,33 +1,108 @@
+using Microsoft.AspNetCore.SignalR.Client;
+using TagGame.Client.Services;
 using TagGame.Shared.Constants;
 using TagGame.Shared.Domain.Games;
 using TagGame.Shared.Domain.Players;
+using TagGame.Shared.DTOs.Games;
 
 namespace TagGame.Client.Clients;
 
-public class LobbyClient : ApiRoutes.ILobbyClient
+public class LobbyClient(ConfigHandler config) : IAsyncDisposable
 {
-    public Task ReceiveGameRoomInfo(GameRoom gameRoom)
+    private HubConnection? _connection;
+    
+    public async Task InitializeAsync()
     {
-        throw new NotImplementedException();
+        var serverConfig = await config.ReadAsync<ServerConfig>();
+        if (serverConfig is null)
+            return;
+        
+        _connection = new HubConnectionBuilder()
+            .WithUrl(Path.Combine(serverConfig.Host, ApiRoutes.ILobbyHub.Endpoint))
+            .WithStatefulReconnect()
+            .WithKeepAliveInterval(TimeSpan.FromSeconds(5))
+            .Build();
+
+        await StartAsync();
     }
 
-    public Task ReceivePlayerJoined(Player player)
+    public async Task StartAsync()
     {
-        throw new NotImplementedException();
+        if (_connection is null)
+            return;
+        
+        await _connection.StartAsync();
     }
 
-    public Task ReceivePlayerLeft(Guid playerId)
+    public async Task StopAsync()
     {
-        throw new NotImplementedException();
+        if (_connection is null || _connection.State != HubConnectionState.Connected)
+            return;
+        
+        await _connection.StopAsync();
     }
 
-    public Task ReceiveGameSettingsUpdated(GameSettings settings)
+    public void SetupReceiveGameRoomInfo(Func<GameRoom, Task> fn)
     {
-        throw new NotImplementedException();
+        if (_connection is null || _connection.State != HubConnectionState.Connected)
+            return;
+        
+        _connection?.On(nameof(ApiRoutes.ILobbyClient.ReceiveGameRoomInfo), fn);
     }
 
-    public Task StartCountdown(int seconds)
+    public void SetupReceivePlayerJoined(Func<Player, Task> fn)
     {
-        throw new NotImplementedException();
+        if (_connection is null || _connection.State != HubConnectionState.Connected)
+            return;
+        
+        _connection?.On(nameof(ApiRoutes.ILobbyClient.ReceivePlayerJoined), fn);
+    }
+
+    public void SetupReceivePlayerLeft(Func<PlayerLeftGameInfo, Task> fn)
+    {
+        if (_connection is null || _connection.State != HubConnectionState.Connected)
+            return;
+        
+        _connection?.On(nameof(ApiRoutes.ILobbyClient.ReceivePlayerLeft), fn);
+    }
+
+    public void SetupReceiveGameSettingsUpdated(Func<GameSettings, Task> fn)
+    {
+        if (_connection is null || _connection.State != HubConnectionState.Connected)
+            return;
+        
+        _connection?.On(nameof(ApiRoutes.ILobbyClient.ReceiveGameSettingsUpdated), fn);
+    }
+
+    public void SetupStartGame(Func<int, Task> fn)
+    {
+        if (_connection is null || _connection.State != HubConnectionState.Connected)
+            return;
+        
+        _connection?.On(nameof(ApiRoutes.ILobbyClient.StartCountdown), fn);
+    }
+
+    public async Task UpdateGameSettingsAsync(GameSettings settings)
+    {
+        if (_connection is null || _connection.State != HubConnectionState.Connected)
+            return;
+        
+        await _connection.InvokeAsync(nameof(ApiRoutes.ILobbyHub.UpdateGameSettings), settings);
+    }
+
+    public async Task StartGameAsync()
+    {
+        if (_connection is null || _connection.State != HubConnectionState.Connected)
+            return;
+
+        await _connection.InvokeAsync(nameof(ApiRoutes.ILobbyHub.StartGame));
+    }
+    
+    public async ValueTask DisposeAsync()
+    {
+        if (_connection is not null) 
+            await _connection.DisposeAsync();
+        
+        GC.SuppressFinalize(this);
     }
 }

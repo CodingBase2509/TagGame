@@ -33,12 +33,10 @@ public static class MauiProgram
 		builder.Services.AddApiClients();
 		builder.Services.ConfigureJsonOptions();
 		
-#if ANDROID
-		builder.CustomizeEntryHandlers();	
-#endif
-		
 #if IOS && DEBUG
 		builder.Services.AddSingleton<ISecureStorage, DebugSecureStorage>();
+#elif ANDROID
+		builder.CustomizeEntryHandlers();
 #endif
 		
 #if DEBUG

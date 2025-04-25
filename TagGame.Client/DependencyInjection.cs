@@ -19,7 +19,7 @@ namespace TagGame.Client;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddContentPages(this IServiceCollection services)
+    public static void AddContentPages(this IServiceCollection services)
     {
         services.AddTransient<InitPage>();
         services.AddTransient<InitPageViewModel>();
@@ -29,11 +29,9 @@ public static class DependencyInjection
 
         services.AddTransient<LobbyPage>();
         services.AddTransient<LobbyPageVm>();
-        
-        return services;
     }
 
-    public static IServiceCollection AddServices(this IServiceCollection services)
+    public static void AddServices(this IServiceCollection services)
     {
         services.AddSingleton<INavigation, Navigation>();
         services.AddSingleton<ISecureStorage>(_ => SecureStorage.Default);
@@ -51,20 +49,16 @@ public static class DependencyInjection
             
             return new ConfigHandler(crypt, secureStorage, jsonOptions, configDir);
         });
-        
-        return services;
     }
 
-    public static IServiceCollection AddApiClients(this IServiceCollection services)
+    public static void AddApiClients(this IServiceCollection services)
     {
         services.AddSingleton<RestClient>();
         services.AddSingleton<LobbyClient>();
         services.AddSingleton<GameClient>();
-        
-        return services;
     }
 
-    public static IServiceCollection ConfigureJsonOptions(this IServiceCollection services)
+    public static void ConfigureJsonOptions(this IServiceCollection services)
     {
         services.Configure<JsonSerializerOptions>(options =>
         {
@@ -73,7 +67,5 @@ public static class DependencyInjection
             options.DefaultIgnoreCondition = JsonIgnoreCondition.Never;
             options.Converters.Add(new MauiColorJsonConverter());
         });
-
-        return services;
     }
 }

@@ -18,17 +18,31 @@ public class GameRoomService(IDataAccess db)
         return room;
     }
 
-    public async Task<GameRoom?> GetRoomAsync(string name, string accessCode)
+    public Task<GameRoom?> GetRoomAsync(string name, string accessCode)
     {
         if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(accessCode))
-            return null;
+            return Task.FromResult<GameRoom?>(null);
 
         var room = db.Rooms
             .Include(r => r.Settings)
             .Where(r => Equals(r.Name, name) && Equals(r.AccessCode, accessCode))
             .FirstOrDefault();
 
-        return room;
+        return Task.FromResult(room);
+    }
+
+    public Task<GameRoom?> GetRoomFromPlayerAsync(Guid playerId)
+    {
+        if (Equals(playerId, Guid.Empty))
+            return Task.FromResult<GameRoom?>(null);
+        
+        var room = db.Rooms
+            .Include(r => r.Settings)
+            .Include(r => r.Players)
+            .Where(r => r.Players.Any(p => Equals(p.Id, playerId)))
+            .FirstOrDefault();
+        
+        return Task.FromResult(room);
     }
 
     public async Task<GameRoom?> CreateAsync(Guid userId, string roomName)

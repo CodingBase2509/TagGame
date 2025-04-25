@@ -1,6 +1,7 @@
 using TagGame.Api.Persistence;
 using TagGame.Api.Services;
 using TagGame.Shared.Domain.Games;
+using TagGame.Shared.Domain.Players;
 
 namespace TagGame.Api.Tests.Unit.Services;
 
@@ -107,6 +108,65 @@ public class GameRoomServiceTests : TestBase
 
     #endregion
 
+    #region GetRoomFromPlayerAsync Tests
+    
+    [Fact]
+    public async Task GetRoomFromPlayerAsync_ShouldReturnRoom_WhenPlayerIsInRoom()
+    {
+        // Arrange
+        var playerId = _fixture.Create<Guid>();
+        var player = _fixture.Build<Player>().With(p => p.Id, playerId).Create();
+        var room = _fixture.Build<GameRoom>()
+            .With(r => r.Players, new List<Player> { player })
+            .Create();
+        
+        _dataAccessMock.Setup(db => db.Rooms.Include(r => r.Players))
+            .Returns(_dataAccessMock.Object.Rooms);
+        _dataAccessMock.Setup(db => db.Rooms.Include(r => r.Settings))
+            .Returns(_dataAccessMock.Object.Rooms);
+        _dataAccessMock.Setup(db => db.Rooms.Where(It.IsAny<Func<GameRoom, bool>>(), It.IsAny<bool>()))
+            .Returns(new[] { room }.AsQueryable());
+
+        // Act
+        var result = await _gameRoomService.GetRoomFromPlayerAsync(playerId);
+
+        // Assert
+        result.Should().NotBeNull();
+        result?.Players.Should().ContainSingle(p => p.Id == playerId);
+    }
+
+    [Fact]
+    public async Task GetRoomFromPlayerAsync_ShouldReturnNull_WhenPlayerIsNotInAnyRoom()
+    {
+        // Arrange
+        var playerId = _fixture.Create<Guid>();
+
+        _dataAccessMock.Setup(db => db.Rooms.Include(r => r.Players))
+            .Returns(_dataAccessMock.Object.Rooms);
+        _dataAccessMock.Setup(db => db.Rooms.Include(r => r.Settings))
+            .Returns(_dataAccessMock.Object.Rooms);
+        _dataAccessMock.Setup(db => db.Rooms.Where(It.IsAny<Func<GameRoom, bool>>(), It.IsAny<bool>()))
+            .Returns(new List<GameRoom>().AsQueryable());
+
+        // Act
+        var result = await _gameRoomService.GetRoomFromPlayerAsync(playerId);
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task GetRoomFromPlayerAsync_ShouldReturnNull_WhenPlayerIdIsEmpty()
+    {
+        // Act
+        var result = await _gameRoomService.GetRoomFromPlayerAsync(Guid.Empty);
+
+        // Assert
+        result.Should().BeNull();
+    }
+    
+    #endregion
+    
     #region CreateAsync Tests
 
     [Fact]
