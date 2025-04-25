@@ -1,5 +1,8 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using Microsoft.Maui.ApplicationModel.DataTransfer;
 using Microsoft.Maui.Controls;
+using Microsoft.Maui.Dispatching;
 
 namespace TagGame.Client.Ui.ViewModels;
 
@@ -20,5 +23,36 @@ public partial class LobbyPageVm : ViewModelBase
     public async Task InitializeAsync()
     {
         
+    }
+
+    [RelayCommand]
+    public async Task GoBackAsync()
+    {
+        
+    }
+
+    [RelayCommand]
+    public async Task OpenSettingsPageAsync()
+    {
+        
+    }
+
+    [RelayCommand]
+    public async Task CopyElement(string text)
+    {
+        var disp = Dispatcher.GetForCurrentThread();
+        if (disp is not null && disp.IsDispatchRequired)
+        {
+            await disp.DispatchAsync(async () => await Copy(text));
+        }
+        else
+        {
+            await Copy(text);
+        }
+    }
+
+    private async Task Copy(string text)
+    {
+        await Clipboard.Default.SetTextAsync(text);
     }
 }
