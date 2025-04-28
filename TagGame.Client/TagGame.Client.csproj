@@ -80,6 +80,14 @@
 	    <Generator>ResXFileCodeGenerator</Generator>
 	    <LastGenOutput>InitPage.Designer.cs</LastGenOutput>
 	  </EmbeddedResource>
+	  <EmbeddedResource Update="Resources\Localization\LobbyPage.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>LobbyPage.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Resources\Localization\LobbyPage.de.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>LobbyPage.de.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -98,6 +106,22 @@
 	    <AutoGen>True</AutoGen>
 	    <DependentUpon>InitPage.resx</DependentUpon>
 	  </Compile>
+	  <Compile Update="Resources\Localization\LobbyPage.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>LobbyPage.resx</DependentUpon>
+	  </Compile>
+	  <Compile Update="Resources\Localization\LobbyPage.de.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>LobbyPage.de.resx</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Reference Include="CommunityToolkit.Maui">
+	    <HintPath>..\..\..\.nuget\packages\communitytoolkit.maui\11.2.0\lib\net9.0-android35.0\CommunityToolkit.Maui.dll</HintPath>
+	  </Reference>
 	</ItemGroup>
 
 </Project>
