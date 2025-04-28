@@ -10,10 +10,9 @@ namespace TagGame.Client.Ui.Views;
 public partial class LobbyPage : PageBase
 {
     public LobbyPage(LobbyPageVm vm)
+        : base(vm)
     {
         InitializeComponent();
         BindingContext = vm;
-        
-        Appearing += async (s, e) => await vm.InitializeAsync();
     }
 }

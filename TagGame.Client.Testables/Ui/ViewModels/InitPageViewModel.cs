@@ -22,7 +22,7 @@ public partial class InitPageViewModel(ConfigHandler config, RestClient api, INa
     public bool IsConfirmEnabled => !string.IsNullOrEmpty(username) && 
                                     !Equals(avatarColor, Colors.Transparent);
 
-    public async Task IsInitializedAsync()
+    public override async Task InitializeAsync()
     {
         await config.InitAsync();
         

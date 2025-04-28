@@ -22,15 +22,18 @@ public partial class StartPageVm(RestClient api, ConfigHandler config, Localizat
     
     private UserConfig? _userConfig;
     
-    public async Task InitializeAsync()
+    public override async Task InitializeAsync()
     {
+        // load user name
         var userConfig = await config.ReadAsync<UserConfig>();
         if (userConfig is null)
             return;
         
-        var greting = loc.Get("greeting", "StartPage");
-        Greeting = $"{greting}, {userConfig.Username}!";
+        var greeting = loc.Get("greeting", "StartPage");
+        Greeting = $"{greeting}, {userConfig.Username}!";
         _userConfig = userConfig;
+        
+        // check if user is ingame
     }
     
     [RelayCommand]

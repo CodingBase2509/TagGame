@@ -4,11 +4,10 @@ namespace TagGame.Client.Ui.Views;
 
 public partial class InitPage : PageBase
 {
-    public InitPage(InitPageViewModel viewModel)
+    public InitPage(InitPageViewModel vm) 
+        : base(vm)
     {
         InitializeComponent();
-        BindingContext = viewModel;
-        
-        Appearing += async (s, e) => await viewModel.IsInitializedAsync();
+        BindingContext = vm;
     }
 }

@@ -20,7 +20,7 @@ public partial class LobbyPageVm : ViewModelBase
     [ObservableProperty]
     private string accessCode = string.Empty;
 
-    public async Task InitializeAsync()
+    public override async Task InitializeAsync()
     {
         
     }
