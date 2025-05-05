@@ -29,6 +29,7 @@ public static class DependencyInjection
 
         services.AddTransient<LobbyPage>();
         services.AddTransient<LobbyPageVm>();
+        Routing.RegisterRoute("lobby", typeof(LobbyPage));
     }
 
     public static void AddServices(this IServiceCollection services)

@@ -8,6 +8,6 @@ public enum NavigationMode
     Backward,
     [Description(@"//")]
     Parallel,
-    [Description(@"")]
+    [Description(@"/")]
     Forward
 }

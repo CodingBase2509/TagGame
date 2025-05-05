@@ -33,7 +33,7 @@ public partial class StartPageVm(RestClient api, ConfigHandler config, Localizat
         Greeting = $"{greeting}, {userConfig.Username}!";
         _userConfig = userConfig;
         
-        // check if user is ingame
+        // TODO: check if user is in game
     }
     
     [RelayCommand]
@@ -49,7 +49,7 @@ public partial class StartPageVm(RestClient api, ConfigHandler config, Localizat
         if (!response.IsSuccess || response.Value is null)
             return;
         
-        await nav.GoToLobby(NavigationMode.Parallel, new Dictionary<string, object>(){
+        await nav.GoToLobby(NavigationMode.Forward, new Dictionary<string, object>(){
             { "roomId", response.Value.RoomId },
             { "roomName", response.Value.RoomName },
             { "accessCode", response.Value.AccessCode },
@@ -71,7 +71,7 @@ public partial class StartPageVm(RestClient api, ConfigHandler config, Localizat
         if (!response.IsSuccess || response.Value is null)
             return;
 
-        await nav.GoToLobby(NavigationMode.Parallel, new Dictionary<string, object>()
+        await nav.GoToLobby(NavigationMode.Forward, new Dictionary<string, object>()
         {
             { "roomId", response.Value.Room.Id },
             { "roomName", response.Value.Room.Name },

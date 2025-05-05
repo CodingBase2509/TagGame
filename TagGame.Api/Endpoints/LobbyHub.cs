@@ -90,6 +90,8 @@ public class LobbyHub(
             playerLeftInfo.DisconnectType = PlayerDisconnectType.LeftGame;
         }
         
+        await Clients.Group(gameRoom.Id.ToString()).ReceivePlayerLeft(playerLeftInfo);
+        
         // check if any player is connected to room
         gameRoom = await gameRooms.GetRoomFromPlayerAsync(player.Id);
         if (gameRoom is null || gameRoom.Players.Count > 0)

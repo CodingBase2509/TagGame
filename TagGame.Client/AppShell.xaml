@@ -16,10 +16,6 @@
     <ShellContent
         ContentTemplate="{DataTemplate views:StartPage}"
         Route="start" />
-
-    <ShellContent
-        ContentTemplate="{DataTemplate views:LobbyPage}"
-        Route="lobby"/>
     
 </Shell>
 

@@ -1,3 +1,4 @@
+using System.Text;
 using Microsoft.AspNetCore.SignalR.Client;
 using TagGame.Client.Services;
 using TagGame.Shared.Constants;
@@ -9,37 +10,67 @@ namespace TagGame.Client.Clients;
 
 public class LobbyClient(ConfigHandler config) : IAsyncDisposable
 {
-    private HubConnection? _connection;
+    private IHubConnection? _connection;
     
     public async Task InitializeAsync()
     {
-        var serverConfig = await config.ReadAsync<ServerConfig>();
-        if (serverConfig is null)
-            return;
-        
-        _connection = new HubConnectionBuilder()
-            .WithUrl(Path.Combine(serverConfig.Host, ApiRoutes.ILobbyHub.Endpoint))
-            .WithStatefulReconnect()
-            .WithKeepAliveInterval(TimeSpan.FromSeconds(5))
-            .Build();
+        try
+        {
+            var serverConfig = await config.ReadAsync<ServerConfig>();
+            var userConfig = await config.ReadAsync<UserConfig>();
+            if (serverConfig is null || userConfig is null)
+                return;
 
-        await StartAsync();
+            var idString = userConfig?.UserId.ToString() ?? string.Empty;
+            var b64Id = Convert.ToBase64String(Encoding.UTF8.GetBytes(idString));
+            
+            var baseUri = new Uri(serverConfig.Port is not null ? $"{serverConfig.Host}:{serverConfig.Port}" : $"{serverConfig.Host}");
+            var hubUri = new Uri(baseUri, ApiRoutes.ILobbyHub.Endpoint);
+            var hubCon = new HubConnectionBuilder()
+                .WithUrl(hubUri, options =>
+                {
+                    options.Headers.Add("Authorization", $"Basic {b64Id}");
+                })
+                .WithStatefulReconnect()
+                .WithKeepAliveInterval(TimeSpan.FromSeconds(5))
+                .Build();
+            
+            _connection = new HubConnectionWrapper(hubCon);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
     }
 
-    public async Task StartAsync()
+    public async Task ConnectAsync()
     {
         if (_connection is null)
             return;
-        
-        await _connection.StartAsync();
+
+        try
+        {
+            await _connection.StartAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
     }
 
-    public async Task StopAsync()
+    public async Task DisconnectAsync()
     {
         if (_connection is null || _connection.State != HubConnectionState.Connected)
             return;
         
-        await _connection.StopAsync();
+        try
+        {
+            await _connection.StopAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
     }
 
     public void SetupReceiveGameRoomInfo(Func<GameRoom, Task> fn)

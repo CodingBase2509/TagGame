@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using Microsoft.Maui.Graphics;
+using TagGame.Shared.Domain.Games;
 
 [assembly: InternalsVisibleTo("TagGame.Client.Tests")]
 namespace TagGame.Client.Services;
@@ -31,4 +32,15 @@ internal class UserConfig : ConfigBase
         Username = string.Empty,
         AvatarColor = Colors.Transparent,
     };
+}
+
+internal class RoomConfig : ConfigBase
+{
+    public Guid RoomId { get; set; }
+    
+    public string RoomName { get; set; } = string.Empty;
+    
+    public string AccessCode { get; set; } = string.Empty;
+    
+    public GameState State { get; set; }
 }
