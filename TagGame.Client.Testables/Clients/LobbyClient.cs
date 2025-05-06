@@ -75,41 +75,26 @@ public class LobbyClient(ConfigHandler config) : IAsyncDisposable
 
     public void SetupReceiveGameRoomInfo(Func<GameRoom, Task> fn)
     {
-        if (_connection is null || _connection.State != HubConnectionState.Connected)
-            return;
-        
         _connection?.On(nameof(ApiRoutes.ILobbyClient.ReceiveGameRoomInfo), fn);
     }
 
     public void SetupReceivePlayerJoined(Func<Player, Task> fn)
     {
-        if (_connection is null || _connection.State != HubConnectionState.Connected)
-            return;
-        
         _connection?.On(nameof(ApiRoutes.ILobbyClient.ReceivePlayerJoined), fn);
     }
 
     public void SetupReceivePlayerLeft(Func<PlayerLeftGameInfo, Task> fn)
     {
-        if (_connection is null || _connection.State != HubConnectionState.Connected)
-            return;
-        
         _connection?.On(nameof(ApiRoutes.ILobbyClient.ReceivePlayerLeft), fn);
     }
 
     public void SetupReceiveGameSettingsUpdated(Func<GameSettings, Task> fn)
     {
-        if (_connection is null || _connection.State != HubConnectionState.Connected)
-            return;
-        
         _connection?.On(nameof(ApiRoutes.ILobbyClient.ReceiveGameSettingsUpdated), fn);
     }
 
     public void SetupStartGame(Func<int, Task> fn)
     {
-        if (_connection is null || _connection.State != HubConnectionState.Connected)
-            return;
-        
         _connection?.On(nameof(ApiRoutes.ILobbyClient.StartCountdown), fn);
     }
 

@@ -11,8 +11,7 @@ namespace TagGame.Api.Endpoints;
 [Authorize]
 public class LobbyHub(
     GameRoomService gameRooms,
-    PlayerService players,
-    UserService users) 
+    PlayerService players) 
     : Hub<ApiRoutes.ILobbyClient>, ApiRoutes.ILobbyHub
 {
     public override async Task OnConnectedAsync()
@@ -46,11 +45,12 @@ public class LobbyHub(
         // add player / connection to webSocket group
         await Groups.AddToGroupAsync(Context.ConnectionId, gameRoom.Id.ToString());
         
-        // inform other players the new player joined
-        await Clients.Group(gameRoom.Id.ToString()).ReceivePlayerJoined(player);
-        
         // send room info to new player
         await Clients.Caller.ReceiveGameRoomInfo(gameRoom);
+        
+        // inform other players the new player joined
+        await Clients.GroupExcept(gameRoom.Id.ToString(), [Context.ConnectionId])
+            .ReceivePlayerJoined(player);
     }
 
     public override async Task OnDisconnectedAsync(Exception? exception)
@@ -86,19 +86,25 @@ public class LobbyHub(
         else
         {
             // update players on room
-            await players.RemovePlayerFromRoomAsync(player.Id, gameRoom.Id);
+            // TODO: impl updating room owner if owner leave
+            var success = await players.RemovePlayerFromRoomAsync(player.Id, gameRoom.Id);
+            if (success)
+                success &= await players.DeletePlayerAsync(player.Id);
+            
             playerLeftInfo.DisconnectType = PlayerDisconnectType.LeftGame;
         }
         
-        await Clients.Group(gameRoom.Id.ToString()).ReceivePlayerLeft(playerLeftInfo);
+        await Clients.OthersInGroup(gameRoom.Id.ToString())
+            .ReceivePlayerLeft(playerLeftInfo);
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, gameRoom.Id.ToString());
         
         // check if any player is connected to room
-        gameRoom = await gameRooms.GetRoomFromPlayerAsync(player.Id);
+        gameRoom = await gameRooms.GetRoomAsync(gameRoom.Id);
         if (gameRoom is null || gameRoom.Players.Count > 0)
             return;
         
         // no player & game still in lobby: close game room
-        await gameRooms.DeleteRoomAsync(gameRoom.Id);
+        var deleteSuccess = await gameRooms.DeleteRoomAsync(gameRoom.Id);
     }
 
     public Task UpdateGameSettings(GameSettings settings)

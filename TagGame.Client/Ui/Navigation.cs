@@ -18,7 +18,7 @@ public class Navigation : INavigation
     private static async Task GoToAsync(string page, NavigationMode mode, Dictionary<string, object>? navItems = null)
     {
         string navMode = mode.GetDescription();
-        string navDest = $@"{navMode}{page}";
+        string navDest = mode == NavigationMode.Backward ? navMode : $@"{navMode}{page}";
 
         if (navItems is null)
             await Shell.Current.GoToAsync(navDest, true);

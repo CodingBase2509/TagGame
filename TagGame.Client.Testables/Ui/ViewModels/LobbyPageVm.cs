@@ -10,23 +10,19 @@ using TagGame.Shared.Domain.Players;
 
 namespace TagGame.Client.Ui.ViewModels;
 
-[QueryProperty(nameof(RoomId), "roomId")]
 [QueryProperty(nameof(RoomName), "roomName")]
 [QueryProperty(nameof(AccessCode), "accessCode")]
 public partial class LobbyPageVm(LobbyClient lobby, ConfigHandler config, INavigation nav) : ViewModelBase
 {
     [ObservableProperty]
-    private Guid roomId = Guid.Empty; 
+    private string _roomName = string.Empty;
     
     [ObservableProperty]
-    private string roomName = string.Empty;
-    
-    [ObservableProperty]
-    private string accessCode = string.Empty;
+    private string _accessCode = string.Empty;
 
 
     [ObservableProperty]
-    private ObservableCollection<Player> players;
+    private ObservableCollection<Player> _players = [];
     
     private GameRoom? _room;
     
@@ -41,6 +37,9 @@ public partial class LobbyPageVm(LobbyClient lobby, ConfigHandler config, INavig
                 this._room = room;
                 RoomName = room.Name;
                 AccessCode = room.AccessCode;
+                
+                foreach (var player in room.Players)
+                    Players.Add(player);
             });
 
             await config.WriteAsync(new RoomConfig()
@@ -107,6 +106,7 @@ public partial class LobbyPageVm(LobbyClient lobby, ConfigHandler config, INavig
     {
         // Delete Game Config
         // Disconnect from Lobby
+        // TODO: impl deleting Config
         await lobby.DisconnectAsync();
         await nav.GoToStart(NavigationMode.Backward);
     }

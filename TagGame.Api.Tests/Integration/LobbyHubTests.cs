@@ -2,6 +2,7 @@ using System.Text;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using TagGame.Api.Persistence;
 using TagGame.Api.Services;
@@ -75,8 +76,16 @@ public class LobbyHubTests : TestBase, IClassFixture<WebApplicationFactory<Progr
             player = await playerService.CreatePlayerAsync(user.Id);
         if(createRoom)
             room = await roomService.CreateAsync(user.Id, "Test1234");
+        else
+        {
+            var data = scope.ServiceProvider.GetRequiredService<IDataAccess>();
+            room = data.Rooms
+                .Include(r => r.Players)
+                .Where(r => r.Players.Any())
+                .FirstOrDefault();
+        }
         
-        if (addPlayerToRoom && createRoom && createPlayer)
+        if (addPlayerToRoom && room is not null && player is not null)
             success = await playerService.AddPlayerToRoomAsync(room.Id, player.Id);
         
         return user.Id;
@@ -135,33 +144,33 @@ public class LobbyHubTests : TestBase, IClassFixture<WebApplicationFactory<Progr
     {
         var userId1 = await CreateEntities(true, true, true);
         var connection1 = CreateHubConnection(userId1.ToString());
-        
-        var userId2 = await CreateEntities(true, true, true);
-        var connection2 = CreateHubConnection(userId1.ToString());
+    
+        var userId2 = await CreateEntities(true, false, true);
+        var connection2 = CreateHubConnection(userId2.ToString());
 
-        PlayerLeftGameInfo? leftInfo = null;
-
+        var tcs = new TaskCompletionSource<PlayerLeftGameInfo>();
         connection1.On<PlayerLeftGameInfo>("ReceivePlayerLeft", info => {
-            leftInfo = info;
+            tcs.SetResult(info);
             return Task.CompletedTask;
         });
 
         await connection1.StartAsync();
         await connection2.StartAsync();
-        await Task.Delay(500);
-        
+        await Task.Delay(1000);
+
         await connection2.StopAsync();
-        await Task.Delay(500);
-        
-        await connection1.StopAsync();
+
+        // wait on ReceivePlayerLeft (max. 4 seconds)
+        var leftInfo = await tcs.Task.WaitAsync(TimeSpan.FromSeconds(10));
 
         leftInfo.Should().NotBeNull();
-        leftInfo!.DisconnectType.Should().Be(PlayerDisconnectType.LeftGame);
+        leftInfo.DisconnectType.Should().Be(PlayerDisconnectType.LeftGame);
 
+        await connection1.StopAsync();
         await connection1.DisposeAsync();
         await connection2.DisposeAsync();
     }
-
+    
     [Fact]
     public async Task Disconnect_ShouldDeleteRoom_WhenLastPlayerLeaves()
     {
@@ -175,13 +184,53 @@ public class LobbyHubTests : TestBase, IClassFixture<WebApplicationFactory<Progr
         await Task.Delay(1000);
 
         var scope =  _factory.Services.CreateScope();
-        var rS = scope.ServiceProvider.GetRequiredService<GameRoomService>();
-        var pS = scope.ServiceProvider.GetRequiredService<PlayerService>();
-        var player = await pS.GetPlayerByUserId(userId);
-        var room = await rS.GetRoomFromPlayerAsync(player.Id);
+        var data = scope.ServiceProvider.GetRequiredService<IDataAccess>();
+        var players = data.Players.Where(p => true)
+            .ToList();
+        var rooms = data.Rooms.Where(r => true)
+            .ToList();
         
-        room.Should().BeNull();
+        players.Should().NotBeNull();
+        players.Should().BeEmpty();
+        
+        rooms.Should().NotBeNull();
+        rooms.Should().BeEmpty();
+        
     }
+    
+    [Fact]
+    public async Task Disconnect_ShouldNotDeleteRoom_WhenOtherPlayersExist()
+    {
+        var userId1 = await CreateEntities(true, true, true);
+        var connection1 = CreateHubConnection(userId1.ToString());
+
+        var userId2 = await CreateEntities(true, true, true);
+        var connection2 = CreateHubConnection(userId2.ToString());
+
+        await connection1.StartAsync();
+        await connection2.StartAsync();
+        await Task.Delay(1000);
+
+        // Disconnect connection2 (one of the two players)
+        await connection2.StopAsync();
+        await Task.Delay(1000);
+
+        // Room should still exist (connection1 still in)
+        using var scope = _factory.Services.CreateScope();
+        var rS = scope.ServiceProvider.GetRequiredService<GameRoomService>();
+        var player = await scope.ServiceProvider
+            .GetRequiredService<PlayerService>()
+            .GetPlayerByUserId(userId1);
+        var room = await rS.GetRoomFromPlayerAsync(player?.Id ?? Guid.Empty);
+    
+        room.Should().NotBeNull();
+
+        // Cleanup
+        await connection1.StopAsync();
+        await connection1.DisposeAsync();
+        await connection2.DisposeAsync();
+    }
+
 
     [Fact(Skip = "Implementieren sobald UpdateGameSettings fertig")]
     public async Task UpdateGameSettings_ShouldBroadcastSettings()
