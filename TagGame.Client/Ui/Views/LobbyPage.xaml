@@ -1,36 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <v:PageBase xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-             xmlns:v="clr-namespace:TagGame.Client.Ui.Views"
-             xmlns:vm="clr-namespace:TagGame.Client.Ui.ViewModels;assembly=TagGame.Client.Testables"
-             xmlns:e="clr-namespace:TagGame.Client.Ui.Extensions;assembly=TagGame.Client.Testables"
-             xmlns:c="clr-namespace:TagGame.Client.Ui.Components"
-             xmlns:m="clr-namespace:TagGame.Shared.Domain.Players;assembly=TagGame.Shared"
-             xmlns:tk="clr-namespace:CommunityToolkit.Maui.Behaviors;assembly=CommunityToolkit.Maui"
-             x:DataType="vm:LobbyPageVm"
-             x:Class="TagGame.Client.Ui.Views.LobbyPage"
-             BackgroundColor="DarkSlateGray">
-
+            xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+            xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+            xmlns:v="clr-namespace:TagGame.Client.Ui.Views"
+            xmlns:vm="clr-namespace:TagGame.Client.Ui.ViewModels;assembly=TagGame.Client.Testables"
+            xmlns:e="clr-namespace:TagGame.Client.Ui.Extensions;assembly=TagGame.Client.Testables"
+            xmlns:c="clr-namespace:TagGame.Client.Ui.Components"
+            xmlns:m="clr-namespace:TagGame.Shared.Domain.Players;assembly=TagGame.Shared"
+            x:DataType="vm:LobbyPageVm"
+            x:Class="TagGame.Client.Ui.Views.LobbyPage"
+            x:Name="This"
+            BackgroundColor="DarkSlateGray">
+    
     <Grid ColumnDefinitions="40, *, 50"
           RowDefinitions="40, *">
-        
+
         <!-- Header -->
-            <ImageButton Grid.Row="0" Grid.Column="0"
-                         Command="{Binding GoBackCommand}"
-                         HorizontalOptions="End"
-                         Source="chevron_left">
-                <Image.Behaviors>
-                    <toolkit:IconTintColorBehavior TintColor="White" />
-                </Image.Behaviors>
-            </ImageButton>
-        
-        <Label Grid.Row="0" Grid.Column="1" 
+        <ImageButton Grid.Row="0" Grid.Column="0"
+                     Command="{Binding GoBackCommand}"
+                     HorizontalOptions="End"
+                     Source="chevron_left">
+            <Image.Behaviors>
+                <toolkit:IconTintColorBehavior TintColor="White" />
+            </Image.Behaviors>
+        </ImageButton>
+
+        <Label Grid.Row="0" Grid.Column="1"
                Text="{Binding RoomName}"
                HorizontalOptions="Center"
                VerticalOptions="Center"
-               FontSize="20"/>
-        
+               FontSize="20" />
+
         <ImageButton Grid.Row="0" Grid.Column="2"
                      Command="{Binding OpenSettingsPageCommand}"
                      Source="settings"
@@ -40,20 +40,20 @@
                 <toolkit:IconTintColorBehavior TintColor="White" />
             </Image.Behaviors>
         </ImageButton>
-        
+
         <!-- Page Content -->
         <Grid Grid.Row="1" Grid.ColumnSpan="3"
               RowDefinitions="Auto,*"
               RowSpacing="30"
               ColumnDefinitions="*"
               Margin="10,10, 10, 0">
-            
+
             <!-- Room Infos -->
             <VerticalStackLayout Grid.Row="0" Grid.Column="0">
                 <Label Text="{e:Localization Key=room-infos, Page=LobbyPage}"
                        Margin="0,0,0,5"
-                       FontSize="16"/>
-                
+                       FontSize="16" />
+
                 <Grid RowDefinitions="*"
                       ColumnDefinitions="*,*">
                     <c:TextCopy Grid.Column="0"
@@ -61,43 +61,37 @@
                                 Text="{Binding RoomName}"
                                 Command="{Binding CopyElementCommand}"
                                 CommandParameter="{Binding RoomName}" />
-                    
+
                     <c:TextCopy Grid.Column="1"
-                        Label="{e:Localization Key=access-code, Page=LobbyPage}"
-                        Text="{Binding AccessCode}"
-                        Command="{Binding CopyElementCommand}"
-                        CommandParameter="{Binding AccessCode}" />
+                                Label="{e:Localization Key=access-code, Page=LobbyPage}"
+                                Text="{Binding AccessCode}"
+                                Command="{Binding CopyElementCommand}"
+                                CommandParameter="{Binding AccessCode}" />
                 </Grid>
             </VerticalStackLayout>
-            
+
             <!-- Players -->
             <VerticalStackLayout Grid.Row="1" Grid.Column="0">
                 <Label Text="{e:Localization Key=players, Page=LobbyPage}"
-                       FontSize="16"/>
-                
+                       FontSize="16" />
+
                 <CollectionView ItemsSource="{Binding Players}"
                                 SelectionMode="None"
-                                BackgroundColor="Pink">
+                                Margin="0,10,0,0">
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="m:Player">
-                            
-                            <VerticalStackLayout>
-                                <Image Source="avatar"
-                                       HeightRequest="60" WidthRequest="60">
-                                    <Image.Behaviors>
-                                        <tk:IconTintColorBehavior TintColor="{Binding AvatarColor, Converter={e:ColorMauiDTOConverter}}"/>
-                                    </Image.Behaviors>
-                                </Image>
-                                <Label Text="{Binding UserName}"/>
-                                <Label Text="{Binding Type}" />
-                            </VerticalStackLayout>
+
+                            <c:PlayerListItem Player="{Binding .}"
+                                              AdminPlayerId="{Binding 
+                                                    Source={x:Reference This},
+                                                    Path=BindingContext.RoomOwnerId}"/>
                             
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
-                
+
             </VerticalStackLayout>
-        </Grid> 
+        </Grid>
     </Grid>
-    
+
 </v:PageBase>

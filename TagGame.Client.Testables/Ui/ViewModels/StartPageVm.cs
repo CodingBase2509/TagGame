@@ -24,6 +24,8 @@ public partial class StartPageVm(RestClient api, ConfigHandler config, Localizat
     
     public override async Task InitializeAsync()
     {
+        // TODO: check if user is in game
+        
         // load user name
         var userConfig = await config.ReadAsync<UserConfig>();
         if (userConfig is null)
@@ -32,8 +34,6 @@ public partial class StartPageVm(RestClient api, ConfigHandler config, Localizat
         var greeting = loc.Get("greeting", "StartPage");
         Greeting = $"{greeting}, {userConfig.Username}!";
         _userConfig = userConfig;
-        
-        // TODO: check if user is in game
     }
     
     [RelayCommand]

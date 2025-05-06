@@ -54,7 +54,7 @@ namespace TagGame.Api.Migrations
 
                     b.HasIndex("SettingsId");
 
-                    b.ToTable("Rooms");
+                    b.ToTable("Rooms", (string)null);
                 });
 
             modelBuilder.Entity("TagGame.Shared.Domain.Games.GameSettings", b =>
@@ -81,7 +81,7 @@ namespace TagGame.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Settings");
+                    b.ToTable("Settings", (string)null);
                 });
 
             modelBuilder.Entity("TagGame.Shared.Domain.Players.Player", b =>
@@ -117,7 +117,7 @@ namespace TagGame.Api.Migrations
 
                     b.HasIndex("GameRoomId");
 
-                    b.ToTable("Players");
+                    b.ToTable("Players", (string)null);
                 });
 
             modelBuilder.Entity("TagGame.Shared.Domain.Players.User", b =>
@@ -136,7 +136,7 @@ namespace TagGame.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("TagGame.Shared.Domain.Games.GameRoom", b =>
@@ -168,7 +168,7 @@ namespace TagGame.Api.Migrations
 
                             b1.HasKey("GameSettingsId");
 
-                            b1.ToTable("Settings");
+                            b1.ToTable("Settings", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("GameSettingsId");

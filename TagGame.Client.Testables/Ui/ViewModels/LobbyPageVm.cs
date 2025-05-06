@@ -19,10 +19,12 @@ public partial class LobbyPageVm(LobbyClient lobby, ConfigHandler config, INavig
     
     [ObservableProperty]
     private string _accessCode = string.Empty;
-
-
+    
     [ObservableProperty]
     private ObservableCollection<Player> _players = [];
+
+    [ObservableProperty]
+    public Guid? _roomOwnerId;
     
     private GameRoom? _room;
     
@@ -35,10 +37,12 @@ public partial class LobbyPageVm(LobbyClient lobby, ConfigHandler config, INavig
             await OnMainThreadAsync(() =>
             {
                 this._room = room;
+                RoomOwnerId = room.CreatorId;
                 RoomName = room.Name;
                 AccessCode = room.AccessCode;
-                
-                foreach (var player in room.Players)
+
+                foreach (var player in room.Players
+                             .Where(player => !Players.Any(p => Equals(p.Id, player.Id))))
                     Players.Add(player);
             });
 
@@ -104,9 +108,8 @@ public partial class LobbyPageVm(LobbyClient lobby, ConfigHandler config, INavig
     [RelayCommand]
     private async Task GoBackAsync()
     {
-        // Delete Game Config
-        // Disconnect from Lobby
-        // TODO: impl deleting Config
+        var deleteSuccess = config.Delete<RoomConfig>();
+        
         await lobby.DisconnectAsync();
         await nav.GoToStart(NavigationMode.Backward);
     }
