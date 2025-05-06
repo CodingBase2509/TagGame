@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Text.Json;
 using Microsoft.Extensions.Options;
 using Microsoft.Maui.Storage;
@@ -111,6 +112,33 @@ public class ConfigHandlerTests : TestBase, IAsyncLifetime
         result.Should().BeNull();
     }
 
+    [Fact]
+    public async Task Delete_ShouldDeleteConfig_WhenFileExists()
+    {
+        // Arrange
+        var config = new DummyConfig { Username = "readUser", RetryCount = 5 };
+        var json = JsonSerializer.Serialize(config, MappingOptions.JsonSerializerOptions);
+        
+        var path = Path.Combine(_configDir, nameof(DummyConfig) + ".enc");
+        await File.WriteAllTextAsync(path, json);
+        
+        // Act
+        var result = _configHandler.Delete<DummyConfig>();
+        
+        // Assert
+        result.Should().BeTrue();
+    }
+
+    [Fact]
+    public void Delete_ShouldReturnFalse_WhenFileDoesNotExist()
+    {
+        // Act
+        var result = _configHandler.Delete<DummyConfig>();
+        
+        // Assert
+        result.Should().BeTrue();
+    }
+    
     [Fact]
     public void CanInteractWithFiles_ShouldReflectEncryptionState()
     {

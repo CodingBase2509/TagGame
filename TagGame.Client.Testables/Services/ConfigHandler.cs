@@ -76,4 +76,20 @@ public class ConfigHandler (Encryption crypt, ISecureStorage secureStorage, IOpt
 
         return config;
     }
+
+    public virtual bool Delete<TConfig>() where TConfig : ConfigBase
+    {
+        if (cachedConfigs.TryGetValue(typeof(TConfig), out var _))
+        {
+            cachedConfigs.Remove(typeof(TConfig));
+        }
+        
+        var fileName = Path.Combine(configDir, typeof(TConfig).Name + encryptedFileExtension);
+        if (!File.Exists(fileName))
+            return true;
+
+        File.Delete(fileName);
+        
+        return !File.Exists(fileName);
+    }
 }
