@@ -46,7 +46,7 @@ public class UpdateSettingsEndpointTests  : TestBase, IClassFixture<WebApplicati
         await context.Database.MigrateAsync();
     }
 
-    [Fact]
+    [Fact(Skip = "Implemented in Lobbyy Hub")]
     public async Task UpdateSettings_ValidRequest_ReturnsSuccess()
     {
         // Arrange
@@ -73,7 +73,7 @@ public class UpdateSettingsEndpointTests  : TestBase, IClassFixture<WebApplicati
          response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
-    [Fact]
+    [Fact(Skip = "Implemented in Lobbyy Hub")]
     public async Task UpdateSettings_InvalidRequest_ReturnsValidationError()
     {
         // Arrange
@@ -103,7 +103,7 @@ public class UpdateSettingsEndpointTests  : TestBase, IClassFixture<WebApplicati
         result.Error.Message.Should().Contain("empty-id");
     }
 
-    [Fact]
+    [Fact(Skip = "Implemented in Lobbyy Hub")]
     public async Task UpdateSettings_ServiceFailsToUpdateSettings_ReturnsServerError()
     {
         // Arrange

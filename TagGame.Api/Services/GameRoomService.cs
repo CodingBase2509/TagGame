@@ -13,6 +13,7 @@ public class GameRoomService(IDataAccess db)
 
         var room = await db.Rooms
             .Include(r => r.Settings)
+            .Include(r => r.Players)
             .GetByIdAsync(roomId, false);
         
         return room;
@@ -50,7 +51,7 @@ public class GameRoomService(IDataAccess db)
         var room = new GameRoom()
         {
             Id = Guid.NewGuid(),
-            CreatorId = userId,
+            OwnerUserId = userId,
             Name = roomName,
             Players = [],
             State = GameState.Lobby,
@@ -86,6 +87,8 @@ public class GameRoomService(IDataAccess db)
         var room = await GetRoomAsync(roomId);
         if (room is null)
             return false;
+        
+        await db.Settings.DeleteAsync(room.Settings); 
         
         var success = await db.Rooms.DeleteAsync(room);
         if (!success)

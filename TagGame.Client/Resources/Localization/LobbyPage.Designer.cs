@@ -68,5 +68,17 @@ namespace TagGame.Client.Resources.Localization {
                 return ResourceManager.GetString("players", resourceCulture);
             }
         }
+        
+        internal static string owner {
+            get {
+                return ResourceManager.GetString("owner", resourceCulture);
+            }
+        }
+        
+        internal static string start_game {
+            get {
+                return ResourceManager.GetString("start-game", resourceCulture);
+            }
+        }
     }
 }

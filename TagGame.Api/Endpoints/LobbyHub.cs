@@ -110,6 +110,7 @@ public class LobbyHub(
     public Task UpdateGameSettings(GameSettings settings)
     {
         throw new NotImplementedException();
+        // TODO: Impl from Rest Endpoint
     }
 
     public Task StartGame()

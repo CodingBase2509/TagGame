@@ -12,86 +12,86 @@
             x:Name="This"
             BackgroundColor="DarkSlateGray">
     
-    <Grid ColumnDefinitions="40, *, 50"
-          RowDefinitions="40, *">
+    <Grid RowDefinitions="40, Auto, *, Auto">
 
         <!-- Header -->
-        <ImageButton Grid.Row="0" Grid.Column="0"
-                     Command="{Binding GoBackCommand}"
-                     HorizontalOptions="End"
-                     Source="chevron_left">
-            <Image.Behaviors>
-                <toolkit:IconTintColorBehavior TintColor="White" />
-            </Image.Behaviors>
-        </ImageButton>
+        <Grid Grid.Row="0"
+              ColumnDefinitions="40,*,50">
+            <ImageButton Grid.Row="0" Grid.Column="0"
+                         Command="{Binding GoBackCommand}"
+                         HorizontalOptions="End"
+                         Source="chevron_left">
+                <Image.Behaviors>
+                    <toolkit:IconTintColorBehavior TintColor="White" />
+                </Image.Behaviors>
+            </ImageButton>
 
-        <Label Grid.Row="0" Grid.Column="1"
-               Text="{Binding RoomName}"
-               HorizontalOptions="Center"
-               VerticalOptions="Center"
-               FontSize="20" />
+            <Label Grid.Row="0" Grid.Column="1"
+                   Text="{Binding RoomName}"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center"
+                   FontSize="20" />
 
-        <ImageButton Grid.Row="0" Grid.Column="2"
-                     Command="{Binding OpenSettingsPageCommand}"
-                     Source="settings"
-                     HorizontalOptions="Start"
-                     Margin="0,0,20,0">
-            <Image.Behaviors>
-                <toolkit:IconTintColorBehavior TintColor="White" />
-            </Image.Behaviors>
-        </ImageButton>
+            <ImageButton Grid.Row="0" Grid.Column="2"
+                         Command="{Binding OpenSettingsPageCommand}"
+                         Source="settings"
+                         HorizontalOptions="Start"
+                         Margin="0,0,20,0">
+                <Image.Behaviors>
+                    <toolkit:IconTintColorBehavior TintColor="White" />
+                </Image.Behaviors>
+            </ImageButton>
+        </Grid>
 
-        <!-- Page Content -->
-        <Grid Grid.Row="1" Grid.ColumnSpan="3"
-              RowDefinitions="Auto,*"
-              RowSpacing="30"
-              ColumnDefinitions="*"
-              Margin="10,10, 10, 0">
+        <!-- Room Infos -->
+        <VerticalStackLayout Grid.Row="1" Grid.ColumnSpan="3"
+                             Margin="5, 10">
+            <Label Text="{e:Localization Key=room-infos, Page=LobbyPage}"
+                   Margin="0,0,0,5"
+                   FontSize="16" />
 
-            <!-- Room Infos -->
-            <VerticalStackLayout Grid.Row="0" Grid.Column="0">
-                <Label Text="{e:Localization Key=room-infos, Page=LobbyPage}"
-                       Margin="0,0,0,5"
-                       FontSize="16" />
+            <Grid RowDefinitions="*"
+                  ColumnDefinitions="*,*">
+                <c:TextCopy Grid.Column="0"
+                            Label="{e:Localization Key=room-name, Page=LobbyPage}"
+                            Text="{Binding RoomName}"
+                            Command="{Binding CopyElementCommand}"
+                            CommandParameter="{Binding RoomName}" />
 
-                <Grid RowDefinitions="*"
-                      ColumnDefinitions="*,*">
-                    <c:TextCopy Grid.Column="0"
-                                Label="{e:Localization Key=room-name, Page=LobbyPage}"
-                                Text="{Binding RoomName}"
-                                Command="{Binding CopyElementCommand}"
-                                CommandParameter="{Binding RoomName}" />
+                <c:TextCopy Grid.Column="1"
+                            Label="{e:Localization Key=access-code, Page=LobbyPage}"
+                            Text="{Binding AccessCode}"
+                            Command="{Binding CopyElementCommand}"
+                            CommandParameter="{Binding AccessCode}" />
+            </Grid>
+        </VerticalStackLayout>
+        
+        <!-- Players -->
+        <VerticalStackLayout Grid.Row="2" Grid.ColumnSpan="3"
+                             Margin="5, 20">
+            <Label Text="{e:Localization Key=players, Page=LobbyPage}"
+                   FontSize="16" />
 
-                    <c:TextCopy Grid.Column="1"
-                                Label="{e:Localization Key=access-code, Page=LobbyPage}"
-                                Text="{Binding AccessCode}"
-                                Command="{Binding CopyElementCommand}"
-                                CommandParameter="{Binding AccessCode}" />
-                </Grid>
-            </VerticalStackLayout>
-
-            <!-- Players -->
-            <VerticalStackLayout Grid.Row="1" Grid.Column="0">
-                <Label Text="{e:Localization Key=players, Page=LobbyPage}"
-                       FontSize="16" />
-
-                <CollectionView ItemsSource="{Binding Players}"
-                                SelectionMode="None"
-                                Margin="0,10,0,0">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="m:Player">
-
-                            <c:PlayerListItem Player="{Binding .}"
-                                              AdminPlayerId="{Binding 
+            <CollectionView ItemsSource="{Binding Players}"
+                            SelectionMode="None"
+                            Margin="0,10,0,0">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="m:Player">
+                        <c:PlayerListItem Player="{Binding .}"
+                                          AdminUserId="{Binding 
                                                     Source={x:Reference This},
                                                     Path=BindingContext.RoomOwnerId}"/>
-                            
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-
-            </VerticalStackLayout>
-        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </VerticalStackLayout>
+        
+        <!-- Start Button -->
+        <Button Grid.Row="3"
+            Text="{e:Localization Key=start-game, Page=LobbyPage}"
+            HorizontalOptions="Center"
+            WidthRequest="160"
+            Height="50"/>
     </Grid>
 
 </v:PageBase>

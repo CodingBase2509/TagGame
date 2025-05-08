@@ -37,7 +37,7 @@ public partial class LobbyPageVm(LobbyClient lobby, ConfigHandler config, INavig
             await OnMainThreadAsync(() =>
             {
                 this._room = room;
-                RoomOwnerId = room.CreatorId;
+                RoomOwnerId = room.OwnerUserId;
                 RoomName = room.Name;
                 AccessCode = room.AccessCode;
 
@@ -85,6 +85,7 @@ public partial class LobbyPageVm(LobbyClient lobby, ConfigHandler config, INavig
             {
                 case PlayerDisconnectType.LeftGame when player is null || _room is null:
                 case PlayerDisconnectType.LeftWithReconnect when player is null || _room is null:
+                default:
                     return;
                 case PlayerDisconnectType.LeftGame:
                     await OnMainThreadAsync(() =>
@@ -105,6 +106,12 @@ public partial class LobbyPageVm(LobbyClient lobby, ConfigHandler config, INavig
         await lobby.ConnectAsync();
     }
 
+    public override Task CleanUpAsync()
+    {
+        Players.Clear();
+        return base.CleanUpAsync();
+    }
+
     [RelayCommand]
     private async Task GoBackAsync()
     {
@@ -117,7 +124,13 @@ public partial class LobbyPageVm(LobbyClient lobby, ConfigHandler config, INavig
     [RelayCommand]
     private async Task OpenSettingsPageAsync()
     {
-        await Shell.Current.DisplayAlert("Settings", "Settings", "OK");
+        await Shell.Current.DisplayAlert("Button Click", "Settings", "OK");
+    }
+
+    [RelayCommand]
+    private async Task StartGameAsync()
+    {
+        await Shell.Current.DisplayAlert("Button Click", "Start Game", "OK");
     }
 
     [RelayCommand]

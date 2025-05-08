@@ -15,7 +15,7 @@ public class GameRoom : IIdentifiable
 
     public GameSettings Settings { get; set; } = new();
 
-    public Guid CreatorId { get; set; }
+    public Guid OwnerUserId { get; set; }
 
     public List<Player> Players { get; set; } = [];
 }

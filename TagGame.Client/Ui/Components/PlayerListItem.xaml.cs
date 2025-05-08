@@ -17,8 +17,8 @@ public partial class PlayerListItem : ContentView
         typeof(PlayerListItem),
         propertyChanged: OnPlayerOrAdminChanged);
     
-    public static BindableProperty AdminPlayerIdProperty = BindableProperty.Create(
-        nameof(AdminPlayerId),
+    public static BindableProperty AdminUserIdProperty = BindableProperty.Create(
+        nameof(AdminUserId),
         typeof(Guid),
         typeof(PlayerListItem),
         propertyChanged: OnPlayerOrAdminChanged);
@@ -37,15 +37,15 @@ public partial class PlayerListItem : ContentView
         }
     }
 
-    public Guid AdminPlayerId
+    public Guid AdminUserId
     {
-        get => (Guid)GetValue(AdminPlayerIdProperty);
-        set => SetValue(AdminPlayerIdProperty, value);
+        get => (Guid)GetValue(AdminUserIdProperty);
+        set => SetValue(AdminUserIdProperty, value);
     }
 
     public string PlayerName => Player?.UserName ?? string.Empty;
     public string PlayerType => Player?.Type.GetDescription() ?? string.Empty;
-    public bool IsPlayerAdmin => Equals(Player?.Id, AdminPlayerId);
+    public bool IsPlayerAdmin => Equals(Player?.UserId, AdminUserId);
     public Color IconColor => Player?.AvatarColor.ToMauiColor() ?? Colors.Black;
     
     private static void OnPlayerOrAdminChanged(BindableObject bindable, object oldValue, object newValue)

@@ -33,6 +33,6 @@ public class PageBase : ContentPage
 
     private async void CleanViewModelAsync(object? sender, EventArgs e)
     {
-        await _viewModel.InitializeAsync();
+        await _viewModel.CleanUpAsync();
     }
 }

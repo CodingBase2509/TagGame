@@ -30,4 +30,10 @@
     <data name="players" xml:space="preserve">
         <value>Joined players</value>
     </data>
+    <data name="owner" xml:space="preserve">
+        <value>Owner</value>
+    </data>
+    <data name="start-game" xml:space="preserve">
+        <value>Start game</value>
+    </data>
 </root>
