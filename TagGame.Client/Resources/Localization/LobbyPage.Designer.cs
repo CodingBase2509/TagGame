@@ -80,5 +80,23 @@ namespace TagGame.Client.Resources.Localization {
                 return ResourceManager.GetString("start-game", resourceCulture);
             }
         }
+        
+        internal static string select_playertype {
+            get {
+                return ResourceManager.GetString("select-playertype", resourceCulture);
+            }
+        }
+        
+        internal static string abort {
+            get {
+                return ResourceManager.GetString("abort", resourceCulture);
+            }
+        }
+        
+        internal static string confirm {
+            get {
+                return ResourceManager.GetString("confirm", resourceCulture);
+            }
+        }
     }
 }

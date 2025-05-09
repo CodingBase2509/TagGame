@@ -4,6 +4,7 @@ using DotNet.Meteor.HotReload.Plugin;
 using Microsoft.Maui.Controls.Hosting;
 using Microsoft.Maui.Hosting;
 using TagGame.Client.Services;
+using TagGame.Client.Ui.Components;
 
 namespace TagGame.Client;
 

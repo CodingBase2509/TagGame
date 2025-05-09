@@ -78,9 +78,10 @@
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="m:Player">
                         <c:PlayerListItem Player="{Binding .}"
-                                          AdminUserId="{Binding 
-                                                    Source={x:Reference This},
-                                                    Path=BindingContext.RoomOwnerId}"/>
+                                          AdminUserId="{Binding Source={x:Reference This},
+                                                    Path=BindingContext.RoomOwnerId}"
+                                          PlayerTypeChangedCommand="{Binding Source={x:Reference This},
+                                                    Path=BindingContext.UpdatePlayerTypeCommand}"/>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
@@ -89,9 +90,10 @@
         <!-- Start Button -->
         <Button Grid.Row="3"
             Text="{e:Localization Key=start-game, Page=LobbyPage}"
+            Command="{Binding StartGameCommand}"
             HorizontalOptions="Center"
-            WidthRequest="160"
-            Height="50"/>
+            WidthRequest="180"
+            Height="60"/>
     </Grid>
 
 </v:PageBase>

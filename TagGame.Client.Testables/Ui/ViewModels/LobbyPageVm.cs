@@ -61,6 +61,16 @@ public partial class LobbyPageVm(LobbyClient lobby, ConfigHandler config, INavig
                 return Task.CompletedTask; 
             
             _room.Settings = settings;
+
+            foreach (var seekerId in settings.SeekerIds)
+            {
+                var player = Players.FirstOrDefault(p => Equals(p.Id, seekerId));
+                if (player is null)
+                    continue;
+                
+                player.Type = PlayerType.Seeker;
+                OnPropertyChanged(nameof(Players));
+            }
             
             return Task.CompletedTask;
         });
@@ -125,6 +135,32 @@ public partial class LobbyPageVm(LobbyClient lobby, ConfigHandler config, INavig
     private async Task OpenSettingsPageAsync()
     {
         await Shell.Current.DisplayAlert("Button Click", "Settings", "OK");
+    }
+
+    [RelayCommand]
+    private async Task UpdatePlayerTypeAsync(Player player)
+    {
+        if (_room is null)
+            return;
+        
+        var seekerIds = _room.Settings.SeekerIds;
+        switch (player.Type)
+        {
+            case PlayerType.Hider:
+                if (!seekerIds.Contains(player.Id))
+                    return;
+                seekerIds.Remove(player.Id);
+                break;
+            case PlayerType.Seeker:
+                if (seekerIds.Contains(player.Id))
+                    return;
+                seekerIds.Add(player.Id);
+                break;
+            default:
+                return;
+        }
+        
+        await lobby.UpdateGameSettingsAsync(_room.Settings);
     }
 
     [RelayCommand]

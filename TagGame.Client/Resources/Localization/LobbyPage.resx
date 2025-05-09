@@ -36,4 +36,13 @@
     <data name="start-game" xml:space="preserve">
         <value>Start game</value>
     </data>
+    <data name="select-playertype" xml:space="preserve">
+        <value>Choose player type</value>
+    </data>
+    <data name="abort" xml:space="preserve">
+        <value>Close</value>
+    </data>
+    <data name="confirm" xml:space="preserve">
+        <value>Confirm Selection</value>
+    </data>
 </root>

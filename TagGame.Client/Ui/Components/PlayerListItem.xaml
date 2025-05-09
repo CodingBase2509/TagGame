@@ -30,6 +30,12 @@
         <Label Grid.Column="2"
                HorizontalOptions="Center"
                VerticalOptions="Center"
-               Text="{Binding Source={x:Reference This}, Path= PlayerType}" />
+               Text="{Binding Source={x:Reference This}, Path= Playertype}">
+            <Label.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding Source={x:Reference This}, 
+                            Path= OpenPlayerTypeSelectCommand}" />
+            </Label.GestureRecognizers>
+        </Label>
+
     </Grid>
 </ContentView>
