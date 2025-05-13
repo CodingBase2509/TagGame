@@ -20,8 +20,6 @@ public static class ApiRoutes
         public const string JoinRoom = "/{roomId:guid}";
 
         public const string GetRoom = "/{roomId:guid}";
-
-        public const string UpdateSettings = "/{roomId:guid}/settings";
     }
 
     public interface IGameClient

@@ -84,28 +84,6 @@ public class RestClient(ConfigHandler configHandler, IOptions<JsonSerializerOpti
         }
     }
 
-    public async Task<bool> UpdateSettingsAsync(GameSettings settings)
-    {
-        try
-        {
-            await InitAsync();
-        
-            var stringContent = JsonSerializer.Serialize(settings, jsonOptions.Value);
-            var response = await _client!.PutAsync(ApiRoutes.GameRoom.GroupName 
-                                                   + ApiRoutes.GameRoom.UpdateSettings
-                                                       .Replace("{roomId:guid}", settings.RoomId.ToString()),
-                new StringContent(stringContent, Encoding.UTF8, MediaTypeNames.Application.Json));
-            
-            var content = await response.Content.ReadAsStringAsync();
-            var result = JsonSerializer.Deserialize<Response<string>>(content, jsonOptions.Value);
-            return result is not null && result.IsSuccess;
-        }
-        catch (Exception ex)
-        {
-            return false;
-        }
-    }
-
     public async Task<Response<User>?> CreateUserAsync(CreateUser.CreateUserRequest createUserRequest)
     {
         try

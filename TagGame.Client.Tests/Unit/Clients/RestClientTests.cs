@@ -154,34 +154,6 @@ public class RestClientTests : TestBase
     }
 
     [Fact]
-    public async Task UpdateSettingsAsync_ShouldReturnTrue_WhenSuccessful()
-    {
-        var settings = _fixture.Create<GameSettings>();
-        var response = new Response<string> { IsSuccess = true };
-        var jsonResponse = JsonSerializer.Serialize(response);
-
-        SetupHttpResponse(HttpStatusCode.OK, jsonResponse);
-
-        var result = await _restClient.UpdateSettingsAsync(settings);
-
-        result.Should().BeTrue();
-    }
-
-    [Fact]
-    public async Task UpdateSettingsAsync_ShouldReturnFalse_WhenUnsuccessful()
-    {
-        var settings = _fixture.Create<GameSettings>();
-        var response = new Response<string> { IsSuccess = false };
-        var jsonResponse = JsonSerializer.Serialize(response);
-
-        SetupHttpResponse(HttpStatusCode.OK, jsonResponse);
-
-        var result = await _restClient.UpdateSettingsAsync(settings);
-
-        result.Should().BeFalse();
-    }
-
-    [Fact]
     public async Task CreateUserAsync_ShouldReturnResponse_WhenSuccessful()
     {
         var request = _fixture.Create<CreateUser.CreateUserRequest>();
