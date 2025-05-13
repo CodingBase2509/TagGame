@@ -12,7 +12,7 @@
             x:Name="This"
             BackgroundColor="DarkSlateGray">
     
-    <Grid RowDefinitions="40, Auto, *, Auto">
+    <Grid RowDefinitions="40, Auto, Auto, *, Auto">
 
         <!-- Header -->
         <Grid Grid.Row="0"
@@ -67,33 +67,43 @@
         </VerticalStackLayout>
         
         <!-- Players -->
-        <VerticalStackLayout Grid.Row="2" Grid.ColumnSpan="3"
-                             Margin="5, 20">
-            <Label Text="{e:Localization Key=players, Page=LobbyPage}"
-                   FontSize="16" />
+        <Label Grid.Row="2" Grid.ColumnSpan="3" 
+               Text="{e:Localization Key=players, Page=LobbyPage}"
+               FontSize="16" 
+               Margin="5, 10, 5, 5"/>
 
-            <CollectionView ItemsSource="{Binding Players}"
-                            SelectionMode="None"
-                            Margin="0,10,0,0">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="m:Player">
-                        <c:PlayerListItem Player="{Binding .}"
-                                          AdminUserId="{Binding Source={x:Reference This},
+        <CollectionView Grid.Row="3" Grid.ColumnSpan="3"
+                        ItemsSource="{Binding Players}"
+                        SelectionMode="None"
+                        Margin="5,0,5,10">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="m:Player">
+                    <c:PlayerListItem Player="{Binding .}"
+                                      CanEdit="{Binding Source={x:Reference This},
+                                                    Path=BindingContext.UserIsRoomOwner}"
+                                      AdminUserId="{Binding Source={x:Reference This},
                                                     Path=BindingContext.RoomOwnerId}"
-                                          PlayerTypeChangedCommand="{Binding Source={x:Reference This},
+                                      PlayerTypeChangedCommand="{Binding Source={x:Reference This},
                                                     Path=BindingContext.UpdatePlayerTypeCommand}"/>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-        </VerticalStackLayout>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
         
         <!-- Start Button -->
-        <Button Grid.Row="3"
+        <Button Grid.Row="4"
             Text="{e:Localization Key=start-game, Page=LobbyPage}"
             Command="{Binding StartGameCommand}"
             HorizontalOptions="Center"
+            IsEnabled="{Binding UserIsRoomOwner}"
             WidthRequest="180"
-            Height="60"/>
+            Height="60">
+            <Button.Margin>
+                <OnPlatform x:TypeArguments="Thickness">
+                    <On Platform="Android" Value="0,0,0,20" />
+                    <On Platform="iOS" Value="0" />
+                </OnPlatform>
+            </Button.Margin>
+        </Button>
     </Grid>
 
 </v:PageBase>

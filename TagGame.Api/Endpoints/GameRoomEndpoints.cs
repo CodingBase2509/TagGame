@@ -39,14 +39,6 @@ public class GameRoomEndpoints : ICarterModule
             .Produces<Response<Error>>(StatusCodes.Status404NotFound)
             .RequireAuthorization()
             .WithOpenApi();
-
-        gameroom.MapPut(ApiRoutes.GameRoom.UpdateSettings, UpdateSettings)
-            .Accepts<Response<string>>(MediaTypeNames.Application.Json)
-            .Produces<Response<Error>>(StatusCodes.Status400BadRequest)
-            .Produces<Response<Error>>(StatusCodes.Status404NotFound)
-            .Produces<Response<Error>>(StatusCodes.Status500InternalServerError)
-            .RequireAuthorization()
-            .WithOpenApi();
     }
 
     public async Task<IResult> CreateRoom(
@@ -134,25 +126,5 @@ public class GameRoomEndpoints : ICarterModule
         
         return room
             .ToHttpResult();
-    }
-
-    public async Task<IResult> UpdateSettings(
-        [FromServices] GameRoomService roomService,
-        [FromServices] GameRoomSettingsValidator validator,
-        Guid roomId,
-        [FromBody] GameSettings settings)
-    {
-        var validationResult = await validator.ValidateAsync(settings);
-        if (!validationResult.IsValid)
-            return new Error(400, validationResult)
-                .ToHttpResult();
-        
-        var success = await roomService.UpdateSettingsAsync(roomId, settings);
-
-        return !success ? 
-            new Error(500, "not-updated-settings")
-                .ToHttpResult()
-            : Response<string>.Empty
-                .ToHttpResult();
     }
 }

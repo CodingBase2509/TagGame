@@ -1,7 +1,9 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using TagGame.Api.Services;
+using TagGame.Api.Validation.GameRoom;
 using TagGame.Shared.Constants;
 using TagGame.Shared.Domain.Games;
 using TagGame.Shared.DTOs.Games;
@@ -11,6 +13,7 @@ namespace TagGame.Api.Endpoints;
 [Authorize]
 public class LobbyHub(
     GameRoomService gameRooms,
+    GameRoomSettingsValidator validator,
     PlayerService players) 
     : Hub<ApiRoutes.ILobbyClient>, ApiRoutes.ILobbyHub
 {
@@ -107,10 +110,16 @@ public class LobbyHub(
         var deleteSuccess = await gameRooms.DeleteRoomAsync(gameRoom.Id);
     }
 
-    public Task UpdateGameSettings(GameSettings settings)
+    public async Task UpdateGameSettings(GameSettings settings)
     {
-        throw new NotImplementedException();
-        // TODO: Impl from Rest Endpoint
+        var validationResult = await validator.ValidateAsync(settings);
+        if (!validationResult.IsValid)
+            return;
+        
+        await gameRooms.UpdateSettingsAsync(settings.RoomId, settings);
+        
+        await Clients.OthersInGroup(settings.RoomId.ToString())
+            .ReceiveGameSettingsUpdated(settings);
     }
 
     public Task StartGame()

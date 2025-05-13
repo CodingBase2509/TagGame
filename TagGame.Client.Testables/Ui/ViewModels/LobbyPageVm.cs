@@ -24,13 +24,20 @@ public partial class LobbyPageVm(LobbyClient lobby, ConfigHandler config, INavig
     private ObservableCollection<Player> _players = [];
 
     [ObservableProperty]
-    public Guid? _roomOwnerId;
+    private Guid? _roomOwnerId;
+    
+    public bool UserIsRoomOwner => Equals(_roomOwnerId, currentUserId);
     
     private GameRoom? _room;
+    private Guid? currentUserId;
     
     public override async Task InitializeAsync()
     {
         await lobby.InitializeAsync();
+        
+        var user = await config.ReadAsync<UserConfig>();
+        currentUserId = user.UserId;
+        OnPropertyChanged(nameof(UserIsRoomOwner));
         
         lobby.SetupReceiveGameRoomInfo(async room =>
         {
@@ -40,10 +47,15 @@ public partial class LobbyPageVm(LobbyClient lobby, ConfigHandler config, INavig
                 RoomOwnerId = room.OwnerUserId;
                 RoomName = room.Name;
                 AccessCode = room.AccessCode;
+                OnPropertyChanged(nameof(UserIsRoomOwner));
 
                 foreach (var player in room.Players
                              .Where(player => !Players.Any(p => Equals(p.Id, player.Id))))
+                {
+                    if (_room.Settings.SeekerIds.Contains(player.Id))
+                        player.Type = PlayerType.Seeker;
                     Players.Add(player);
+                }
             });
 
             await config.WriteAsync(new RoomConfig()
@@ -62,17 +74,28 @@ public partial class LobbyPageVm(LobbyClient lobby, ConfigHandler config, INavig
             
             _room.Settings = settings;
 
-            foreach (var seekerId in settings.SeekerIds)
+            foreach (var player in _room.Players)
             {
-                var player = Players.FirstOrDefault(p => Equals(p.Id, seekerId));
-                if (player is null)
+                if (settings.SeekerIds.Contains(player.Id) &&
+                    player.Type != PlayerType.Seeker)
+                    UpdatePlayer(player, PlayerType.Seeker);
+
+                if (settings.SeekerIds.Contains(player.Id) ||
+                    player.Type == PlayerType.Hider) 
                     continue;
                 
-                player.Type = PlayerType.Seeker;
-                OnPropertyChanged(nameof(Players));
+                UpdatePlayer(player, PlayerType.Hider);
             }
             
             return Task.CompletedTask;
+
+            void UpdatePlayer(Player player, PlayerType newType)
+            {
+                player.Type = newType;
+                var index = Players.IndexOf(player);
+                Players.RemoveAt(index);
+                Players.Insert(index, player);
+            }
         });
         
         lobby.SetupReceivePlayerJoined(async player =>

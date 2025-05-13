@@ -1,7 +1,6 @@
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 using TagGame.Client.Services;
-using TagGame.Client;
 using TagGame.Shared.Domain.Players;
 
 namespace TagGame.Client.Ui.Components;
@@ -25,6 +24,11 @@ public partial class PlayerListItem : ContentView
         typeof(ICommand), 
         typeof(PlayerListItem));
 
+    public static BindableProperty CanEditProperty = BindableProperty.Create(
+        nameof(CanEdit),
+        typeof(bool),
+        typeof(PlayerListItem));
+    
     public PlayerListItem()
     {
         InitializeComponent();
@@ -51,6 +55,16 @@ public partial class PlayerListItem : ContentView
         set => SetValue(PlayerTypeChangedCommandProperty, value);
     }
 
+    public bool CanEdit
+    {
+        get => (bool)GetValue(CanEditProperty);
+        set
+        {
+            OpenPlayerTypeSelectCommand.CanExecute(value);
+            SetValue(CanEditProperty, value);
+        }
+    }
+    
     public string PlayerName => Player?.UserName ?? string.Empty;
     public string Playertype => Player?.Type.GetDescription() ?? string.Empty;
     public bool IsPlayerAdmin => Equals(Player?.UserId, AdminUserId);
@@ -59,7 +73,7 @@ public partial class PlayerListItem : ContentView
     [RelayCommand]
     public async Task OpenPlayerTypeSelect()
     {
-        if (Player == null) 
+        if (Player is null || !CanEdit) 
             return;
 
         var loc = ServiceHelper.GetRequiredService<Localization>();
@@ -75,8 +89,9 @@ public partial class PlayerListItem : ContentView
             "",
             FlowDirection.LeftToRight,
             values);
-        
-        var enumValue = Enum.Parse<PlayerType>(result);
+
+        if (!Enum.TryParse<PlayerType>(result, out var enumValue))
+            return;
         
         if (enumValue is PlayerType newType && newType != Player.Type)
         {
