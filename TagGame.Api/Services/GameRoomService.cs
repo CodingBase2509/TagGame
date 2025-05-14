@@ -85,10 +85,16 @@ public class GameRoomService(IDataAccess db)
 
     public async Task<bool> UpdateRoomOwnerAsync(Guid roomId, Player newOwner)
     {
+        var player = await db.Players
+            .GetByIdAsync(newOwner.Id, false);
+        if (player is null)
+            return false;
+        
         var room = await db.Rooms
-            .Include(r => r.Settings)
-            .Include(r => r.Players)
             .GetByIdAsync(roomId);
+        
+        if (room is null)
+            return false;
         
         room.OwnerUserId = newOwner.UserId;
         

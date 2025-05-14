@@ -221,6 +221,101 @@ public class GameRoomServiceTests : TestBase
 
     #endregion
 
+    [Fact]
+    public async Task UpdateRoomOwner_ShouldReturnTrue_WhenOwnerIsUpdated()
+    {
+        // Arrange
+        var room = _fixture.Create<GameRoom>();
+        var newOwnerPlayer = _fixture.Create<Player>();
+        
+        _dataAccessMock.Setup(db => db.Rooms.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<bool>()))
+            .ReturnsAsync(room);
+        
+        _dataAccessMock.Setup(db => db.Rooms.UpdateAsync(It.IsAny<GameRoom>()))
+            .ReturnsAsync(true);
+        
+        _dataAccessMock.Setup(db => db.Players.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<bool>()))
+            .ReturnsAsync(newOwnerPlayer);
+        
+        _dataAccessMock.Setup(db => db.SaveChangesAsync(default))
+            .ReturnsAsync(true);
+
+        // Act
+        var result = await _gameRoomService.UpdateRoomOwnerAsync(room.Id, newOwnerPlayer);
+
+        // Assert
+        result.Should().BeTrue();
+    }
+    
+    [Fact]
+    public async Task UpdateRoomOwner_ShouldReturnFalse_WhenOwnerDoesNotExist()
+    {
+        // Arrange
+        var room = _fixture.Create<GameRoom>();
+        var newOwnerPlayer = _fixture.Create<Player>();
+        
+        _dataAccessMock.Setup(db => db.Rooms.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<bool>()))
+            .ReturnsAsync(room);
+        
+        _dataAccessMock.Setup(db => db.Rooms.UpdateAsync(It.IsAny<GameRoom>()))
+            .ReturnsAsync(true);
+        
+        _dataAccessMock.Setup(db => db.Players.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<bool>()))
+            .ReturnsAsync((Player)null);
+
+        // Act
+        var result = await _gameRoomService.UpdateRoomOwnerAsync(room.Id, newOwnerPlayer);
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task UpdateRoomOwner_ShouldReturnFalse_WhenRoomDoesNotExist()
+    {
+        // Arrange
+        var room = _fixture.Create<GameRoom>();
+        var newOwnerPlayer = _fixture.Create<Player>();
+        
+        _dataAccessMock.Setup(db => db.Players.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<bool>()))
+            .ReturnsAsync(newOwnerPlayer);
+        
+        _dataAccessMock.Setup(db => db.Rooms.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<bool>()))
+            .ReturnsAsync((GameRoom)null);
+
+        // Act
+        var result = await _gameRoomService.UpdateRoomOwnerAsync(room.Id, newOwnerPlayer);
+
+        // Assert
+        result.Should().BeFalse();
+    }
+    
+    [Fact]
+    public async Task UpdateRoomOwner_ShouldReturnFalse_WhenOwnerIsNotUpdated()
+    {
+        // Arrange
+        var room = _fixture.Create<GameRoom>();
+        var newOwnerPlayer = _fixture.Create<Player>();
+        
+        _dataAccessMock.Setup(db => db.Rooms.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<bool>()))
+            .ReturnsAsync(room);
+        
+        _dataAccessMock.Setup(db => db.Rooms.UpdateAsync(It.IsAny<GameRoom>()))
+            .ReturnsAsync(false);
+        
+        _dataAccessMock.Setup(db => db.Players.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<bool>()))
+            .ReturnsAsync(newOwnerPlayer);
+        
+        _dataAccessMock.Setup(db => db.SaveChangesAsync(default))
+            .ReturnsAsync(true);
+
+        // Act
+        var result = await _gameRoomService.UpdateRoomOwnerAsync(room.Id, newOwnerPlayer);
+
+        // Assert
+        result.Should().BeFalse();
+    }
+    
     #region DeleteRoomAsync Tests
 
     [Fact]
