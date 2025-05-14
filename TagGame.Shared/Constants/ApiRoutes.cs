@@ -47,7 +47,7 @@ public static class ApiRoutes
     {
         static string Endpoint = "/lobby";
 
-        Task SendDisconnectInfo();
+        Task ReceiveDisconnectInfo();
         Task UpdateGameSettings(GameSettings settings);
         Task StartGame();
     }

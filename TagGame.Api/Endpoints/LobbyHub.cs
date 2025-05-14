@@ -113,7 +113,7 @@ public class LobbyHub(
         var deleteSuccess = await gameRooms.DeleteRoomAsync(gameRoom.Id);
     }
 
-    public async Task SendDisconnectInfo()
+    public async Task ReceiveDisconnectInfo()
     {
         var leftInfo = await players.CreatePlayerLeftGameAsync(Context.ConnectionId);
         if (leftInfo is null)

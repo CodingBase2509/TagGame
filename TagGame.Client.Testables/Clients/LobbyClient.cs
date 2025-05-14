@@ -80,7 +80,7 @@ public class LobbyClient(ConfigHandler config) : IAsyncDisposable
         if (_connection is null || _connection.State != HubConnectionState.Connected)
             return;
 
-        await _connection.InvokeAsync("SendDisconnectInfo");
+        await _connection.InvokeAsync(nameof(ApiRoutes.ILobbyHub.ReceiveDisconnectInfo));
     }
 
     // Setup / Receive Methods
