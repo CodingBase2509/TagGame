@@ -144,12 +144,15 @@ public class LobbyHub(
         if (!Equals(room.OwnerUserId, player.UserId))
             return true;
         
-        var nexPlayer = room.Players
+        var nextPlayer = room.Players
             .FirstOrDefault(p => !Equals(player.Id, p.Id));
         
-        var success = await gameRooms.UpdateRoomOwnerAsync(room.Id, nexPlayer);
+        if (nextPlayer is null)
+            return true;
+        
+        var success = await gameRooms.UpdateRoomOwnerAsync(room.Id, nextPlayer);
         if (success)
-            await Clients.Group(room.Id.ToString()).ReceiveNewRoomOwner(nexPlayer.UserId);
+            await Clients.Group(room.Id.ToString()).ReceiveNewRoomOwner(nextPlayer.UserId);
         
         return success;
     }

@@ -142,6 +142,7 @@ public partial class LobbyPageVm(LobbyClient lobby, ConfigHandler config, INavig
             {
                 _room.OwnerUserId = newOwnerUserId;
                 RoomOwnerId = newOwnerUserId;
+                OnPropertyChanged(nameof(UserIsRoomOwner));
             });
         });
 
