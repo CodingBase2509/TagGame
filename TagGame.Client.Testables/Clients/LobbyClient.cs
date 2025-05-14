@@ -66,7 +66,7 @@ public class LobbyClient(ConfigHandler config) : IAsyncDisposable
         try
         {
             await SendDisconnectInfoAsync();
-            await Task.Delay(TimeSpan.FromMilliseconds(500));
+            await Task.Delay(TimeSpan.FromMilliseconds(200));
             await _connection.StopAsync();
         }
         catch (Exception ex)
