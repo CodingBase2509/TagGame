@@ -11,7 +11,9 @@ public interface IHubConnection : IAsyncDisposable
     /// <inheritdoc cref="HubConnection.StopAsync"/>
     Task StopAsync();
     /// <inheritdoc cref="HubConnection.InvokeAsync"/>
-    Task InvokeAsync(string methodName, object? arg1 = null, CancellationToken cancellationToken = default);
+    Task InvokeAsync(string methodName, object? arg1, CancellationToken cancellationToken = default);
+    /// <inheritdoc cref="HubConnection.InvokeAsync"/>
+    Task InvokeAsync(string methodName, CancellationToken cancellationToken = default);
     /// <inheritdoc cref="HubConnection.On"/>
     IDisposable On<T1>(string methodName, Func<T1, Task> handler);
 }
@@ -21,9 +23,13 @@ public class HubConnectionWrapper(HubConnection inner) : IHubConnection
     public HubConnectionState State => inner.State;
     public Task StartAsync() => inner.StartAsync();
     public Task StopAsync() => inner.StopAsync();
-    public Task InvokeAsync(string methodName, object? arg1 = null, CancellationToken cancellationToken = default)
+    
+    public Task InvokeAsync(string methodName, object? arg1, CancellationToken cancellationToken = default)
         => inner.InvokeAsync(methodName, arg1, cancellationToken);
 
+    public Task InvokeAsync(string methodName, CancellationToken cancellationToken = default)
+        => inner.InvokeAsync(methodName, cancellationToken);
+    
     public IDisposable On<T1>(string methodName, Func<T1, Task> handler)
         => inner.On(methodName, handler);
 
