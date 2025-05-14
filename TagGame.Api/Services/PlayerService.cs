@@ -1,5 +1,7 @@
 using TagGame.Api.Persistence;
+using TagGame.Shared.Domain.Games;
 using TagGame.Shared.Domain.Players;
+using TagGame.Shared.DTOs.Games;
 
 namespace TagGame.Api.Services;
 
@@ -59,6 +61,45 @@ public class PlayerService(IDataAccess db)
             .FirstOrDefault();
         
         return Task.FromResult(player);
+    }
+
+    public async Task<PlayerLeftGameInfo?> CreatePlayerLeftGameAsync(string connectionId)
+    {
+        var player = db.Players
+            .Where(p => Equals(p.ConnectionId, connectionId))
+            .FirstOrDefault();
+
+        var playerLeftGameInfo = new PlayerLeftGameInfo()
+        {
+            Id = Guid.NewGuid(),
+            Player = player,
+            DisconnectType = PlayerDisconnectType.LeftGame,
+        };
+        
+        var success = await db.PlayerLeftInfo.AddAsync(playerLeftGameInfo);
+        success &= await db.SaveChangesAsync();
+        return success ? playerLeftGameInfo : null;
+    }
+
+    public async Task<PlayerLeftGameInfo?> GetPlayerLeftGame(Guid playerId)
+    {
+        var leftInfo = db.PlayerLeftInfo
+            .Where(i => Equals(i.Player.Id, playerId))
+            .FirstOrDefault();
+        
+        return leftInfo;
+    }
+
+    public async Task<bool> DeletePlayerLeftGameAsync(Guid playerLeftId)
+    {
+        var leftInfo = await db.PlayerLeftInfo
+            .GetByIdAsync(playerLeftId, false);
+        if (leftInfo is null)
+            return false;
+        
+        var result = await db.PlayerLeftInfo
+            .DeleteAsync(leftInfo);
+        return result;
     }
 
     public async Task<bool> UpdatePlayerAsync(Player player)

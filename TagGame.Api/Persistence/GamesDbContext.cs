@@ -7,6 +7,7 @@ using TagGame.Shared.Domain.Common;
 using TagGame.Shared.Domain.Games;
 using TagGame.Shared.Domain.Players;
 using TagGame.Shared.DTOs.Common;
+using TagGame.Shared.DTOs.Games;
 
 namespace TagGame.Api.Persistence;
 
@@ -19,6 +20,8 @@ public class GamesDbContext : DbContext
     internal DbSet<Player> Players { get; set; }
     
     internal DbSet<User> Users { get; set; }
+    
+    internal DbSet<PlayerLeftGameInfo> PlayLeftInfo { get; set; }
 
     public GamesDbContext(DbContextOptions<GamesDbContext> options)
         : base(options)
@@ -67,6 +70,11 @@ public class GamesDbContext : DbContext
                     v => JsonSerializer.Serialize(v, MappingOptions.JsonSerializerOptions),
                     v => JsonSerializer.Deserialize<ColorDTO>(v, MappingOptions.JsonSerializerOptions))
                 .HasColumnType("jsonb");
+        });
+
+        builder.Entity<PlayerLeftGameInfo>(entity =>
+        {
+            entity.HasOne(l => l.Player);
         });
 
         builder.Entity<User>(entity =>

@@ -136,6 +136,15 @@ public partial class LobbyPageVm(LobbyClient lobby, ConfigHandler config, INavig
             }
         });
 
+        lobby.SetupReceiveNewRoomOwner(async newOwnerUserId =>
+        {
+            await OnMainThreadAsync(() =>
+            {
+                _room.OwnerUserId = newOwnerUserId;
+                RoomOwnerId = newOwnerUserId;
+            });
+        });
+
         await lobby.ConnectAsync();
     }
 

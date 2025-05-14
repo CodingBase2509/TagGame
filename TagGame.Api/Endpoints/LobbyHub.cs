@@ -1,11 +1,11 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using TagGame.Api.Services;
 using TagGame.Api.Validation.GameRoom;
 using TagGame.Shared.Constants;
 using TagGame.Shared.Domain.Games;
+using TagGame.Shared.Domain.Players;
 using TagGame.Shared.DTOs.Games;
 
 namespace TagGame.Api.Endpoints;
@@ -76,29 +76,32 @@ public class LobbyHub(
         // remove connectionId from player
         player.ConnectionId = null;
 
-        var playerLeftInfo = new PlayerLeftGameInfo()
-        {
-            Player = player,
-        };
-        
+        var playerLeftInfo = await players.GetPlayerLeftGame(player.Id);
         // inform others, player left
-        if (exception is not null)
+        if (playerLeftInfo is null)
         {
-            playerLeftInfo.DisconnectType = PlayerDisconnectType.LeftWithReconnect;
+            playerLeftInfo = new PlayerLeftGameInfo()
+            {
+                Id = Guid.Empty,
+                DisconnectType = PlayerDisconnectType.LeftWithReconnect,
+                Player = player,
+            };
         }
         else
         {
             // update players on room
-            // TODO: impl updating room owner if owner leave
             var success = await players.RemovePlayerFromRoomAsync(player.Id, gameRoom.Id);
             if (success)
-                success &= await players.DeletePlayerAsync(player.Id);
-            
-            playerLeftInfo.DisconnectType = PlayerDisconnectType.LeftGame;
+                success &= await CheckRoomAdminAndUpdate(player, gameRoom);
+
+            if (success)
+            {
+                await players.DeletePlayerLeftGameAsync(playerLeftInfo.Id);
+                await players.DeletePlayerAsync(player.Id);
+            }
         }
         
-        await Clients.OthersInGroup(gameRoom.Id.ToString())
-            .ReceivePlayerLeft(playerLeftInfo);
+        await Clients.OthersInGroup(gameRoom.Id.ToString()).ReceivePlayerLeft(playerLeftInfo);
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, gameRoom.Id.ToString());
         
         // check if any player is connected to room
@@ -108,6 +111,15 @@ public class LobbyHub(
         
         // no player & game still in lobby: close game room
         var deleteSuccess = await gameRooms.DeleteRoomAsync(gameRoom.Id);
+    }
+
+    public async Task SendDisconnectInfo()
+    {
+        var leftInfo = await players.CreatePlayerLeftGameAsync(Context.ConnectionId);
+        if (leftInfo is null)
+            return;
+        
+        Console.WriteLine(leftInfo.Player.UserName);
     }
 
     public async Task UpdateGameSettings(GameSettings settings)
@@ -125,6 +137,21 @@ public class LobbyHub(
     public Task StartGame()
     {
         throw new NotImplementedException();
+    }
+
+    private async Task<bool> CheckRoomAdminAndUpdate(Player player, GameRoom room)
+    {
+        if (!Equals(room.OwnerUserId, player.UserId))
+            return true;
+        
+        var nexPlayer = room.Players
+            .FirstOrDefault(p => !Equals(player.Id, p.Id));
+        
+        var success = await gameRooms.UpdateRoomOwnerAsync(room.Id, nexPlayer);
+        if (success)
+            await Clients.Group(room.Id.ToString()).ReceiveNewRoomOwner(nexPlayer.UserId);
+        
+        return success;
     }
     
     private Guid GetUserId()

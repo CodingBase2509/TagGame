@@ -65,6 +65,8 @@ public class LobbyClient(ConfigHandler config) : IAsyncDisposable
         
         try
         {
+            await SendDisconnectInfoAsync();
+            await Task.Delay(TimeSpan.FromMilliseconds(500));
             await _connection.StopAsync();
         }
         catch (Exception ex)
@@ -72,7 +74,16 @@ public class LobbyClient(ConfigHandler config) : IAsyncDisposable
             Console.WriteLine(ex);
         }
     }
+    
+    private async Task SendDisconnectInfoAsync()
+    {
+        if (_connection is null || _connection.State != HubConnectionState.Connected)
+            return;
 
+        await _connection.InvokeAsync("SendDisconnectInfo");
+    }
+
+    // Setup / Receive Methods
     public void SetupReceiveGameRoomInfo(Func<GameRoom, Task> fn)
     {
         _connection?.On(nameof(ApiRoutes.ILobbyClient.ReceiveGameRoomInfo), fn);
@@ -93,11 +104,17 @@ public class LobbyClient(ConfigHandler config) : IAsyncDisposable
         _connection?.On(nameof(ApiRoutes.ILobbyClient.ReceiveGameSettingsUpdated), fn);
     }
 
+    public void SetupReceiveNewRoomOwner(Func<Guid, Task> fn)
+    {
+        _connection?.On(nameof(ApiRoutes.ILobbyClient.ReceiveNewRoomOwner), fn);
+    }
+    
     public void SetupStartGame(Func<int, Task> fn)
     {
         _connection?.On(nameof(ApiRoutes.ILobbyClient.StartCountdown), fn);
     }
 
+    // Send Methods
     public async Task UpdateGameSettingsAsync(GameSettings settings)
     {
         if (_connection is null || _connection.State != HubConnectionState.Connected)
