@@ -69,6 +69,9 @@ public class PlayerService(IDataAccess db)
             .Where(p => Equals(p.ConnectionId, connectionId))
             .FirstOrDefault();
 
+        if (player is null)
+            return null;
+        
         var playerLeftGameInfo = new PlayerLeftGameInfo()
         {
             Id = Guid.NewGuid(),
@@ -81,13 +84,13 @@ public class PlayerService(IDataAccess db)
         return success ? playerLeftGameInfo : null;
     }
 
-    public async Task<PlayerLeftGameInfo?> GetPlayerLeftGame(Guid playerId)
+    public Task<PlayerLeftGameInfo?> GetPlayerLeftGame(Guid playerId)
     {
         var leftInfo = db.PlayerLeftInfo
             .Where(i => Equals(i.Player.Id, playerId))
             .FirstOrDefault();
         
-        return leftInfo;
+        return Task.FromResult(leftInfo);
     }
 
     public async Task<bool> DeletePlayerLeftGameAsync(Guid playerLeftId)

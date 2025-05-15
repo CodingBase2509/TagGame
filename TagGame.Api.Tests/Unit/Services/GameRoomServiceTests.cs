@@ -221,6 +221,7 @@ public class GameRoomServiceTests : TestBase
 
     #endregion
 
+    #region UpdateRoomOwner Tests
     [Fact]
     public async Task UpdateRoomOwner_ShouldReturnTrue_WhenOwnerIsUpdated()
     {
@@ -315,6 +316,7 @@ public class GameRoomServiceTests : TestBase
         // Assert
         result.Should().BeFalse();
     }
+    #endregion
     
     #region DeleteRoomAsync Tests
 
