@@ -86,5 +86,17 @@ namespace TagGame.Client.Ui.LocalizationRessource {
                 return ResourceManager.GetString("open-game-title", resourceCulture);
             }
         }
+        
+        internal static string room_ingame {
+            get {
+                return ResourceManager.GetString("room-ingame", resourceCulture);
+            }
+        }
+        
+        internal static string attention {
+            get {
+                return ResourceManager.GetString("attention", resourceCulture);
+            }
+        }
     }
 }

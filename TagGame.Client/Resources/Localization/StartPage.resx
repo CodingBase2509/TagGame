@@ -39,4 +39,11 @@
     <data name="open-game-title" xml:space="preserve">
         <value>Open Game</value>
     </data>
+    <data name="room-ingame" xml:space="preserve">
+        <value>Your friends are currently playing. Please wait until the round is over.
+</value>
+    </data>
+    <data name="attention" xml:space="preserve">
+        <value>Attention</value>
+    </data>
 </root>
