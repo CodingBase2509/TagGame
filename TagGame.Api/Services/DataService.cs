@@ -4,6 +4,7 @@ using TagGame.Api.Persistence;
 using TagGame.Shared.Domain.Common;
 using TagGame.Shared.Domain.Games;
 using TagGame.Shared.Domain.Players;
+using TagGame.Shared.DTOs.Games;
 
 namespace TagGame.Api.Services;
 
@@ -13,6 +14,7 @@ public class DataService(GamesDbContext context) : IDataAccess
     public IDataSet<GameSettings> Settings => new DataService<GameSettings>(context.Settings);
     public IDataSet<Player> Players => new DataService<Player>(context.Players);
     public IDataSet<User> Users => new DataService<User>(context.Users);
+    public IDataSet<PlayerLeftGameInfo> PlayerLeftInfo => new DataService<PlayerLeftGameInfo>(context.PlayLeftInfo);
 
     public async Task<bool> SaveChangesAsync(CancellationToken cancellationToken = default)
     {

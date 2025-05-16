@@ -1,6 +1,7 @@
 using TagGame.Api.Persistence;
 using TagGame.Shared.Constants;
 using TagGame.Shared.Domain.Games;
+using TagGame.Shared.Domain.Players;
 
 namespace TagGame.Api.Services;
 
@@ -82,6 +83,28 @@ public class GameRoomService(IDataAccess db)
         return saveSuccess ? room : null;
     }
 
+    public async Task<bool> UpdateRoomOwnerAsync(Guid roomId, Player newOwner)
+    {
+        var player = await db.Players
+            .GetByIdAsync(newOwner.Id, false);
+        if (player is null)
+            return false;
+        
+        var room = await db.Rooms
+            .GetByIdAsync(roomId);
+        
+        if (room is null)
+            return false;
+        
+        room.OwnerUserId = newOwner.UserId;
+        
+        var success = await db.Rooms.UpdateAsync(room);
+        if (success)
+            success &= await db.SaveChangesAsync();
+        
+        return success;
+    }
+    
     public async Task<bool> DeleteRoomAsync(Guid roomId)
     {
         var room = await GetRoomAsync(roomId);

@@ -38,6 +38,7 @@ public static class ApiRoutes
         Task ReceivePlayerJoined(Player player);
         Task ReceivePlayerLeft(PlayerLeftGameInfo playerLeftInfo);
         Task ReceiveGameSettingsUpdated(GameSettings settings);
+        Task ReceiveNewRoomOwner(Guid ownerUserId);
         Task StartCountdown(int seconds);
     }
 
@@ -45,7 +46,8 @@ public static class ApiRoutes
     public interface ILobbyHub
     {
         static string Endpoint = "/lobby";
-        
+
+        Task ReceiveDisconnectInfo();
         Task UpdateGameSettings(GameSettings settings);
         Task StartGame();
     }

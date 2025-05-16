@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using TagGame.Api.Persistence;
 using TagGame.Api.Services;
+using TagGame.Shared;
+using TagGame.Shared.Domain.Common;
 using TagGame.Shared.Domain.Games;
 using TagGame.Shared.Domain.Players;
 using TagGame.Shared.DTOs.Common;
@@ -158,6 +160,8 @@ public class LobbyHubTests : TestBase, IClassFixture<WebApplicationFactory<Progr
         await connection2.StartAsync();
         await Task.Delay(1000);
 
+        await connection2.InvokeAsync("ReceiveDisconnectInfo");
+        await Task.Delay(500);
         await connection2.StopAsync();
 
         // wait on ReceivePlayerLeft (max. 4 seconds)
@@ -180,6 +184,8 @@ public class LobbyHubTests : TestBase, IClassFixture<WebApplicationFactory<Progr
         await connection.StartAsync();
         await Task.Delay(1000);
 
+        await connection.InvokeAsync("ReceiveDisconnectInfo");
+        await Task.Delay(500);
         await connection.StopAsync();
         await Task.Delay(1000);
 
@@ -232,13 +238,221 @@ public class LobbyHubTests : TestBase, IClassFixture<WebApplicationFactory<Progr
     }
 
 
-    [Fact(Skip = "Implementieren sobald UpdateGameSettings fertig")]
-    public async Task UpdateGameSettings_ShouldBroadcastSettings()
-    {
-    }
+[Fact]
+public async Task UpdateGameSettings_ShouldBroadcastSettings()
+{
+    // Arrange
+    var userId1 = await CreateEntities(true, true, true);
+    var connection1 = CreateHubConnection(userId1.ToString());
+    
+    var userId2 = await CreateEntities(true, false, true);
+    var connection2 = CreateHubConnection(userId2.ToString());
 
-    [Fact(Skip = "Implementieren sobald StartGame fertig")]
-    public async Task StartGame_ShouldBroadcastStart()
+    var tcs = new TaskCompletionSource<GameSettings>();
+    connection2.On<GameSettings>("ReceiveGameSettingsUpdated", settings => {
+        tcs.SetResult(settings);
+        return Task.CompletedTask;
+    });
+
+    await connection1.StartAsync();
+    await connection2.StartAsync();
+    await Task.Delay(1000);
+
+    using var scope = _factory.Services.CreateScope();
+    var data = scope.ServiceProvider.GetRequiredService<IDataAccess>();
+    var gameRoom = data.Rooms
+        .Include(r => r.Players)
+        .Where(r => r.Players.Count == 2)
+        .FirstOrDefault();
+    
+    // Act
+    var newSettings = new GameSettings
     {
-    }
+        Id = Guid.NewGuid(),
+        RoomId = gameRoom.Id,
+        HideTimeout = TimeSpan.FromMinutes(2),
+        IsPingEnabled = true,
+        PingInterval = TimeSpan.FromSeconds(30),
+        SeekerIds = [Guid.NewGuid()],
+        Area = new GameArea
+        {
+            Shape = GameAreaType.Rectangle,
+            Boundary = [],
+        }
+    };
+
+    await connection1.InvokeAsync("UpdateGameSettings", newSettings);
+
+    // Assert
+    var receivedSettings = await tcs.Task.WaitAsync(TimeSpan.FromSeconds(40));
+    receivedSettings.Should().NotBeNull();
+    receivedSettings.HideTimeout.Should().Be(newSettings.HideTimeout);
+    receivedSettings.IsPingEnabled.Should().Be(newSettings.IsPingEnabled);
+    receivedSettings.PingInterval.Should().Be(newSettings.PingInterval);
+
+    // Cleanup
+    await connection1.StopAsync();
+    await connection2.StopAsync();
+    await connection1.DisposeAsync();
+    await connection2.DisposeAsync();
+}
+
+[Fact]
+public async Task UpdateGameSettings_ShouldNotBroadcast_WhenValidationFails()
+{
+    // Arrange
+    var userId1 = await CreateEntities(true, true, true);
+    var connection1 = CreateHubConnection(userId1.ToString());
+
+    var userId2 = await CreateEntities(true, false, true);
+    var connection2 = CreateHubConnection(userId2.ToString());
+
+    var settingsReceived = false;
+    connection2.On<GameSettings>("ReceiveGameSettingsUpdated", _ =>
+    {
+        settingsReceived = true;
+        return Task.CompletedTask;
+    });
+
+    await connection1.StartAsync();
+    await connection2.StartAsync();
+    await Task.Delay(1000);
+
+    // Act
+    var invalidSettings = new GameSettings
+    {
+        Id = Guid.Empty, // Ungültige ID laut Validator
+        RoomId = Guid.Empty, // Ungültige RoomId laut Validator
+        HideTimeout = TimeSpan.Zero, // Ungültig laut Validator
+        IsPingEnabled = true,
+        PingInterval = TimeSpan.Zero // Ungültig wenn IsPingEnabled = true
+    };
+
+    await connection1.InvokeAsync("UpdateGameSettings", invalidSettings);
+    await Task.Delay(1000);
+
+    // Assert
+    settingsReceived.Should().BeFalse();
+
+    // Cleanup
+    await connection1.StopAsync();
+    await connection2.StopAsync();
+    await connection1.DisposeAsync();
+    await connection2.DisposeAsync();
+}
+
+[Fact]
+public async Task UpdateGameSettings_ShouldUpdateDatabase()
+{
+    // Arrange
+    var userId = await CreateEntities(true, true, true);
+    var connection = CreateHubConnection(userId.ToString());
+    await connection.StartAsync();
+    await Task.Delay(1000);
+
+    var scope = _factory.Services.CreateScope();
+    var rS = scope.ServiceProvider.GetRequiredService<GameRoomService>();
+    var player = await scope.ServiceProvider
+        .GetRequiredService<PlayerService>()
+        .GetPlayerByUserId(userId);
+    var originalRoom = await rS.GetRoomFromPlayerAsync(player?.Id ?? Guid.Empty);
+
+    // Act
+    var newSettings = new GameSettings
+    {
+        Id = originalRoom!.Settings.Id,
+        RoomId = originalRoom.Id,
+        HideTimeout = TimeSpan.FromMinutes(5),
+        IsPingEnabled = true,
+        PingInterval = TimeSpan.FromSeconds(45),
+        Area = new GameArea
+        {
+            Shape = GameAreaType.Rectangle,
+            Boundary = [],
+        }
+    };
+
+    await connection.InvokeAsync("UpdateGameSettings", newSettings);
+    await Task.Delay(1000);
+
+    // Assert
+    var updatedRoom = await rS.GetRoomAsync(originalRoom.Id);
+    updatedRoom.Should().NotBeNull();
+    updatedRoom!.Settings.HideTimeout.Should().Be(newSettings.HideTimeout);
+    updatedRoom.Settings.IsPingEnabled.Should().Be(newSettings.IsPingEnabled);
+    updatedRoom.Settings.PingInterval.Should().Be(newSettings.PingInterval);
+
+    // Cleanup
+    await connection.StopAsync();
+    await connection.DisposeAsync();
+}
+
+[Fact]
+public async Task UpdateGameSettings_CallerShouldNotReceiveUpdate()
+{
+    // Arrange
+    var userId = await CreateEntities(true, true, true);
+    var connection = CreateHubConnection(userId.ToString());
+
+    var updateReceived = false;
+    connection.On<GameSettings>("ReceiveGameSettingsUpdated", _ =>
+    {
+        updateReceived = true;
+        return Task.CompletedTask;
+    });
+
+    await connection.StartAsync();
+    await Task.Delay(1000);
+
+    // Act
+    var scope = _factory.Services.CreateScope();
+    var rS = scope.ServiceProvider.GetRequiredService<GameRoomService>();
+    var player = await scope.ServiceProvider
+        .GetRequiredService<PlayerService>()
+        .GetPlayerByUserId(userId);
+    var room = await rS.GetRoomFromPlayerAsync(player?.Id ?? Guid.Empty);
+
+    var newSettings = new GameSettings
+    {
+        Id = room!.Settings.Id,
+        RoomId = room.Id,
+        HideTimeout = TimeSpan.FromMinutes(3),
+        IsPingEnabled = true,
+        PingInterval = TimeSpan.FromSeconds(30),
+        Area = new GameArea
+        {
+            Shape = GameAreaType.Rectangle,
+            Boundary = [],
+        }
+    };
+
+    await connection.InvokeAsync("UpdateGameSettings", newSettings);
+    await Task.Delay(1000);
+
+    // Assert
+    updateReceived.Should().BeFalse();
+
+    // Cleanup
+    await connection.StopAsync();
+    await connection.DisposeAsync();
+}
+
+[Fact(Skip = "")]
+public async Task StartGame_ShouldThrowNotImplementedException()
+{
+    // Arrange
+    var userId = await CreateEntities(true, true, true);
+    var connection = CreateHubConnection(userId.ToString());
+    await connection.StartAsync();
+    await Task.Delay(1000);
+
+    // Act
+    Func<Task> act = async () => await connection.InvokeAsync("StartGame");
+    
+    act.Should().ThrowAsync<NotImplementedException>();
+
+    // Cleanup
+    await connection.StopAsync();
+    await connection.DisposeAsync();
+}
 }
