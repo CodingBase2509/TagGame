@@ -27,4 +27,16 @@
     <data name="greeting" xml:space="preserve">
         <value>Hello</value>
     </data>
+    <data name="open-game-text" xml:space="preserve">
+        <value>The last game you participated in seems to still be running. Would you like to rejoin?</value>
+    </data>
+    <data name="yes" xml:space="preserve">
+        <value>Yes</value>
+    </data>
+    <data name="no" xml:space="preserve">
+        <value>No</value>
+    </data>
+    <data name="open-game-title" xml:space="preserve">
+        <value>Open Game</value>
+    </data>
 </root>
