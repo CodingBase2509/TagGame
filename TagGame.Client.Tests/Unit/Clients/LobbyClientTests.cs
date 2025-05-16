@@ -1,3 +1,4 @@
+using System.Reflection;
 using Microsoft.AspNetCore.SignalR.Client;
 using TagGame.Client.Clients;
 using TagGame.Client.Services;
@@ -43,29 +44,6 @@ public class LobbyClientTests : TestBase
     }
 
     [Fact]
-    public async Task UpdateGameSettingsAsync_ShouldNotInvoke_WhenConnectionIsNull()
-    {
-        // Arrange
-        var settings = _fixture.Create<GameSettings>();
-
-        // Act
-        Func<Task> act = async () => await _sut.UpdateGameSettingsAsync(settings);
-
-        // Assert
-        await act.Should().NotThrowAsync();  // Method is safe to call even without connection
-    }
-
-    [Fact]
-    public async Task StartGameAsync_ShouldNotInvoke_WhenConnectionIsNull()
-    {
-        // Act
-        Func<Task> act = async () => await _sut.StartGameAsync();
-
-        // Assert
-        await act.Should().NotThrowAsync();
-    }
-
-    [Fact]
     public async Task DisposeAsync_ShouldNotThrow_WhenConnectionIsNull()
     {
         // Act
@@ -76,7 +54,100 @@ public class LobbyClientTests : TestBase
     }
 
     // Erweiterte Tests mit gemocktem HubConnection
+    [Fact]
+    public async Task ConnectAsync_ShouldNotThrow_WhenConnectionIsNull()
+    {
+        // Act
+        Func<Task> act = async () => await _sut.ConnectAsync();
 
+        // Assert
+        await act.Should().NotThrowAsync();
+    }
+
+    [Fact]
+    public async Task ConnectAsync_ShouldStartConnection_WhenConnectionExists()
+    {
+        // Arrange
+        var connectionMock = new Mock<IHubConnection>();
+        typeof(LobbyClient).GetField("_connection", BindingFlags.NonPublic | BindingFlags.Instance)!
+            .SetValue(_sut, connectionMock.Object);
+
+        // Act
+        await _sut.ConnectAsync();
+
+        // Assert
+        connectionMock.Verify(c => c.StartAsync(), Times.Once);
+    }
+
+    [Fact]
+    public async Task DisconnectAsync_ShouldNotThrow_WhenConnectionIsNull()
+    {
+        // Act
+        Func<Task> act = async () => await _sut.DisconnectAsync();
+
+        // Assert
+        await act.Should().NotThrowAsync();
+    }
+
+    [Fact]
+    public async Task DisconnectAsync_ShouldNotInvoke_WhenStateIsNotConnected()
+    {
+        // Arrange
+        var connectionMock = new Mock<IHubConnection>();
+        connectionMock.Setup(c => c.State).Returns(HubConnectionState.Disconnected);
+        typeof(LobbyClient).GetField("_connection", BindingFlags.NonPublic | BindingFlags.Instance)!
+            .SetValue(_sut, connectionMock.Object);
+
+        // Act
+        await _sut.DisconnectAsync();
+
+        // Assert
+        connectionMock.Verify(c => c.InvokeAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+        connectionMock.Verify(c => c.StopAsync(), Times.Never);
+    }
+
+    [Fact]
+    public async Task DisconnectAsync_ShouldSendDisconnectInfoAndStop_WhenConnected()
+    {
+        // Arrange
+        var connectionMock = new Mock<IHubConnection>();
+        connectionMock.Setup(c => c.State).Returns(HubConnectionState.Connected);
+        typeof(LobbyClient).GetField("_connection", BindingFlags.NonPublic | BindingFlags.Instance)!
+            .SetValue(_sut, connectionMock.Object);
+
+        // Act
+        await _sut.DisconnectAsync();
+
+        // Assert
+        connectionMock.Verify(
+            c => c.InvokeAsync(nameof(ApiRoutes.ILobbyHub.ReceiveDisconnectInfo), It.IsAny<CancellationToken>()),
+            Times.Once);
+
+        connectionMock.Verify(c => c.StopAsync(), Times.Once);
+    }
+    
+    [Fact]
+    public void SetupReceiveNewRoomOwner_ShouldSetupHandler_WhenConnected()
+    {
+        // Arrange
+        var connectionMock = new Mock<IHubConnection>();
+        typeof(LobbyClient).GetField("_connection", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+            ?.SetValue(_sut, connectionMock.Object);
+        Func<Guid, Task> handler = _ => Task.CompletedTask;
+
+        // Act
+        _sut.SetupReceiveNewRoomOwner(handler);
+
+        // Assert
+        connectionMock.Verify(
+            c => c.On(
+                nameof(ApiRoutes.ILobbyClient.ReceiveNewRoomOwner),
+                It.Is<Func<Guid, Task>>(f => f == handler)
+            ),
+            Times.Once
+        );
+    }
+    
     [Fact]
     public async Task UpdateGameSettingsAsync_ShouldInvokeHub_WhenConnected()
     {
@@ -94,7 +165,20 @@ public class LobbyClientTests : TestBase
         // Assert
         connectionMock.Verify(c => c.InvokeAsync(nameof(ApiRoutes.ILobbyHub.UpdateGameSettings), settings, It.IsAny<CancellationToken>()), Times.Once);
     }
+    
+    [Fact]
+    public async Task UpdateGameSettingsAsync_ShouldNotInvoke_WhenConnectionIsNull()
+    {
+        // Arrange
+        var settings = _fixture.Create<GameSettings>();
 
+        // Act
+        Func<Task> act = async () => await _sut.UpdateGameSettingsAsync(settings);
+
+        // Assert
+        await act.Should().NotThrowAsync();  // Method is safe to call even without connection
+    }
+    
     [Fact]
     public async Task StartGameAsync_ShouldInvokeHub_WhenConnected()
     {
@@ -109,6 +193,16 @@ public class LobbyClientTests : TestBase
         await _sut.StartGameAsync();
 
         // Assert
-        connectionMock.Verify(c => c.InvokeAsync(nameof(ApiRoutes.ILobbyHub.StartGame), It.IsAny<object[]>(), It.IsAny<CancellationToken>()), Times.Once);
+        connectionMock.Verify(c => c.InvokeAsync(nameof(ApiRoutes.ILobbyHub.StartGame), It.IsAny<CancellationToken>()), Times.Once);
+    }
+    
+    [Fact]
+    public async Task StartGameAsync_ShouldNotInvoke_WhenConnectionIsNull()
+    {
+        // Act
+        Func<Task> act = async () => await _sut.StartGameAsync();
+
+        // Assert
+        await act.Should().NotThrowAsync();
     }
 }
