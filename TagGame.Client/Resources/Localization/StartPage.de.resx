@@ -27,4 +27,22 @@
     <data name="greeting" xml:space="preserve">
         <value>Hallo</value>
     </data>
+    <data name="open-game-text" xml:space="preserve">
+        <value>Das letzte Spiel an dem du teilgenommen hast, scheint noch zu laufen. Möchtest du wieder beitreten?</value>
+    </data>
+    <data name="yes" xml:space="preserve">
+        <value>Ja</value>
+    </data>
+    <data name="no" xml:space="preserve">
+        <value>Nein</value>
+    </data>
+    <data name="open-game-title" xml:space="preserve">
+        <value>Offenes Spiel</value>
+    </data>
+    <data name="room-ingame" xml:space="preserve">
+        <value>Deine Freunde sind gerade am spielen. Warte bis die Runde zu Ende ist.</value>
+    </data>
+    <data name="attention" xml:space="preserve">
+        <value>Achtung</value>
+    </data>
 </root>
