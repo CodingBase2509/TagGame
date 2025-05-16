@@ -30,6 +30,12 @@ public class ConfigHandlerTests : TestBase, IAsyncLifetime
         public int RetryCount { get; set; } = 3;
     }
     
+    public Task DisposeAsync()
+    { 
+        Directory.Delete(_configDir, true);
+        return Task.CompletedTask;
+    }
+    
     public Task InitializeAsync()
     {
         _encryptionMock.Setup(e => e.WithStorageKey(It.IsAny<string>())).Returns(_encryptionMock.Object);
@@ -41,12 +47,6 @@ public class ConfigHandlerTests : TestBase, IAsyncLifetime
                 return MappingOptions.JsonSerializerOptions;
             });
         _configHandler = new ConfigHandler(_encryptionMock.Object, _secureStorageMock.Object, jsonOptions.Object, _configDir);
-        return Task.CompletedTask;
-    }
-
-    public Task DisposeAsync()
-    { 
-        Directory.Delete(_configDir, true);
         return Task.CompletedTask;
     }
 
@@ -137,6 +137,56 @@ public class ConfigHandlerTests : TestBase, IAsyncLifetime
         
         // Assert
         result.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task Exists_ShouldReturnTrue_WhenConfigIsCachedAndFileExists()
+    {
+        // Arrange
+        var cfg = new DummyConfig { Username = "cachedUser", RetryCount = 7 };
+        _encryptionMock.Setup(e => e.EncryptAsync(It.IsAny<string>())).ReturnsAsync("encrypted_content");
+
+        // Write-Aufruf legt die Datei an UND cached die Instanz
+        await _configHandler.WriteAsync(cfg);
+
+        // Act
+        var result = _configHandler.Exists<DummyConfig>();
+
+        // Assert
+        result.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task Exists_ShouldReturnFalse_WhenFileIsMissing()
+    {
+        // Arrange – zuerst in Cache & Datei schreiben
+        var cfg = new DummyConfig { Username = "user", RetryCount = 1 };
+        _encryptionMock.Setup(e => e.EncryptAsync(It.IsAny<string>())).ReturnsAsync("encrypted_content");
+        await _configHandler.WriteAsync(cfg);
+
+        // Datei anschließend entfernen
+        var path = Path.Combine(_configDir, nameof(DummyConfig) + ".enc");
+        File.Delete(path);
+
+        // Act
+        var result = _configHandler.Exists<DummyConfig>();
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Exists_ShouldReturnFalse_WhenNotCachedButFileExists()
+    {
+        // Arrange – Datei manuell anlegen, ohne etwas zu cachen
+        var path = Path.Combine(_configDir, nameof(DummyConfig) + ".enc");
+        File.WriteAllText(path, "placeholder");
+        
+        // Act
+        var result = _configHandler.Exists<DummyConfig>();
+
+        // Assert
+        result.Should().BeFalse();
     }
     
     [Fact]
