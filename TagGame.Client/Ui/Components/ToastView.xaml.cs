@@ -16,6 +16,7 @@ public partial class ToastView : ContentView
     {
         this.AbortAnimation(ProgressAnimationName);
         
+        // TODO: Add Localization for toast messages
         ToastMessage.Text = message;
         ToastIcon.Source = ImageSource.FromFile(type switch
         {

@@ -41,7 +41,7 @@ public class RestClient(ConfigHandler configHandler, IOptions<JsonSerializerOpti
         }
         catch (Exception ex)
         {
-            return (Response<CreateGameRoom.CreateGameRoomResponse>) new Error(400, $"Error on sending request");
+            return (Response<CreateGameRoom.CreateGameRoomResponse>) new Error(400, $"error-sending-request");
         }
     }
 
@@ -61,7 +61,7 @@ public class RestClient(ConfigHandler configHandler, IOptions<JsonSerializerOpti
         }
         catch (Exception ex)
         {
-            return (Response<JoinGameRoom.JoinGameRoomResponse>) new Error(400, "Error on sending request");
+            return (Response<JoinGameRoom.JoinGameRoomResponse>) new Error(400, "error-sending-request");
         }
     }
 
@@ -80,7 +80,7 @@ public class RestClient(ConfigHandler configHandler, IOptions<JsonSerializerOpti
         }
         catch (Exception ex)
         {
-            return (Response<GameRoom>) new Error(400, "Error on sending request");
+            return (Response<GameRoom>) new Error(400, "error-sending-request");
         }
     }
 
@@ -99,7 +99,7 @@ public class RestClient(ConfigHandler configHandler, IOptions<JsonSerializerOpti
         }
         catch (Exception ex)
         {
-            return (Response<User>) new Error(400, "Error on sending request");
+            return (Response<User>) new Error(400, "error-sending-request");
         }
     }
 

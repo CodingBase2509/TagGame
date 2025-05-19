@@ -3,10 +3,15 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.Maui.Graphics;
 using TagGame.Client.Clients;
 using TagGame.Client.Services;
+using TagGame.Client.Ui.ToastMessages;
 
 namespace TagGame.Client.Ui.ViewModels;
 
-public partial class InitPageViewModel(ConfigHandler config, RestClient api, INavigation nav) : ViewModelBase
+public partial class InitPageViewModel(
+    ConfigHandler config, 
+    RestClient api, 
+    INavigation nav,
+    IToastService toast) : ViewModelBase
 {
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsConfirmEnabled))]
@@ -50,7 +55,8 @@ public partial class InitPageViewModel(ConfigHandler config, RestClient api, INa
         var success = await SetupUserAsync();
         if (!success)
         {
-            // show error
+            await OnMainThreadAsync(async () =>
+                await toast.ShowErrorAsync("failed-create-user"));
             return;
         }
         
