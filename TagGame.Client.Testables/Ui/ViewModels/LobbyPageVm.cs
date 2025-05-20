@@ -92,8 +92,7 @@ public partial class LobbyPageVm(
                 UpdatePlayer(player, PlayerType.Hider);
             }
 
-            await OnMainThreadAsync(async () =>
-                await toast.ShowMessageAsync("update-settings"));
+            await toast.ShowMessageAsync("update-settings");
             return;
 
             void UpdatePlayer(Player player, PlayerType newType)
@@ -110,12 +109,13 @@ public partial class LobbyPageVm(
             if (_room is null)
                 return;
 
-            await OnMainThreadAsync(async () =>
+            await OnMainThreadAsync(() =>
             {
                 Players.Add(player);
                 _room.Players.Add(player);
-                await toast.ShowMessageAsync("player-joined");
             });
+            
+            await toast.ShowMessageAsync("player-joined");
         });
         
         lobby.SetupReceivePlayerLeft(async info =>
@@ -129,32 +129,33 @@ public partial class LobbyPageVm(
                 default:
                     return;
                 case PlayerDisconnectType.LeftGame:
-                    await OnMainThreadAsync(async () =>
+                    await OnMainThreadAsync(() =>
                     {
                         Players.Remove(player);
                         _room.Players.Remove(player);
-                        await toast.ShowMessageAsync("player-left");
                     });
                     break;
                 case PlayerDisconnectType.LeftWithReconnect:
-                    await OnMainThreadAsync(async () =>
+                    await OnMainThreadAsync(() =>
                     {
                         player.ConnectionId = info.Player.ConnectionId;
-                        await toast.ShowMessageAsync("player-left");
                     });
                     break;
             }
+            
+            await toast.ShowMessageAsync("player-left");
         });
 
         lobby.SetupReceiveNewRoomOwner(async newOwnerUserId =>
         {
-            await OnMainThreadAsync(async () =>
+            await OnMainThreadAsync(() =>
             {
                 _room.OwnerUserId = newOwnerUserId;
                 RoomOwnerId = newOwnerUserId;
                 OnPropertyChanged(nameof(UserIsRoomOwner));
-                await toast.ShowMessageAsync("roomowner-changed");
             });
+            
+            await toast.ShowMessageAsync("roomowner-changed");
         });
 
         await lobby.ConnectAsync();

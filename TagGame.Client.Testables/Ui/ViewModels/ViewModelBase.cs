@@ -19,10 +19,10 @@ public abstract partial class ViewModelBase : ObservableObject
         return Task.CompletedTask;
     }
 
-    protected async Task OnMainThreadAsync(Action action)
+    protected static async Task OnMainThreadAsync(Action action, bool force = false)
     {
         var disp = Dispatcher.GetForCurrentThread();
-        if (disp is not null && disp.IsDispatchRequired)
+        if (force || (disp is not null && disp.IsDispatchRequired))
         {
             await disp.DispatchAsync(action);
         }
@@ -32,10 +32,10 @@ public abstract partial class ViewModelBase : ObservableObject
         }
     }
 
-    protected async Task OnMainThreadAsync(Func<Task> action)
+    protected static async Task OnMainThreadAsync(Func<Task> action, bool force = false)
     {
         var disp = Dispatcher.GetForCurrentThread();
-        if (disp is not null && disp.IsDispatchRequired)
+        if (force || (disp is not null && disp.IsDispatchRequired))
         {
             await disp.DispatchAsync(async () => await action());
         }
