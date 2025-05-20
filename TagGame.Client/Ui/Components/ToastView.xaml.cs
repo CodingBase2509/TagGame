@@ -33,6 +33,7 @@ public partial class ToastView : ContentView
         };
         
         ProgressLine.BackgroundColor = toastColor;
+        ToastIcon.Behaviors.Clear();
         ToastIcon.Behaviors.Add(new IconTintColorBehavior()
         {
             TintColor = toastColor 

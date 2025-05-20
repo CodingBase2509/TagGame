@@ -4,7 +4,7 @@ using TagGame.Client.Ui.ToastMessages;
 
 namespace TagGame.Client.Ui;
 
-public class ToastService : IToastService
+public class ToastService(IDispatcher dispatcher) : IToastService
 {
     private ToastView? _toastView;
 
@@ -30,6 +30,16 @@ public class ToastService : IToastService
 
     public async Task ShowAsync(ToastType type, string message, int duration = 3000)
     {
-        await _toastView.Show(message, type, duration);
+        try
+        {
+            if (_toastView is null)
+                return;
+            
+            await dispatcher.DispatchAsync(async () => await _toastView.Show(message, type, duration));
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
     }
 }
