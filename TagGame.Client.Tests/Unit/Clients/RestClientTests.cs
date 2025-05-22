@@ -88,7 +88,7 @@ public class RestClientTests : TestBase
         // Assert
         result.Should().NotBeNull();
         result.Error.Should().NotBeNull();
-        result.Error.Message.Should().Be("Error on sending request");
+        result.Error.Message.Should().Be("error-sending-request");
     }
 
     [Fact]
@@ -119,7 +119,7 @@ public class RestClientTests : TestBase
         // Assert
         result.Should().NotBeNull();
         result.Error.Should().NotBeNull();
-        result.Error.Message.Should().Be("Error on sending request");
+        result.Error.Message.Should().Be("error-sending-request");
     }
 
     [Fact]
@@ -150,7 +150,7 @@ public class RestClientTests : TestBase
         // Assert
         result.Should().NotBeNull();
         result.Error.Should().NotBeNull();
-        result.Error.Message.Should().Be("Error on sending request");
+        result.Error.Message.Should().Be("error-sending-request");
     }
 
     [Fact]
@@ -181,7 +181,7 @@ public class RestClientTests : TestBase
         // Assert
         result.Should().NotBeNull();
         result.Error.Should().NotBeNull();
-        result.Error.Message.Should().Be("Error on sending request");
+        result.Error.Message.Should().Be("error-sending-request");
     }
 
     private Guid InitClient()
