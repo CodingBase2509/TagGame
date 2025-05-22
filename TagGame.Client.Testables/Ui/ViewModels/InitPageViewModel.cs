@@ -55,8 +55,7 @@ public partial class InitPageViewModel(
         var success = await SetupUserAsync();
         if (!success)
         {
-            await OnMainThreadAsync(async () =>
-                await toast.ShowErrorAsync("failed-create-user"));
+            await toast.ShowErrorAsync("failed-create-user");
             return;
         }
         

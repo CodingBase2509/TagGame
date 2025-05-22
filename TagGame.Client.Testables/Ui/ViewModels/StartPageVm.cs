@@ -107,8 +107,7 @@ public partial class StartPageVm(
         var response = await api.CreateRoomAsync(request);
         if (!response.IsSuccess || response.Value is null)
         {
-            await OnMainThreadAsync(async () =>
-                await toast.ShowErrorAsync(response.Error.Message));
+            await toast.ShowErrorAsync(response.Error.Message);
             return;
         }
         
@@ -133,8 +132,7 @@ public partial class StartPageVm(
         var response = await api.JoinRoomAsync(request);
         if (!response.IsSuccess || response.Value is null)
         {
-            await OnMainThreadAsync(async () =>
-                await toast.ShowErrorAsync(response.Error.Message));
+            await toast.ShowErrorAsync(response.Error.Message);
             return;
         }
 

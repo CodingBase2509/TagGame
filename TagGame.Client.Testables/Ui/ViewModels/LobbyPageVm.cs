@@ -217,6 +217,6 @@ public partial class LobbyPageVm(
     [RelayCommand]
     private async Task CopyElement(string text)
     {
-        await OnMainThreadAsync(async () => await Clipboard.Default.SetTextAsync(text));
+        await OnMainThreadAsync(async () => await Clipboard.Default.SetTextAsync(text), force: true);
     }
 }
