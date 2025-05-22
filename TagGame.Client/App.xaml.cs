@@ -1,20 +1,21 @@
-﻿using Microsoft.Maui;
-using Microsoft.Maui.Controls;
+﻿using TagGame.Client.Ui.ToastMessages;
 using Application = Microsoft.Maui.Controls.Application;
 
 namespace TagGame.Client;
 
 public partial class App : Application
 {
-	public App()
+	private readonly IToastService _toast;
+	
+	public App(IToastService toast)
 	{
 		InitializeComponent();
-		// MainPage = new AppShell();
+		_toast = toast;
 	}
 
 	protected override Window CreateWindow(IActivationState? activationState)
 	{
-		return new Window(new AppShell());
+		return new Window(new AppShell(_toast));
 	}
 }
 

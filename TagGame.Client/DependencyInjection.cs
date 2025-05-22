@@ -10,6 +10,7 @@ using TagGame.Client.Common;
 using TagGame.Client.Services;
 using TagGame.Client.Ui;
 using TagGame.Client.Ui.Extensions;
+using TagGame.Client.Ui.ToastMessages;
 using TagGame.Client.Ui.ViewModels;
 using TagGame.Client.Ui.Views;
 using TagGame.Shared.Constants;
@@ -34,6 +35,7 @@ public static class DependencyInjection
 
     public static void AddServices(this IServiceCollection services)
     {
+        services.AddSingleton<IToastService, ToastService>();
         services.AddSingleton<INavigation, Navigation>();
         services.AddSingleton<ISecureStorage>(_ => SecureStorage.Default);
         

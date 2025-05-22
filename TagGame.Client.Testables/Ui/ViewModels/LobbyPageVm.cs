@@ -5,6 +5,7 @@ using Microsoft.Maui.ApplicationModel.DataTransfer;
 using Microsoft.Maui.Controls;
 using TagGame.Client.Clients;
 using TagGame.Client.Services;
+using TagGame.Client.Ui.ToastMessages;
 using TagGame.Shared.Domain.Games;
 using TagGame.Shared.Domain.Players;
 
@@ -12,7 +13,11 @@ namespace TagGame.Client.Ui.ViewModels;
 
 [QueryProperty(nameof(RoomName), "roomName")]
 [QueryProperty(nameof(AccessCode), "accessCode")]
-public partial class LobbyPageVm(LobbyClient lobby, ConfigHandler config, INavigation nav) : ViewModelBase
+public partial class LobbyPageVm(
+    LobbyClient lobby, 
+    ConfigHandler config, 
+    INavigation nav,
+    IToastService toast) : ViewModelBase
 {
     [ObservableProperty]
     private string _roomName = string.Empty;
@@ -67,10 +72,10 @@ public partial class LobbyPageVm(LobbyClient lobby, ConfigHandler config, INavig
             });
         });
         
-        lobby.SetupReceiveGameSettingsUpdated(settings =>
+        lobby.SetupReceiveGameSettingsUpdated(async settings =>
         {
             if (_room is null)
-                return Task.CompletedTask; 
+                return; 
             
             _room.Settings = settings;
 
@@ -86,8 +91,9 @@ public partial class LobbyPageVm(LobbyClient lobby, ConfigHandler config, INavig
                 
                 UpdatePlayer(player, PlayerType.Hider);
             }
-            
-            return Task.CompletedTask;
+
+            await toast.ShowMessageAsync("update-settings");
+            return;
 
             void UpdatePlayer(Player player, PlayerType newType)
             {
@@ -108,6 +114,8 @@ public partial class LobbyPageVm(LobbyClient lobby, ConfigHandler config, INavig
                 Players.Add(player);
                 _room.Players.Add(player);
             });
+            
+            await toast.ShowMessageAsync("player-joined");
         });
         
         lobby.SetupReceivePlayerLeft(async info =>
@@ -134,6 +142,8 @@ public partial class LobbyPageVm(LobbyClient lobby, ConfigHandler config, INavig
                     });
                     break;
             }
+            
+            await toast.ShowMessageAsync("player-left");
         });
 
         lobby.SetupReceiveNewRoomOwner(async newOwnerUserId =>
@@ -144,6 +154,8 @@ public partial class LobbyPageVm(LobbyClient lobby, ConfigHandler config, INavig
                 RoomOwnerId = newOwnerUserId;
                 OnPropertyChanged(nameof(UserIsRoomOwner));
             });
+            
+            await toast.ShowMessageAsync("roomowner-changed");
         });
 
         await lobby.ConnectAsync();
@@ -183,11 +195,13 @@ public partial class LobbyPageVm(LobbyClient lobby, ConfigHandler config, INavig
                 if (!seekerIds.Contains(player.Id))
                     return;
                 seekerIds.Remove(player.Id);
+                await toast.ShowSuccessAsync("player-updated");
                 break;
             case PlayerType.Seeker:
                 if (seekerIds.Contains(player.Id))
                     return;
                 seekerIds.Add(player.Id);
+                await toast.ShowSuccessAsync("player-updated");
                 break;
             default:
                 return;
@@ -205,6 +219,6 @@ public partial class LobbyPageVm(LobbyClient lobby, ConfigHandler config, INavig
     [RelayCommand]
     private async Task CopyElement(string text)
     {
-        await OnMainThreadAsync(async () => await Clipboard.Default.SetTextAsync(text));
+        await OnMainThreadAsync(async () => await Clipboard.Default.SetTextAsync(text), force: true);
     }
 }

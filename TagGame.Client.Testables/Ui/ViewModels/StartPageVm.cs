@@ -3,12 +3,18 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.Maui.Controls;
 using TagGame.Client.Clients;
 using TagGame.Client.Services;
+using TagGame.Client.Ui.ToastMessages;
 using TagGame.Shared.Domain.Games;
 using TagGame.Shared.DTOs.Games;
 
 namespace TagGame.Client.Ui.ViewModels;
 
-public partial class StartPageVm(RestClient api, ConfigHandler config, Localization loc, INavigation nav) : ViewModelBase
+public partial class StartPageVm(
+    RestClient api,
+    ConfigHandler config,
+    Localization loc,
+    INavigation nav,
+    IToastService toast) : ViewModelBase
 {
     [ObservableProperty]
     private string _newGameRoomName = string.Empty;
@@ -26,7 +32,6 @@ public partial class StartPageVm(RestClient api, ConfigHandler config, Localizat
     
     public override async Task InitializeAsync()
     {
-        // TODO: check if user is in game
         if (config.Exists<RoomConfig>())
         {
             await HandleOpenGame();
@@ -101,7 +106,10 @@ public partial class StartPageVm(RestClient api, ConfigHandler config, Localizat
         
         var response = await api.CreateRoomAsync(request);
         if (!response.IsSuccess || response.Value is null)
+        {
+            await toast.ShowErrorAsync(response.Error.Message);
             return;
+        }
         
         await nav.GoToLobby(NavigationMode.Forward, new Dictionary<string, object>(){
             { "roomId", response.Value.RoomId },
@@ -123,7 +131,10 @@ public partial class StartPageVm(RestClient api, ConfigHandler config, Localizat
         
         var response = await api.JoinRoomAsync(request);
         if (!response.IsSuccess || response.Value is null)
+        {
+            await toast.ShowErrorAsync(response.Error.Message);
             return;
+        }
 
         await nav.GoToLobby(NavigationMode.Forward, new Dictionary<string, object>()
         {

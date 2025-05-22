@@ -88,6 +88,14 @@
 	    <Generator>ResXFileCodeGenerator</Generator>
 	    <LastGenOutput>LobbyPage.de.Designer.cs</LastGenOutput>
 	  </EmbeddedResource>
+	  <EmbeddedResource Update="Resources\Localization\ToastMessages.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>ToastMessages.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Resources\Localization\ToastMessages.de.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>ToastMessages.de.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -115,6 +123,16 @@
 	    <DesignTime>True</DesignTime>
 	    <AutoGen>True</AutoGen>
 	    <DependentUpon>LobbyPage.de.resx</DependentUpon>
+	  </Compile>
+	  <Compile Update="Resources\Localization\ToastMessages.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>ToastMessages.resx</DependentUpon>
+	  </Compile>
+	  <Compile Update="Resources\Localization\ToastMessages.de.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>ToastMessages.de.resx</DependentUpon>
 	  </Compile>
 	</ItemGroup>
 
