@@ -98,5 +98,17 @@ namespace TagGame.Client.Resources.Localization {
                 return ResourceManager.GetString("not-found-room", resourceCulture);
             }
         }
+        
+        internal static string error_sending_request {
+            get {
+                return ResourceManager.GetString("error-sending-request", resourceCulture);
+            }
+        }
+        
+        internal static string player_updated {
+            get {
+                return ResourceManager.GetString("player-updated", resourceCulture);
+            }
+        }
     }
 }

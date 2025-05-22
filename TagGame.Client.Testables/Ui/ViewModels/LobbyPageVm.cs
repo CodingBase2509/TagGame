@@ -195,11 +195,13 @@ public partial class LobbyPageVm(
                 if (!seekerIds.Contains(player.Id))
                     return;
                 seekerIds.Remove(player.Id);
+                await toast.ShowSuccessAsync("player-updated");
                 break;
             case PlayerType.Seeker:
                 if (seekerIds.Contains(player.Id))
                     return;
                 seekerIds.Add(player.Id);
+                await toast.ShowSuccessAsync("player-updated");
                 break;
             default:
                 return;

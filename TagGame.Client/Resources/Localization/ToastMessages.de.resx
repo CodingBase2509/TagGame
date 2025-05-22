@@ -45,4 +45,10 @@
     <data name="not-found-room" xml:space="preserve">
         <value>Der Raum existiert nicht</value>
     </data>
+    <data name="error-sending-request" xml:space="preserve">
+        <value>Verbindung zum Server nicht möglich</value>
+    </data>
+    <data name="player-updated" xml:space="preserve">
+        <value>Spieler wurde aktualisiert</value>
+    </data>
 </root>

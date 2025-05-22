@@ -45,4 +45,10 @@
     <data name="not-found-room" xml:space="preserve">
         <value>The Room does not exists</value>
     </data>
+    <data name="error-sending-request" xml:space="preserve">
+        <value>Can not connect to server</value>
+    </data>
+    <data name="player-updated" xml:space="preserve">
+        <value>Player was updated</value>
+    </data>
 </root>

@@ -9,10 +9,8 @@
              Margin="10"
              InputTransparent="True">
     
-    <Border x:Name="ToastBorder"
+    <Border x:Name="ToastBorder" 
             StrokeThickness="1"
-            Padding="10,0, 10, 10"
-            BackgroundColor="Azure"
             HorizontalOptions="Fill"
             IsVisible="{Binding IsVisible, Source={x:Reference Toast}}">
         <Border.StrokeShape>
@@ -20,13 +18,14 @@
         </Border.StrokeShape>
         <Border.Shadow>
             <Shadow Brush="Black"
-                    Offset="10, 10"
-                    Radius="30"
+                    Offset="3, 10"
+                    Radius="10"
                     Opacity="0.4"/>
         </Border.Shadow>
         
         <Grid ColumnDefinitions="Auto, *"
-              RowDefinitions="4, Auto">
+              RowDefinitions="4, Auto"
+              RowSpacing="5">
             <BoxView Grid.Row="0"
                      Grid.ColumnSpan="2"
                      x:Name="ProgressLine"
@@ -36,13 +35,15 @@
             <!-- Toast Content -->
             <Image Grid.Column="0" Grid.Row="1"
                    x:Name="ToastIcon"
-                   WidthRequest="50"
-                   Height="50"/>
+                   Margin="10, 0, 10, 10"
+                   WidthRequest="30"
+                   Height="30"
+                   HorizontalOptions="Center"/>
             
             <Label Grid.Column="1" Grid.Row="1"
                    x:Name="ToastMessage"
-                   TextColor="Black"
-                   FontSize="16"
+                   FontSize="14"
+                   Margin="0, 0, 10, 10"
                    HorizontalTextAlignment="Start"
                    VerticalTextAlignment="Center"/>
         </Grid>
