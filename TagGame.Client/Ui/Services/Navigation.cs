@@ -1,8 +1,7 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.Maui.Controls;
+using INavigation = TagGame.Client.Ui.Navigation.INavigation;
+using NavigationMode = TagGame.Client.Ui.Navigation.NavigationMode;
 
-namespace TagGame.Client.Ui;
+namespace TagGame.Client.Ui.Services;
 
 public class Navigation : INavigation
 {
@@ -14,6 +13,9 @@ public class Navigation : INavigation
     
     public async Task GoToInit(NavigationMode mode, Dictionary<string, object>? navItems = null) =>
         await GoToAsync("init", mode, navItems);
+    
+    public async Task GoToSettings(NavigationMode mode, Dictionary<string, object>? navItems = null) =>
+        await GoToAsync("roomSettings", mode, navItems);
     
     private static async Task GoToAsync(string page, NavigationMode mode, Dictionary<string, object>? navItems = null)
     {

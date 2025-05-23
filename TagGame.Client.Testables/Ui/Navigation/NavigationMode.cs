@@ -1,6 +1,6 @@
 using System.ComponentModel;
 
-namespace TagGame.Client.Ui;
+namespace TagGame.Client.Ui.Navigation;
 
 public enum NavigationMode
 {

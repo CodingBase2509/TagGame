@@ -4,6 +4,7 @@ using Microsoft.Maui.Graphics;
 using TagGame.Client.Clients;
 using TagGame.Client.Services;
 using TagGame.Client.Ui.ToastMessages;
+using TagGame.Client.Ui.Navigation;
 
 namespace TagGame.Client.Ui.ViewModels;
 
