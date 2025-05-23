@@ -96,6 +96,14 @@
 	    <Generator>ResXFileCodeGenerator</Generator>
 	    <LastGenOutput>ToastMessages.de.Designer.cs</LastGenOutput>
 	  </EmbeddedResource>
+	  <EmbeddedResource Update="Resources\Localization\SettingsModal.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>SettingsModal.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Resources\Localization\SettingsModal.de.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>SettingsModal.de.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -133,6 +141,16 @@
 	    <DesignTime>True</DesignTime>
 	    <AutoGen>True</AutoGen>
 	    <DependentUpon>ToastMessages.de.resx</DependentUpon>
+	  </Compile>
+	  <Compile Update="Resources\Localization\SettingsModal.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>SettingsModal.resx</DependentUpon>
+	  </Compile>
+	  <Compile Update="Resources\Localization\SettingsModal.de.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>SettingsModal.de.resx</DependentUpon>
 	  </Compile>
 	</ItemGroup>
 

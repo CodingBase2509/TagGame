@@ -1,12 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <v:PageBase xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:v="clr-namespace:TagGame.Client.Ui.Views"
              xmlns:vm="clr-namespace:TagGame.Client.Ui.ViewModels;assembly=TagGame.Client.Testables"
+             xmlns:e="clr-namespace:TagGame.Client.Ui.Extensions;assembly=TagGame.Client.Testables"
              x:DataType="vm:RoomSettingsModalVm"
              x:Class="TagGame.Client.Ui.Views.RoomSettingsModal"
              BackgroundColor="DarkSlateGray"
              Shell.PresentationMode="ModalAnimated">
     
+    <Grid RowDefinitions="40, Auto, Auto">
+        
+        <!-- Header -->
+        <Grid Grid.Row="0"
+              ColumnDefinitions="40,*,50">
+            <ImageButton Grid.Row="0" Grid.Column="0"
+                         Command="{Binding GoBackCommand}"
+                         HorizontalOptions="End"
+                         Source="chevron_left">
+                <Image.Behaviors>
+                    <toolkit:IconTintColorBehavior TintColor="White" />
+                </Image.Behaviors>
+            </ImageButton>
+
+            <Label Grid.Row="0" Grid.Column="1"
+                   Text="{e:Localization Key=settings-header, Page=SettingsModal}"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center"
+                   FontSize="20" />
+
+            <ImageButton Grid.Row="0" Grid.Column="2"
+                         Command="{Binding SaveSettingsCommand}"
+                         Source="save"
+                         HorizontalOptions="Start"
+                         Margin="0,0,20,0">
+                <Image.Behaviors>
+                    <toolkit:IconTintColorBehavior TintColor="White" />
+                </Image.Behaviors>
+            </ImageButton>
+        </Grid>
+        
+        
+        
+    </Grid>
     
 </v:PageBase>
