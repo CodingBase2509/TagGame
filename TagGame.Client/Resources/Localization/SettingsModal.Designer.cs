@@ -50,5 +50,29 @@ namespace TagGame.Client.Resources.Localization {
                 return ResourceManager.GetString("settings-header", resourceCulture);
             }
         }
+        
+        internal static string hide_timeout {
+            get {
+                return ResourceManager.GetString("hide-timeout", resourceCulture);
+            }
+        }
+        
+        internal static string seeker_ping {
+            get {
+                return ResourceManager.GetString("seeker-ping", resourceCulture);
+            }
+        }
+        
+        internal static string seeker_ping_active {
+            get {
+                return ResourceManager.GetString("seeker-ping-active", resourceCulture);
+            }
+        }
+        
+        internal static string seeker_ping_inactive {
+            get {
+                return ResourceManager.GetString("seeker-ping-inactive", resourceCulture);
+            }
+        }
     }
 }

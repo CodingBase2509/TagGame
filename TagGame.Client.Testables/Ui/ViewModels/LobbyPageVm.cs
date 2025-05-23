@@ -181,7 +181,6 @@ public partial class LobbyPageVm(
     [RelayCommand]
     private async Task OpenSettingsPageAsync()
     {
-        await Shell.Current.DisplayAlert("Button Click", "Settings", "OK");
         await nav.GoToSettings(NavigationMode.Forward, new Dictionary<string, object>
         {
             { "settings", _room.Settings }

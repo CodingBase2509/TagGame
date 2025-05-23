@@ -21,4 +21,16 @@
     <data name="settings-header" xml:space="preserve">
         <value>Einstellungen</value>
     </data>
+    <data name="hide-timeout" xml:space="preserve">
+        <value>Zeit zum Verstecken</value>
+    </data>
+    <data name="seeker-ping" xml:space="preserve">
+        <value>Periodisches Update der Sucher Positionen</value>
+    </data>
+    <data name="seeker-ping-active" xml:space="preserve">
+        <value>Ping Aktiv</value>
+    </data>
+    <data name="seeker-ping-inactive" xml:space="preserve">
+        <value>Ping Deaktiviert</value>
+    </data>
 </root>

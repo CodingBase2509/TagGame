@@ -28,6 +28,25 @@
         <Style TargetType="Label" ApplyToDerivedTypes="True">
             <Setter Property="TextColor" Value="White"/>
         </Style>
+        
+        <Style TargetType="CheckBox" ApplyToDerivedTypes="True">
+            <Setter Property="Color" Value="Teal"/>
+        </Style>
+        
+        <Style TargetType="Picker" ApplyToDerivedTypes="True">
+            <Style.Triggers>
+                <Trigger TargetType="Picker"
+                         Property="IsEnabled"
+                         Value="False">
+                    <Setter Property="BackgroundColor" Value="LightGrey"/>
+                </Trigger>
+                <Trigger TargetType="Picker"
+                         Property="IsEnabled"
+                         Value="True">
+                    <Setter Property="BackgroundColor" Value="White"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
 
     </Application.Resources>
 </Application>

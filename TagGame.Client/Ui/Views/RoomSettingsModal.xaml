@@ -5,12 +5,14 @@
              xmlns:v="clr-namespace:TagGame.Client.Ui.Views"
              xmlns:vm="clr-namespace:TagGame.Client.Ui.ViewModels;assembly=TagGame.Client.Testables"
              xmlns:e="clr-namespace:TagGame.Client.Ui.Extensions;assembly=TagGame.Client.Testables"
+             xmlns:c="clr-namespace:TagGame.Client.Ui.Components"
              x:DataType="vm:RoomSettingsModalVm"
              x:Class="TagGame.Client.Ui.Views.RoomSettingsModal"
              BackgroundColor="DarkSlateGray"
              Shell.PresentationMode="ModalAnimated">
     
-    <Grid RowDefinitions="40, Auto, Auto">
+    <Grid RowDefinitions="40, *" 
+          RowSpacing="10">
         
         <!-- Header -->
         <Grid Grid.Row="0"
@@ -41,7 +43,52 @@
             </ImageButton>
         </Grid>
         
+        <!-- Configuration -->
+        <Grid Grid.Row="1" 
+              RowDefinitions="Auto, Auto, *"
+              RowSpacing="20"
+              Margin="10">
+            <c:LabelElement Grid.Row="0" 
+                            Text="{e:Localization Key=hide-timeout, Page=SettingsModal}"
+                            Orientation="Horizontal">
+                <c:MinSecPicker Value="{Binding HideTimeout}" 
+                        MaximumWidthRequest="200"
+                        HorizontalOptions="Start"/>
+            </c:LabelElement>
         
+            <c:LabelElement Grid.Row="1" 
+                            Text="{e:Localization Key=seeker-ping, Page=SettingsModal}"
+                            Orientation="Vertical"
+                            LabelFontSize="16">
+                <Grid ColumnDefinitions="Auto, 120, *"
+                      ColumnSpacing="10">
+                    <CheckBox Grid.Column="0"
+                              IsChecked="{Binding IsSeekerPingEnabled}" />
+                    <Label Grid.Column="1" 
+                           Text="active"
+                           VerticalOptions="Center">
+                        <Label.Triggers>
+                            <DataTrigger TargetType="Label"
+                                         Binding="{Binding IsSeekerPingEnabled}"
+                                         Value="True">
+                                <Setter Property="Text" Value="{e:Localization Key=seeker-ping-active, Page=SettingsModal}"/>
+                            </DataTrigger>
+                            <DataTrigger TargetType="Label"
+                                         Binding="{Binding IsSeekerPingEnabled}"
+                                         Value="False">
+                                <Setter Property="Text" Value="{e:Localization Key=seeker-ping-inactive, Page=SettingsModal}"/>
+                            </DataTrigger>
+                        </Label.Triggers>
+                    </Label>
+                    
+                    <c:MinSecPicker Grid.Column="2"
+                                Value="{Binding SeekerPingInterval}" 
+                                IsEnabled="{Binding IsSeekerPingEnabled}"
+                                MaximumWidthRequest="200" 
+                                HorizontalOptions="Center" />
+                </Grid>
+            </c:LabelElement>
+        </Grid>
         
     </Grid>
     
