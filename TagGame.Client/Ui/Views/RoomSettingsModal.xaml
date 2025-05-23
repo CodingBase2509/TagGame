@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<v:PageBase xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:v="clr-namespace:TagGame.Client.Ui.Views"
+             xmlns:vm="clr-namespace:TagGame.Client.Ui.ViewModels;assembly=TagGame.Client.Testables"
+             x:DataType="vm:RoomSettingsModalVm"
+             x:Class="TagGame.Client.Ui.Views.RoomSettingsModal"
+             BackgroundColor="DarkSlateGray"
+             Shell.PresentationMode="ModalAnimated">
+    
+    
+</v:PageBase>
