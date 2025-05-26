@@ -160,4 +160,17 @@
 	  </Reference>
 	</ItemGroup>
 
+	<ItemGroup>
+	  <None Remove="Platforms\iOS\Resources\en.lproj\InfoPlist.strings" />
+	  <BundleResource Include="Platforms\iOS\Resources\en.lproj\InfoPlist.strings">
+	    <Link>/Users/fabian/Developer/TagGame/TagGame.Client/Platforms/iOS/Resources/en.lproj/InfoPlist.strings</Link>
+	    <IsDefaultItem>true</IsDefaultItem>
+	  </BundleResource>
+	  <None Remove="Platforms\iOS\Resources\de.lproj\InfoPlist.strings" />
+	  <BundleResource Include="Platforms\iOS\Resources\de.lproj\InfoPlist.strings">
+	    <Link>/Users/fabian/Developer/TagGame/TagGame.Client/Platforms/iOS/Resources/de.lproj/InfoPlist.strings</Link>
+	    <IsDefaultItem>true</IsDefaultItem>
+	  </BundleResource>
+	</ItemGroup>
+
 </Project>

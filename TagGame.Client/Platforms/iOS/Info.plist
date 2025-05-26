@@ -40,5 +40,9 @@
 	</dict>
 	<key>CFBundleIdentifier</key>
 	<string>com.dasler.taggame</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>$(NSLocationAllwaysAndInUse)</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>$(NSLocationInUse)</string>
 </dict>
 </plist>

@@ -1,0 +1,2 @@
+NSLocationAllwaysAndInUse = "Dein Standort wird auch im Hintergrund benötigt, um das Spielerlebnis aufrechtzuerhalten.";
+NSLocationInUse = "Dein Standort wird verwendet, um mit anderen Spielern in deiner Nähe zu interagieren.";
