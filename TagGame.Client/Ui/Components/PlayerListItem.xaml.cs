@@ -1,5 +1,11 @@
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Maui;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui.Graphics;
 using TagGame.Client.Services;
 using TagGame.Shared.Domain.Players;
 

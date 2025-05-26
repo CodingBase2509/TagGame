@@ -1,6 +1,9 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui.Storage;
 using TagGame.Client.Clients;
 using TagGame.Client.Common;
 using TagGame.Client.Services;

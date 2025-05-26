@@ -1,7 +1,7 @@
+using System;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Controls.PlatformConfiguration;
 using Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;
-using Microsoft.Maui.Layouts;
 using TagGame.Client.Ui.ViewModels;
 
 namespace TagGame.Client.Ui.Views;

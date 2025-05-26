@@ -1,4 +1,6 @@
-﻿using TagGame.Client.Ui.ToastMessages;
+﻿using Microsoft.Maui;
+using Microsoft.Maui.Controls;
+using TagGame.Client.Ui.ToastMessages;
 using Application = Microsoft.Maui.Controls.Application;
 
 namespace TagGame.Client;
