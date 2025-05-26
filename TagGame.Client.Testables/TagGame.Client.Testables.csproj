@@ -16,6 +16,7 @@
       <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
       <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.4" />
       <PackageReference Include="Microsoft.Maui.Controls.Core" Version="9.0.60" />
+      <PackageReference Include="Microsoft.Maui.Controls.Maps" Version="9.0.70" />
       <PackageReference Include="Microsoft.Maui.Essentials" Version="9.0.60" />
       <PackageReference Include="Microsoft.Maui.Graphics" Version="9.0.60" />
     </ItemGroup>

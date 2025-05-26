@@ -1,6 +1,8 @@
 ﻿using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
 using DotNet.Meteor.HotReload.Plugin;
+using Microsoft.Maui.Controls.Hosting;
+using Microsoft.Maui.Hosting;
 using TagGame.Client.Services;
 
 namespace TagGame.Client;
@@ -13,6 +15,7 @@ public static class MauiProgram
 		builder
 			.UseMauiApp<App>()
 			.UseMauiCommunityToolkit()
+			.UseMauiMaps()
 			.ConfigureEssentials(essentials =>
 			{
 				essentials.UseVersionTracking();
