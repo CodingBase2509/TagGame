@@ -6,12 +6,13 @@
              xmlns:vm="clr-namespace:TagGame.Client.Ui.ViewModels;assembly=TagGame.Client.Testables"
              xmlns:e="clr-namespace:TagGame.Client.Ui.Extensions;assembly=TagGame.Client.Testables"
              xmlns:c="clr-namespace:TagGame.Client.Ui.Components"
+             xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
              x:DataType="vm:RoomSettingsModalVm"
              x:Class="TagGame.Client.Ui.Views.RoomSettingsModal"
              BackgroundColor="DarkSlateGray"
              Shell.PresentationMode="ModalAnimated">
     
-    <Grid RowDefinitions="40, *" 
+    <Grid RowDefinitions="40, Auto, *" 
           RowSpacing="10">
         
         <!-- Header -->
@@ -90,6 +91,9 @@
             </c:LabelElement>
         </Grid>
         
+        <!-- Map -->
+        <maps:Map Grid.Row="2" 
+                  Margin="10, 0, 10, 10"
+                  MapType="Street"/>
     </Grid>
-    
 </v:PageBase>
