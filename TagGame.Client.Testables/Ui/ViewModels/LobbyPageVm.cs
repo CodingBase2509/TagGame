@@ -181,9 +181,11 @@ public partial class LobbyPageVm(
     [RelayCommand]
     private async Task OpenSettingsPageAsync()
     {
+        RunCleanUp = false;
         await nav.GoToSettings(NavigationMode.Forward, new Dictionary<string, object>
         {
-            { "settings", _room.Settings }
+            { "settings", _room.Settings },
+            { "canEdit", UserIsRoomOwner }
         });
     }
 

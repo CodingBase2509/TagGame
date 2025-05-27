@@ -10,6 +10,7 @@ using INavigation = TagGame.Client.Ui.Navigation.INavigation;
 namespace TagGame.Client.Ui.ViewModels;
 
 [QueryProperty(nameof(Settings), "settings")]
+[QueryProperty(nameof(CanEdit), "canEdit")]
 public partial class RoomSettingsModalVm(
     LobbyClient lobby,
     INavigation nav) : ViewModelBase
@@ -20,20 +21,28 @@ public partial class RoomSettingsModalVm(
         get => _settings;
         set
         {
-            SetProperty(ref _settings, value);
-            SetProperty(ref _hideTimeout, value.HideTimeout);
-            SetProperty(ref _isSeekerPingEnabled, value.IsPingEnabled);
-            SetProperty(ref _seekerPingInterval, value.PingInterval ?? TimeSpan.Zero);
-            SetProperty(ref _gameArea, value.Area);
+            SetProperty(ref _settings, value, nameof(Settings));
+            SetProperty(ref _hideTimeout, value.HideTimeout, nameof(HideTimeout));
+            SetProperty(ref _isSeekerPingEnabled, value.IsPingEnabled, nameof(IsSeekerPingEnabled));
+            if (value.IsPingEnabled)
+                SetProperty(ref _seekerPingInterval, value.PingInterval.Value, nameof(SeekerPingInterval));
+            SetProperty(ref _gameArea, value.Area, nameof(GameArea));
         }
     }
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanEditSeekerPing))]
+    private bool _canEdit;
     
     [ObservableProperty] 
     private TimeSpan _hideTimeout;
 
-    [ObservableProperty] 
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanEditSeekerPing))]
     private bool _isSeekerPingEnabled;
 
+    public bool CanEditSeekerPing => CanEdit && IsSeekerPingEnabled;
+    
     [ObservableProperty] 
     private TimeSpan _seekerPingInterval;
     

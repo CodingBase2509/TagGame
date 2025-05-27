@@ -11,7 +11,7 @@ namespace TagGame.Client.Clients;
 public class LobbyClient(ConfigHandler config) : IAsyncDisposable
 {
     private IHubConnection? _connection;
-    
+
     public async Task InitializeAsync()
     {
         try
