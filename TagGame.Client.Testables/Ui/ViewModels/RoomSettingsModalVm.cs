@@ -1,7 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Maui.Controls;
-using Microsoft.Maui.Layouts;
+using Microsoft.Maui.Devices.Sensors;
 using TagGame.Client.Clients;
 using TagGame.Client.Ui.Navigation;
 using TagGame.Shared.Domain.Games;
@@ -21,7 +21,7 @@ public partial class RoomSettingsModalVm(
         get => _settings;
         set
         {
-            SetProperty(ref _settings, value, nameof(Settings));
+            SetProperty(ref _settings, value);
             SetProperty(ref _hideTimeout, value.HideTimeout, nameof(HideTimeout));
             SetProperty(ref _isSeekerPingEnabled, value.IsPingEnabled, nameof(IsSeekerPingEnabled));
             if (value.IsPingEnabled)
@@ -58,6 +58,15 @@ public partial class RoomSettingsModalVm(
     private async Task GoBackAsync()
     {
         await nav.GoToLobby(NavigationMode.Backward);
+    }
+
+    [RelayCommand]
+    private void UpdateGameAreaAsync(IList<Location> points)
+    {
+        var locations = points
+            .Select(point => new TagGame.Shared.Domain.Common.Location(point.Latitude, point.Longitude));
+        
+        _settings.Area.Boundary = locations.ToArray();
     }
     
     [RelayCommand]

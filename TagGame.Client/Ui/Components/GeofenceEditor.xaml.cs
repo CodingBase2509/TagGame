@@ -23,8 +23,8 @@ public partial class GeofenceEditor : ContentView
     private double _startScale = 1;
     private bool _isRotating = false;
     
-    public static BindableProperty GeofenceChangedProperty = BindableProperty.Create(
-        nameof(GeofenceChanged),
+    public static BindableProperty GeofenceChangedCommandProperty = BindableProperty.Create(
+        nameof(GeofenceChangedCommand),
         typeof(ICommand),
         typeof(GeofenceEditor));
     
@@ -39,10 +39,10 @@ public partial class GeofenceEditor : ContentView
         Loaded -= OnLoaded;
     }
 
-    public ICommand GeofenceChanged
+    public ICommand GeofenceChangedCommand
     {
-        get => (ICommand)GetValue(GeofenceChangedProperty);
-        set => SetValue(GeofenceChangedProperty, value);
+        get => (ICommand)GetValue(GeofenceChangedCommandProperty);
+        set => SetValue(GeofenceChangedCommandProperty, value);
     }
     
     private async void OnLoaded(object? sender, EventArgs e)
@@ -135,7 +135,7 @@ public partial class GeofenceEditor : ContentView
         GameMap.MapElements.Clear();
         GameMap.MapElements.Add(polygon);
         
-        GeofenceChanged?.Execute(polygon);
+        GeofenceChangedCommand?.Execute(polygon.Geopath);
     }
 
     private List<Point> GetBoxViewCorners()

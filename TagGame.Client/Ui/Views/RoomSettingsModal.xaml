@@ -111,7 +111,8 @@
         
         <c:GeofenceEditor Grid.Row="3"
                           Margin="10, 0, 10, 10"
-                          IsVisible="{Binding CanEdit}"/>
+                          IsVisible="{Binding CanEdit}"
+                          GeofenceChangedCommand="{Binding UpdateGameAreaCommand}"/>
         
     </Grid>
 </v:PageBase>
