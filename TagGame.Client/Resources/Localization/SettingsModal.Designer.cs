@@ -74,5 +74,11 @@ namespace TagGame.Client.Resources.Localization {
                 return ResourceManager.GetString("seeker-ping-inactive", resourceCulture);
             }
         }
+        
+        internal static string game_area {
+            get {
+                return ResourceManager.GetString("game-area", resourceCulture);
+            }
+        }
     }
 }

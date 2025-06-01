@@ -33,4 +33,7 @@
     <data name="seeker-ping-inactive" xml:space="preserve">
         <value>Ping Deaktiviert</value>
     </data>
+    <data name="game-area" xml:space="preserve">
+        <value>Spielbereich</value>
+    </data>
 </root>

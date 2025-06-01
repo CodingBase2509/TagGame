@@ -32,7 +32,9 @@ public partial class RoomSettingsModalVm(
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanEditSeekerPing))]
+    [NotifyPropertyChangedFor(nameof(CanNotEdit))]
     private bool _canEdit;
+    public bool CanNotEdit => !CanEdit; 
     
     [ObservableProperty] 
     private TimeSpan _hideTimeout;
