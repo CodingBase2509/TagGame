@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  pull_request:
+    # Run for any pull request (default types: opened, synchronize, reopened)
+    branches: [ '**/*' ]
+
+jobs:
+  build_test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: NuGet cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.sln', '**/*.csproj', 'Directory.Packages.props') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore (server + core only)
+        run: |
+          dotnet restore TagGame.Shared/TagGame.Shared.csproj
+          dotnet restore TagGame.Api.Core/TagGame.Api.Core.csproj
+          dotnet restore TagGame.Client.Core/TagGame.Client.Core.csproj
+          dotnet restore TagGame.Api/TagGame.Api.csproj
+
+      # Build server/core libs; MAUI app build is excluded to avoid heavy workloads in CI
+      - name: Build Core (warnings as errors)
+        run: |
+          dotnet build TagGame.Shared/TagGame.Shared.csproj -c Release --nologo
+          dotnet build TagGame.Api.Core/TagGame.Api.Core.csproj -c Release --nologo
+          dotnet build TagGame.Client.Core/TagGame.Client.Core.csproj -c Release --nologo
+          dotnet build TagGame.Api/TagGame.Api.csproj -c Release --nologo
+
+      - name: Test with coverage (targeted)
+        run: |
+          dotnet test TagGame.Api.Tests/TagGame.Api.Tests.csproj -c Release --collect:"XPlat Code Coverage" --results-directory ./TestResults --verbosity normal
+          dotnet test TagGame.Client.Tests/TagGame.Client.Tests.csproj -c Release --collect:"XPlat Code Coverage" --results-directory ./TestResults --verbosity normal
+
+      - name: Gather coverage reports
+        id: coverage
+        run: |
+          echo "files<<EOF" >> $GITHUB_OUTPUT
+          find TestResults -type f -name 'coverage.cobertura.xml' -print >> $GITHUB_OUTPUT || true
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Upload coverage artifact
+        if: steps.coverage.outputs.files != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-cobertura
+          path: ${{ steps.coverage.outputs.files }}

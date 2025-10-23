@@ -1,0 +1,38 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+indent_style = space
+indent_size = 4
+trim_trailing_whitespace = true
+
+[*.sln]
+indent_style = tab
+indent_size = 4
+
+[*.cs]
+dotnet_sort_system_directives_first = true
+csharp_new_line_before_open_brace = all
+csharp_prefer_braces = true:suggestion
+csharp_style_var_when_type_is_apparent = true:suggestion
+csharp_style_var_for_built_in_types = true:suggestion
+csharp_style_var_elsewhere = true:suggestion
+csharp_style_expression_bodied_methods = when_on_single_line:suggestion
+csharp_style_expression_bodied_properties = when_on_single_line:suggestion
+csharp_style_expression_bodied_indexers = when_on_single_line:suggestion
+csharp_style_expression_bodied_accessors = when_on_single_line:suggestion
+csharp_style_namespace_declarations = file_scoped:suggestion
+
+# Enforce code style as warnings; in Core libs warnings become errors via Directory.Build.props
+dotnet_analyzer_diagnostic.category-Style.severity = warning
+dotnet_analyzer_diagnostic.category-Design.severity = warning
+dotnet_analyzer_diagnostic.category-Maintainability.severity = warning
+dotnet_analyzer_diagnostic.category-Performance.severity = warning
+dotnet_analyzer_diagnostic.category-Usage.severity = warning
+
+# Common rules
+dotnet_diagnostic.IDE0005.severity = silent    # remove unused usings (avoid build dependency on XML docs)
+dotnet_diagnostic.IDE0060.severity = suggestion # remove unused parameters (keep suggestion)
+dotnet_diagnostic.CA1822.severity = suggestion  # mark members as static when possible

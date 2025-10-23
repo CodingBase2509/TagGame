@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="location_permission_rationale">Um mit Freunden in deiner Nähe zu spielen, benötigt diese App Zugriff auf deinen Standort.</string>
-    <string name="location_permission_denied">Ohne Standortzugriff kann keine Verbindung zu Spielern in der Nähe hergestellt werden.</string>
-<!--    <string name="background_location_permission_rationale">Der Standort wird im Hintergrund benötigt, damit die Verbindung auch bei geschlossener App bestehen bleibt.</string>-->
-</resources>

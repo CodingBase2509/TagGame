@@ -4,7 +4,7 @@ Diese Datei richtet sich an Agenten, die im Repo arbeiten. Sie spiegelt die Ziel
 
 ## Project Structure & Module Organization
 - `TagGame.Api` — ASP.NET Core API. Endpoints in `Endpoints/`, SignalR Hubs, Middleware/Filters, AuthN/AuthZ‑Setup, DI‑Komposition (`services.AddCore(...)`).
-- `TagGameApi.Core` — Server‑Kern: Feature‑Services (statt striktem CQRS), Abstraktionen (`Abstractions/` für Persistence/System), EF Core (`Persistence/EfCore/` inkl. `TagGameDbContext`, `Configurations/`, `Repositories/`, `Migrations/`), Validierung (`Validation/`), Mapping (`Mapping/`).
+- `TagGame.Api.Core` (alias „TagGameApi.Core“ in den Docs) — Server‑Kern: Feature‑Services (statt striktem CQRS), Abstraktionen (`Abstractions/` für Persistence/System), EF Core (`Persistence/EfCore/` inkl. `TagGameDbContext`, `Configurations/`, `Repositories/`, `Migrations/`), Validierung (`Validation/`), Mapping (`Mapping/`).
 - `TagGame.Client` — .NET MAUI App. UI in `Ui/Views` und `Ui/Components`, Assets unter `Resources/`, Plattformcode `Platforms/Android|iOS`. Toast‑Anzeige (Presenter/Host) liegt hier.
 - `TagGame.Client.Core` — UI‑agnostische ViewModels, Services (Abstraktionen/Implementierungen für HTTP/Storage), State‑Management, Lokalisierung (`ILocalizer`), Benachrichtigungen (`IToastPublisher`). Keine `Microsoft.Maui.*`‑Abhängigkeiten.
 - `TagGame.Shared` — Domain‑Modelle, DTOs, Konstanten.
@@ -24,10 +24,10 @@ Hinweis: Existieren noch V1‑Artefakte (z. B. `TagGame.Client.Testables`), ne
 - PascalCase für Typen/Methoden; camelCase für Locals/Parameter; `_camelCase` für private Felder. Async‑Methoden enden auf `Async`.
 - Place new code by area:
   - API Endpoints/Hubs → `TagGame.Api/Endpoints`
-  - Validatoren/Mapping → `TagGameApi.Core/Features/<Feature>/(Validation|Mapping)`
-  - Feature‑Services → `TagGameApi.Core/Features/<Feature>/<Feature>Service.cs`
-  - Abstraktionen (Repos/System) → `TagGameApi.Core/Abstractions/*`
-  - EF Core (DbContext/Repos/Migrations) → `TagGameApi.Core/Persistence/EfCore/*`
+  - Validatoren/Mapping → `TagGame.Api.Core/Features/<Feature>/(Validation|Mapping)`
+  - Feature‑Services → `TagGame.Api.Core/Features/<Feature>/<Feature>Service.cs`
+  - Abstraktionen (Repos/System) → `TagGame.Api.Core/Abstractions/*`
+  - EF Core (DbContext/Repos/Migrations) → `TagGame.Api.Core/Persistence/EfCore/*`
   - DTOs → `TagGame.Shared/DTOs/<Area>`
   - ViewModels → `TagGame.Client.Core/Ui/ViewModels`
 
@@ -54,4 +54,3 @@ Hinweis: Existieren noch V1‑Artefakte (z. B. `TagGame.Client.Testables`), ne
 ## Agent‑Specific Notes
 - Änderungen minimal halten und an obige Struktur/Docs ausrichten. Neue Features folgen den Konventionen (Features‑Ordner, Services, Abstraktionen, Tests).
 - Keine tiefgreifende Umstrukturierung ohne explizite Anweisung. Bei Abweichungen vom V2‑Layout Rücksprache halten bzw. in den Docs festhalten.
-

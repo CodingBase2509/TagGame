@@ -1,53 +1,14 @@
 ﻿<?xml version = "1.0" encoding = "UTF-8" ?>
 <Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:TagGame.Client"
              x:Class="TagGame.Client.App">
     <Application.Resources>
-        
-        <Style TargetType="Button" ApplyToDerivedTypes="True">
-            <Setter Property="CornerRadius" Value="5" />
-            <Style.Triggers>
-                <Trigger TargetType="Button" Property="IsEnabled" Value="True">
-                    <Setter Property="BackgroundColor" Value="Teal" />
-                    <Setter Property="TextColor" Value="White" />
-                </Trigger>
-                <Trigger TargetType="Button" Property="IsEnabled" Value="False">
-                    <Setter Property="BackgroundColor" Value="Gray" />
-                    <Setter Property="TextColor" Value="Black" />
-                </Trigger>
-            </Style.Triggers>
-            
-        </Style>
-        
-        <Style TargetType="Entry" ApplyToDerivedTypes="True">
-            <Setter Property="PlaceholderColor" Value="LightGray"/>
-            <Setter Property="TextColor" Value="Black"/>
-            <Setter Property="BackgroundColor" Value="Azure"/>
-        </Style>
-        
-        <Style TargetType="Label" ApplyToDerivedTypes="True">
-            <Setter Property="TextColor" Value="White"/>
-        </Style>
-        
-        <Style TargetType="CheckBox" ApplyToDerivedTypes="True">
-            <Setter Property="Color" Value="Teal"/>
-        </Style>
-        
-        <Style TargetType="Picker" ApplyToDerivedTypes="True">
-            <Setter Property="TextColor" Value="Black" />
-            <Style.Triggers>
-                <Trigger TargetType="Picker"
-                         Property="IsEnabled"
-                         Value="False">
-                    <Setter Property="BackgroundColor" Value="LightGray"/>
-                </Trigger>
-                <Trigger TargetType="Picker"
-                         Property="IsEnabled"
-                         Value="True">
-                    <Setter Property="BackgroundColor" Value="White"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
+                <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

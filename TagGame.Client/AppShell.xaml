@@ -1,21 +1,8 @@
-﻿<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <Shell
     x:Class="TagGame.Client.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:views="clr-namespace:TagGame.Client.Ui.Views"
-    FlyoutBehavior="Disabled"
-    NavBarIsVisible="false"
-    TabBarIsVisible="False"
-    Title="TagGame">
+    Title="TagGame.Client">
 
-    <ShellContent
-        ContentTemplate="{DataTemplate views:InitPage}"
-        Route="init"/>
-    
-    <ShellContent
-        ContentTemplate="{DataTemplate views:StartPage}"
-        Route="start" />
-    
 </Shell>
-
