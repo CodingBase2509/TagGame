@@ -26,8 +26,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nuget-
 
-      - name: Restore
-        run: dotnet restore
+      - name: Restore (server + core only)
+        run: |
+          dotnet restore TagGame.Shared/TagGame.Shared.csproj
+          dotnet restore TagGame.Api.Core/TagGame.Api.Core.csproj
+          dotnet restore TagGame.Client.Core/TagGame.Client.Core.csproj
+          dotnet restore TagGame.Api/TagGame.Api.csproj
 
       # Build server/core libs; MAUI app build is excluded to avoid heavy workloads in CI
       - name: Build Core (warnings as errors)
@@ -37,8 +41,10 @@ jobs:
           dotnet build TagGame.Client.Core/TagGame.Client.Core.csproj -c Release --nologo
           dotnet build TagGame.Api/TagGame.Api.csproj -c Release --nologo
 
-      - name: Test with coverage
-        run: dotnet test -c Release --collect:"XPlat Code Coverage" --results-directory ./TestResults --verbosity normal
+      - name: Test with coverage (targeted)
+        run: |
+          dotnet test TagGame.Api.Tests/TagGame.Api.Tests.csproj -c Release --collect:"XPlat Code Coverage" --results-directory ./TestResults --verbosity normal
+          dotnet test TagGame.Client.Tests/TagGame.Client.Tests.csproj -c Release --collect:"XPlat Code Coverage" --results-directory ./TestResults --verbosity normal
 
       - name: Gather coverage reports
         id: coverage
