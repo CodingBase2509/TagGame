@@ -35,3 +35,34 @@
 - SignalR: Snapshot + Deltas, Idempotency für `TagPlayer`
 - Observability-Dashboards (Grafana/Seq/ELK)
 
+## v2 M0 — Umsetzung (Plan)
+- Ziel: Lauffähiges Skelett mit echter DB, sauberer API-Basis und CI.
+
+- Sequenz A: Persistence + Container (Startpunkt)
+  - #43 EF Core: Npgsql + DbContext + DI + design-time factory
+  - #44 EF Core: initial migration + apply to dev DB
+  - #21 Docker Compose: API + Postgres
+  - #47 Dockerfile for API + .dockerignore
+  - #49 Basic health endpoints with DB check
+
+- Sequenz B: API Platform Baseline
+  - #19 ProblemDetails + error pipeline (RFC7807)
+  - #20 OpenAPI/Swagger baseline (Bearer, IDs, Tags)
+  - #46 API versioning: /api/v1 + route groups
+  - #45 CORS policy for MAUI dev
+  - #48 CI: dotnet format verification
+
+- Sequenz C: Abschluss M0
+  - #50 Developer docs: Getting started v2
+  - Schließen per PR: #42 Centralized NuGet, #18 Directory.Build.props + analyzers, #22 CI build/test/coverage
+
+- PR-Strategie
+  - Kleine, fokussierte PRs (1–3 Issues), Beschreibung mit „Closes #…“.
+  - CI prüft Build/Tests/Format; Merge schließt Issues automatisch.
+
+- Definition of Done (M0)
+  - API startet lokal und im Container, verbindet zu Postgres.
+  - Health-/Readiness-Endpunkte vorhanden (DB‑Check).
+  - Einheitliches Fehlermodell (ProblemDetails), Dokumentation via Swagger.
+  - Versionierte Routen (/api/v1) und CORS für MAUI‑Dev.
+  - CI grün (Restore/Build/Test/Coverage/Format‑Check).

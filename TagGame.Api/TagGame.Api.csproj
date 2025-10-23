@@ -8,6 +8,19 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+    <PackageReference Include="Carter" />
+    <PackageReference Include="AspNetCore.HealthChecks.NpgSql" />
+    <PackageReference Include="AspNetCore.HealthChecks.UI.Client" />
+  </ItemGroup>
+
+  <!-- Explicit folders to show in Solution Explorer even when empty -->
+  <ItemGroup>
+    <Folder Include="Endpoints/" />
+    <Folder Include="Extensions/" />
+    <Folder Include="Middleware/" />
+    <Folder Include="Filters/" />
+    <Folder Include="Auth/" />
+    <Folder Include="Hubs/" />
   </ItemGroup>
 
   <ItemGroup>

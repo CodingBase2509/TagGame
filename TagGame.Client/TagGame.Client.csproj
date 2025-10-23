@@ -56,6 +56,14 @@
         <PackageReference Include="Microsoft.Extensions.Logging.Debug"/>
     </ItemGroup>
 
+    <!-- Explicit folders to show in Solution Explorer even when empty -->
+    <ItemGroup>
+        <Folder Include="Ui/Views/" />
+        <Folder Include="Ui/Components/" />
+        <Folder Include="Ui/Extensions/" />
+        <Folder Include="Ui/Services/" />
+    </ItemGroup>
+
     <ItemGroup>
         <ProjectReference Include="..\TagGame.Client.Core\TagGame.Client.Core.csproj"/>
         <ProjectReference Include="..\TagGame.Shared\TagGame.Shared.csproj"/>

@@ -14,8 +14,14 @@
     <PackageReference Include="xunit.runner.visualstudio" />
     </ItemGroup>
 
-    <ItemGroup>
-        <Using Include="Xunit"/>
-    </ItemGroup>
+  <ItemGroup>
+    <Using Include="Xunit"/>
+  </ItemGroup>
+
+  <!-- Explicit folders to show in Solution Explorer even when empty -->
+  <ItemGroup>
+    <Folder Include="Unit/" />
+    <Folder Include="Integration/" />
+  </ItemGroup>
 
 </Project>

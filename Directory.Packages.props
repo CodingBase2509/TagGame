@@ -4,14 +4,25 @@
     </PropertyGroup>
     <ItemGroup>
         <!-- Extentions -->
-        <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0"/>
-        <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.0"/>
+        <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.10"/>
+        <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.10"/>
         <PackageVersion Include="Microsoft.Extensions.Logging.Debug" Version="9.0.8"/>
 
         <!-- Apps -->
         <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="9.0.10"/>
         <PackageVersion Include="Microsoft.Maui.Controls" Version="$(MauiVersion)"/>
         <PackageVersion Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="9.0.0"/>
+
+        <!-- EF Core & Provider (PostgreSQL) -->
+        <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="9.0.10"/>
+        <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.10"/>
+        <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4"/>
+        <PackageVersion Include="Npgsql" Version="9.0.4"/>
+
+        <!-- API composition -->
+        <PackageVersion Include="Carter" Version="8.1.2"/>
+        <PackageVersion Include="AspNetCore.HealthChecks.NpgSql" Version="8.0.2"/>
+        <PackageVersion Include="AspNetCore.HealthChecks.UI.Client" Version="8.0.1"/>
 
         <!-- Tests -->
         <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.12.0"/>

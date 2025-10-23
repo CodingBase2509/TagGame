@@ -14,4 +14,17 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
   </ItemGroup>
 
+  <!-- Explicit folders to show in Solution Explorer even when empty -->
+  <ItemGroup>
+    <Folder Include="Ui/ViewModels/" />
+    <Folder Include="Services/Abstractions/" />
+    <Folder Include="Services/Implementations/" />
+    <Folder Include="Http/" />
+    <Folder Include="Storage/" />
+    <Folder Include="State/" />
+    <Folder Include="Navigation/" />
+    <Folder Include="Localization/" />
+    <Folder Include="Notifications/" />
+  </ItemGroup>
+
 </Project>
