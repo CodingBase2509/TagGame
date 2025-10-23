@@ -12,7 +12,8 @@ public class Localization(Assembly assembly)
         { "ToastMessages", new ResourceManager("TagGame.Client.Resources.Localization.ToastMessages", assembly: assembly) },
         { "StartPage", new ResourceManager("TagGame.Client.Resources.Localization.StartPage", assembly: assembly) },
         { "InitPage", new ResourceManager("TagGame.Client.Resources.Localization.InitPage", assembly: assembly)},
-        { "LobbyPage", new ResourceManager("TagGame.Client.Resources.Localization.LobbyPage", assembly: assembly)}
+        { "LobbyPage", new ResourceManager("TagGame.Client.Resources.Localization.LobbyPage", assembly: assembly)},
+        { "SettingsModal", new ResourceManager("TagGame.Client.Resources.Localization.SettingsModal", assembly: assembly)}
     };
 
     public string Get(string key, string pageName)

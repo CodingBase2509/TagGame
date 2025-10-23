@@ -36,3 +36,5 @@ Desktop.ini
 
 # Aditional files and folders
 **/Data
+**/Directory.Build.props
+**/Directory.Build.*.props

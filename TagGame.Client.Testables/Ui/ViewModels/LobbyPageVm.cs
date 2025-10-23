@@ -8,6 +8,8 @@ using TagGame.Client.Services;
 using TagGame.Client.Ui.ToastMessages;
 using TagGame.Shared.Domain.Games;
 using TagGame.Shared.Domain.Players;
+using INavigation = TagGame.Client.Ui.Navigation.INavigation;
+using NavigationMode = TagGame.Client.Ui.Navigation.NavigationMode;
 
 namespace TagGame.Client.Ui.ViewModels;
 
@@ -179,7 +181,12 @@ public partial class LobbyPageVm(
     [RelayCommand]
     private async Task OpenSettingsPageAsync()
     {
-        await Shell.Current.DisplayAlert("Button Click", "Settings", "OK");
+        RunCleanUp = false;
+        await nav.GoToSettings(NavigationMode.Forward, new Dictionary<string, object>
+        {
+            { "settings", _room.Settings },
+            { "canEdit", UserIsRoomOwner }
+        });
     }
 
     [RelayCommand]

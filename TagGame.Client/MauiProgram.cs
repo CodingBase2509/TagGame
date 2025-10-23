@@ -1,10 +1,8 @@
 ﻿using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
-using DotNet.Meteor.HotReload.Plugin;
 using Microsoft.Maui.Controls.Hosting;
 using Microsoft.Maui.Hosting;
 using TagGame.Client.Services;
-using TagGame.Client.Ui.Components;
 
 namespace TagGame.Client;
 
@@ -16,6 +14,7 @@ public static class MauiProgram
 		builder
 			.UseMauiApp<App>()
 			.UseMauiCommunityToolkit()
+			.UseMauiMaps()
 			.ConfigureEssentials(essentials =>
 			{
 				essentials.UseVersionTracking();
@@ -26,6 +25,8 @@ public static class MauiProgram
 				fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
 			});
 
+		builder.ConfigureHandlers();
+		
 		// register views and view models
 		builder.Services.AddContentPages();
 		
@@ -34,15 +35,12 @@ public static class MauiProgram
 		builder.Services.AddApiClients();
 		builder.Services.ConfigureJsonOptions();
 		
-#if IOS && DEBUG
-		builder.Services.AddSingleton<ISecureStorage, DebugSecureStorage>();
-#elif ANDROID
+#if ANDROID
 		builder.CustomizeEntryHandlers();
 #endif
 		
 #if DEBUG
 		builder.Logging.AddDebug();
-		builder.EnableHotReload();
 #endif
 		var app = builder.Build();
 		ServiceHelper.SetProvider(app.Services);

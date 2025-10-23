@@ -28,9 +28,19 @@
 		<AssemblyVersion>1.0.0.0</AssemblyVersion>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-ios|AnyCPU'">
-	  	<CreatePackage>false</CreatePackage>
-		<CodesignEntitlements>Platforms\iOS\Entitlements.plist</CodesignEntitlements>
+		<!-- iOS signing: use entitlements only for device builds. Simulator should not use custom keychain groups. -->
+		<PropertyGroup Condition="'$(TargetFramework)'=='net9.0-ios' and '$(RuntimeIdentifier)'=='ios-arm64'">
+			<CreatePackage>false</CreatePackage>
+			<CodesignEntitlements>Platforms\iOS\Entitlements.plist</CodesignEntitlements>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(TargetFramework)'=='net9.0-ios' and '$(RuntimeIdentifier)'=='iossimulator-arm64'">
+			<CodesignEntitlements></CodesignEntitlements>
+		</PropertyGroup>
+	
+	<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+		<AndroidManifestPlaceholders>
+			GOOGLE_MAPS_API_KEY=$(GOOGLE_MAPS_API_KEY)
+		</AndroidManifestPlaceholders>
 	</PropertyGroup>
 	
 	<ItemGroup>
@@ -55,7 +65,6 @@
 	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Maui" Version="11.2.0" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-		<PackageReference Include="DotNetMeteor.HotReload.Plugin" Version="3.3.0" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.60" />
 		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="9.0.60" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.4" />
@@ -96,6 +105,14 @@
 	    <Generator>ResXFileCodeGenerator</Generator>
 	    <LastGenOutput>ToastMessages.de.Designer.cs</LastGenOutput>
 	  </EmbeddedResource>
+	  <EmbeddedResource Update="Resources\Localization\SettingsModal.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>SettingsModal.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Resources\Localization\SettingsModal.de.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>SettingsModal.de.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -134,12 +151,32 @@
 	    <AutoGen>True</AutoGen>
 	    <DependentUpon>ToastMessages.de.resx</DependentUpon>
 	  </Compile>
+	  <Compile Update="Resources\Localization\SettingsModal.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>SettingsModal.resx</DependentUpon>
+	  </Compile>
+	  <Compile Update="Resources\Localization\SettingsModal.de.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>SettingsModal.de.resx</DependentUpon>
+	  </Compile>
+	  <Compile Update="Platforms\Android\CustomImplementations\EntryHandlerConfig.cs">
+	    <ExcludeFromCurrentConfiguration>false</ExcludeFromCurrentConfiguration>
+	  </Compile>
+	  <Compile Update="Platforms\Android\CustomImplementations\AdvancedMapHandler.cs">
+	    <ExcludeFromCurrentConfiguration>false</ExcludeFromCurrentConfiguration>
+	  </Compile>
+	  <Compile Update="Platforms\Android\Handlers\AdvancedMapHandler.cs">
+	    <ExcludeFromCurrentConfiguration>false</ExcludeFromCurrentConfiguration>
+	  </Compile>
+	  <Compile Update="Platforms\iOS\Handlers\AdvancedMapHandler.cs">
+	    <ExcludeFromCurrentConfiguration>false</ExcludeFromCurrentConfiguration>
+	  </Compile>
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Reference Include="CommunityToolkit.Maui">
-	    <HintPath>..\..\..\.nuget\packages\communitytoolkit.maui\11.2.0\lib\net9.0-android35.0\CommunityToolkit.Maui.dll</HintPath>
-	  </Reference>
-	</ItemGroup>
+
+    <!-- iOS entitlements are used for codesigning via CodesignEntitlements
+         and must not be embedded as a bundle resource. -->
 
 </Project>

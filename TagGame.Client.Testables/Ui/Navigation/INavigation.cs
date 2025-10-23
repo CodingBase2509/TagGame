@@ -1,4 +1,4 @@
-namespace TagGame.Client.Ui;
+namespace TagGame.Client.Ui.Navigation;
 
 public interface INavigation
 {
@@ -7,4 +7,6 @@ public interface INavigation
     Task GoToStart(NavigationMode mode, Dictionary<string, object>? navItems = null);
 
     Task GoToInit(NavigationMode mode, Dictionary<string, object>? navItems = null);
+
+    Task GoToSettings(NavigationMode mode, Dictionary<string, object>? navItems = null);
 }

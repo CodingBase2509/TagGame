@@ -1,20 +1,21 @@
-using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Microsoft.Maui.Graphics;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui.Controls.Maps;
+using Microsoft.Maui.Hosting;
 using Microsoft.Maui.Storage;
 using TagGame.Client.Clients;
 using TagGame.Client.Common;
+using TagGame.Client.Handlers;
 using TagGame.Client.Services;
-using TagGame.Client.Ui;
 using TagGame.Client.Ui.Extensions;
 using TagGame.Client.Ui.ToastMessages;
 using TagGame.Client.Ui.ViewModels;
 using TagGame.Client.Ui.Views;
-using TagGame.Shared.Constants;
-using INavigation = TagGame.Client.Ui.INavigation;
+using TagGame.Client.Ui.Services;
+using INavigation = TagGame.Client.Ui.Navigation.INavigation;
 
 namespace TagGame.Client;
 
@@ -31,6 +32,10 @@ public static class DependencyInjection
         services.AddTransient<LobbyPage>();
         services.AddTransient<LobbyPageVm>();
         Routing.RegisterRoute("lobby", typeof(LobbyPage));
+
+        services.AddTransient<RoomSettingsModal>();
+        services.AddTransient<RoomSettingsModalVm>();
+        Routing.RegisterRoute("roomSettings", typeof(RoomSettingsModal));
     }
 
     public static void AddServices(this IServiceCollection services)
@@ -69,6 +74,14 @@ public static class DependencyInjection
             options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
             options.DefaultIgnoreCondition = JsonIgnoreCondition.Never;
             options.Converters.Add(new MauiColorJsonConverter());
+        });
+    }
+
+    public static void ConfigureHandlers(this MauiAppBuilder builder)
+    {
+        builder.ConfigureMauiHandlers(handlers =>
+        {
+            handlers.AddHandler(typeof(Microsoft.Maui.Controls.Maps.Map), typeof(AdvancedMapHandler));
         });
     }
 }

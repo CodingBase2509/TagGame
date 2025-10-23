@@ -9,6 +9,8 @@ public abstract partial class ViewModelBase : ObservableObject
     [ObservableProperty]
     private bool isBusy;
 
+    public bool RunCleanUp = true;
+    
     public virtual Task InitializeAsync()
     {
         return Task.CompletedTask;

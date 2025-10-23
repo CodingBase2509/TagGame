@@ -1,7 +1,7 @@
+using System;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Controls.PlatformConfiguration;
 using Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;
-using Microsoft.Maui.Layouts;
 using TagGame.Client.Ui.ViewModels;
 
 namespace TagGame.Client.Ui.Views;
@@ -9,10 +9,11 @@ namespace TagGame.Client.Ui.Views;
 public class PageBase : ContentPage
 {
     private readonly ViewModelBase _viewModel;
+    private bool _isInitialized = false;
     
     public Grid BaseLayout { get; private set; }
     
-    public PageBase(ViewModelBase vm)
+    protected PageBase(ViewModelBase vm)
     {
         _viewModel = vm;
         On<iOS>().SetUseSafeArea(false);
@@ -34,7 +35,7 @@ public class PageBase : ContentPage
     {
         return new ControlTemplate(() =>
         {
-            var presenter = new ContentPresenter();
+            var presenter = new ContentView();
             BaseLayout =
             [
                 presenter
@@ -47,11 +48,33 @@ public class PageBase : ContentPage
     
     private async void InitViewModelAsync(object? sender, EventArgs e)
     {
-        await _viewModel.InitializeAsync();
+        try
+        {
+            _viewModel.RunCleanUp = true;
+            if (_isInitialized)
+                return;
+
+            await _viewModel.InitializeAsync();
+            _isInitialized = true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
     }
 
     private async void CleanViewModelAsync(object? sender, EventArgs e)
     {
-        await _viewModel.CleanUpAsync();
+        try
+        {
+            if (!_isInitialized || !_viewModel.RunCleanUp)
+                return;
+            
+            await _viewModel.CleanUpAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
     }
 }

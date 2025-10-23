@@ -1,8 +1,10 @@
-using Microsoft.Maui.Layouts;
+using System;
+using System.Threading.Tasks;
+using Microsoft.Maui.Dispatching;
 using TagGame.Client.Ui.Components;
 using TagGame.Client.Ui.ToastMessages;
 
-namespace TagGame.Client.Ui;
+namespace TagGame.Client.Ui.Services;
 
 public class ToastService(IDispatcher dispatcher) : IToastService
 {
