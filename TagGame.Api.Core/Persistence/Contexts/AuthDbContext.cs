@@ -1,4 +1,5 @@
 using TagGame.Shared.Domain.Auth;
+using TagGame.Api.Core.Persistence.Configurations;
 
 namespace TagGame.Api.Core.Persistence.Contexts;
 
@@ -28,7 +29,11 @@ public class AuthDbContext(DbContextOptions<AuthDbContext> options) : DbContext(
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema("auth");
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(AuthDbContext).Assembly);
+
+        modelBuilder.ApplyConfiguration(new UserConfiguration());
+        modelBuilder.ApplyConfiguration(new RefreshTokenConfiguration());
+        modelBuilder.ApplyConfiguration(new EntitlementConfiguration());
+
         base.OnModelCreating(modelBuilder);
     }
 }

@@ -27,6 +27,8 @@
     <Folder Include="Features/Player/" />
     <Folder Include="Persistence\Configurations\" />
     <Folder Include="Persistence\Migrations\" />
+    <Folder Include="Persistence\Migrations\Auth\" />
+    <Folder Include="Persistence\Migrations\Games\" />
     <Folder Include="Persistence\Repositories\" />
     <Folder Include="Validation/" />
     <Folder Include="Mapping/" />

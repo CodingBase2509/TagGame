@@ -40,6 +40,8 @@ public sealed class GameRoomConfiguration : IEntityTypeConfiguration<GameRoom>
         builder.OwnsOne(r => r.Boundaries, nb =>
         {
             nb.ToJson();
+            // Map polygon points as JSON array of value objects
+            nb.OwnsMany(p => p.Points);
         });
     }
 }

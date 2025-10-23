@@ -1,4 +1,5 @@
 using TagGame.Shared.Domain.Games;
+using TagGame.Api.Core.Persistence.Configurations;
 
 namespace TagGame.Api.Core.Persistence.Contexts;
 
@@ -32,7 +33,12 @@ public class GamesDbContext(DbContextOptions<GamesDbContext> options) : DbContex
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema("games");
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(GamesDbContext).Assembly);
+
+        modelBuilder.ApplyConfiguration(new GameRoomConfiguration());
+        modelBuilder.ApplyConfiguration(new RoomMembershipConfiguration());
+        modelBuilder.ApplyConfiguration(new MatchConfiguration());
+        modelBuilder.ApplyConfiguration(new RoundConfiguration());
+
         base.OnModelCreating(modelBuilder);
     }
 }

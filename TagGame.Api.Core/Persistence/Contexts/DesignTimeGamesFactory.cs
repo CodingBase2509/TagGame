@@ -7,7 +7,7 @@ public sealed class DesignTimeGamesFactory : IDesignTimeDbContextFactory<GamesDb
     public GamesDbContext CreateDbContext(string[] args)
     {
         var cs = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")
-                 ?? "Host=localhost;Port=5432;Database=taggame;Username=postgres;Password=postgres";
+                 ?? "Host=localhost;Port=5432;Database=TagGame;Username=taggame;Password=SecurePassword;Include Error Detail=true";
 
         var options = new DbContextOptionsBuilder<GamesDbContext>()
             .UseNpgsql(cs, o =>

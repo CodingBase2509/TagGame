@@ -20,7 +20,7 @@
         <PackageVersion Include="Npgsql" Version="9.0.4"/>
 
         <!-- API composition -->
-        <PackageVersion Include="Carter" Version="8.1.2"/>
+        <PackageVersion Include="Carter" Version="8.2.1"/>
         <PackageVersion Include="AspNetCore.HealthChecks.NpgSql" Version="8.0.2"/>
         <PackageVersion Include="AspNetCore.HealthChecks.UI.Client" Version="8.0.1"/>
 
