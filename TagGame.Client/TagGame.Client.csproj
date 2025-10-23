@@ -28,10 +28,14 @@
 		<AssemblyVersion>1.0.0.0</AssemblyVersion>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-ios|AnyCPU'">
-	  	<CreatePackage>false</CreatePackage>
-		<CodesignEntitlements>Platforms\iOS\Entitlements.plist</CodesignEntitlements>
-	</PropertyGroup>
+		<!-- iOS signing: use entitlements only for device builds. Simulator should not use custom keychain groups. -->
+		<PropertyGroup Condition="'$(TargetFramework)'=='net9.0-ios' and '$(RuntimeIdentifier)'=='ios-arm64'">
+			<CreatePackage>false</CreatePackage>
+			<CodesignEntitlements>Platforms\iOS\Entitlements.plist</CodesignEntitlements>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(TargetFramework)'=='net9.0-ios' and '$(RuntimeIdentifier)'=='iossimulator-arm64'">
+			<CodesignEntitlements></CodesignEntitlements>
+		</PropertyGroup>
 	
 	<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
 		<AndroidManifestPlaceholders>
@@ -61,7 +65,6 @@
 	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Maui" Version="11.2.0" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-		<PackageReference Include="DotNetMeteor.HotReload.Plugin" Version="3.3.0" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.60" />
 		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="9.0.60" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.4" />
@@ -164,34 +167,16 @@
 	  <Compile Update="Platforms\Android\CustomImplementations\AdvancedMapHandler.cs">
 	    <ExcludeFromCurrentConfiguration>false</ExcludeFromCurrentConfiguration>
 	  </Compile>
-	  <Compile Update="Platforms\iOS\Impementations\DebugSecureStorage.cs">
-	    <ExcludeFromCurrentConfiguration>true</ExcludeFromCurrentConfiguration>
-	  </Compile>
 	  <Compile Update="Platforms\Android\Handlers\AdvancedMapHandler.cs">
 	    <ExcludeFromCurrentConfiguration>false</ExcludeFromCurrentConfiguration>
 	  </Compile>
 	  <Compile Update="Platforms\iOS\Handlers\AdvancedMapHandler.cs">
-	    <ExcludeFromCurrentConfiguration>true</ExcludeFromCurrentConfiguration>
+	    <ExcludeFromCurrentConfiguration>false</ExcludeFromCurrentConfiguration>
 	  </Compile>
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Reference Include="CommunityToolkit.Maui">
-	    <HintPath>..\..\..\.nuget\packages\communitytoolkit.maui\11.2.0\lib\net9.0-android35.0\CommunityToolkit.Maui.dll</HintPath>
-	  </Reference>
-	</ItemGroup>
 
-	<ItemGroup>
-	  <None Remove="Platforms\iOS\Resources\en.lproj\InfoPlist.strings" />
-	  <BundleResource Include="Platforms\iOS\Resources\en.lproj\InfoPlist.strings">
-	    <Link>/Users/fabian/Developer/TagGame/TagGame.Client/Platforms/iOS/Resources/en.lproj/InfoPlist.strings</Link>
-	    <IsDefaultItem>true</IsDefaultItem>
-	  </BundleResource>
-	  <None Remove="Platforms\iOS\Resources\de.lproj\InfoPlist.strings" />
-	  <BundleResource Include="Platforms\iOS\Resources\de.lproj\InfoPlist.strings">
-	    <Link>/Users/fabian/Developer/TagGame/TagGame.Client/Platforms/iOS/Resources/de.lproj/InfoPlist.strings</Link>
-	    <IsDefaultItem>true</IsDefaultItem>
-	  </BundleResource>
-	</ItemGroup>
+    <!-- iOS entitlements are used for codesigning via CodesignEntitlements
+         and must not be embedded as a bundle resource. -->
 
 </Project>

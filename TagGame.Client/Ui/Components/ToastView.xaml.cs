@@ -18,7 +18,7 @@ public partial class ToastView : ContentView
         InitializeComponent();
     }
     
-    public async Task Show(string message, ToastType type, int durationMilliseconds = 3000)
+    public Task Show(string message, ToastType type, int durationMilliseconds = 3000)
     {
         this.AbortAnimation(ProgressAnimationName);
         SetText(message);   
@@ -27,6 +27,8 @@ public partial class ToastView : ContentView
         SetStyle(type);
         
         AnimateProgressBar(durationMilliseconds);
+        
+        return Task.CompletedTask;
     }
 
     private void SetText(string message)
@@ -47,7 +49,7 @@ public partial class ToastView : ContentView
 
     private void SetStyle(ToastType type)
     {
-        var style = Style.FromToastType(type);
+        var style = ToastStyle.FromToastType(type);
         
         ProgressLine.BackgroundColor = style.Event;
         ToastIcon.Behaviors.Clear();
@@ -82,29 +84,29 @@ public partial class ToastView : ContentView
             (v, c) => IsVisible = false);
     }
     
-    private class Style
+    private class ToastStyle
     {
-        public Color Background { get; set; }
-        public Color Text { get; set; }
-        public Color Event { get; set; }
+        public Color Background { get; set; } = Colors.White;
+        public Color Text { get; set; } = Colors.Black;
+        public Color Event { get; set; } = Colors.Black;
 
-        public static Style FromToastType(ToastType type)
+        public static ToastStyle FromToastType(ToastType type)
         {
             return type switch
             {
-                ToastType.Error => new Style
+                ToastType.Error => new ToastStyle
                 {
                     Background = Color.FromArgb("#FFDDDD"), 
                     Text = Color.FromArgb("#7A0000"), 
                     Event = Color.FromArgb("#D32F2F")
                 },
-                ToastType.Success => new  Style
+                ToastType.Success => new  ToastStyle
                 {
                     Background = Color.FromArgb("#DDF5E3"), 
                     Text = Color.FromArgb("#1B5E20"), 
                     Event = Color.FromArgb("#388E3C")
                 },
-                _ => new Style 
+                _ => new ToastStyle 
                 { 
                     Background = Color.FromArgb("#DDEBFF"), 
                     Text = Color.FromArgb("#0D47A1"), 

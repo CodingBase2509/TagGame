@@ -1,4 +1,5 @@
 using Microsoft.Maui.Controls.Xaml;
+using Microsoft.Extensions.DependencyInjection;
 using TagGame.Client.Services;
 
 namespace TagGame.Client.Ui.Extensions;
@@ -15,7 +16,7 @@ public class LocalizationExtension : IMarkupExtension<string>
 
     public string ProvideValue(IServiceProvider serviceProvider)
     {
-        var loc = ServiceHelper.GetService<Localization>();
+        var loc = ServiceHelper.GetRequiredService<Localization>();
         return string.IsNullOrEmpty(Key) ? $"[Key not set]" : loc.Get(Key, Page);
     }
 

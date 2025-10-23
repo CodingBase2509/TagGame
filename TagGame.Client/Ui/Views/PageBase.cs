@@ -13,7 +13,7 @@ public class PageBase : ContentPage
     
     public Grid BaseLayout { get; private set; }
     
-    public PageBase(ViewModelBase vm)
+    protected PageBase(ViewModelBase vm)
     {
         _viewModel = vm;
         On<iOS>().SetUseSafeArea(false);
@@ -35,7 +35,7 @@ public class PageBase : ContentPage
     {
         return new ControlTemplate(() =>
         {
-            var presenter = new ContentPresenter();
+            var presenter = new ContentView();
             BaseLayout =
             [
                 presenter

@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
 using CommunityToolkit.Maui.Core;
+using Microsoft.Maui;
+using Microsoft.Maui.Controls;
 #if IOS
 using CoreGraphics;
 #endif
-using Microsoft.Maui;
-using Microsoft.Maui.Controls;
 using Microsoft.Maui.Controls.Maps;
 using Microsoft.Maui.Devices.Sensors;
 using Microsoft.Maui.Graphics;
@@ -16,14 +16,21 @@ using TagGame.Client.Handlers;
 
 namespace TagGame.Client.Ui.Components;
 
-public partial class GeofenceEditor : ContentView
+public partial class GeofenceEditor : ContentView, IDisposable
 {
+    private Polygon? _geofencePolygon;
     private Point _panStartCenter;
     private double _currentScale = 1;
     private double _startScale = 1;
     private bool _isRotating = false;
     
-    public static BindableProperty GeofenceChangedCommandProperty = BindableProperty.Create(
+    public static readonly BindableProperty InitialGeofenceProperty = BindableProperty.Create(
+        nameof(InitialGeofence),
+        typeof(Shared.Domain.Common.Location[]),
+        typeof(GeofenceEditor),
+        Array.Empty<TagGame.Shared.Domain.Common.Location>());
+    
+    public static readonly BindableProperty GeofenceChangedCommandProperty = BindableProperty.Create(
         nameof(GeofenceChangedCommand),
         typeof(ICommand),
         typeof(GeofenceEditor));
@@ -33,28 +40,56 @@ public partial class GeofenceEditor : ContentView
         InitializeComponent();
         Loaded += OnLoaded;
     }
-    
-    ~GeofenceEditor()
-    {
-        Loaded -= OnLoaded;
-    }
 
+    public Shared.Domain.Common.Location[] InitialGeofence
+    {
+        get => (Shared.Domain.Common.Location[])GetValue(InitialGeofenceProperty);
+        set => SetValue(InitialGeofenceProperty, value);
+    }
+    
     public ICommand GeofenceChangedCommand
     {
         get => (ICommand)GetValue(GeofenceChangedCommandProperty);
         set => SetValue(GeofenceChangedCommandProperty, value);
     }
     
+    public void Dispose()
+    {
+        Loaded -= OnLoaded;
+        if (_geofencePolygon is not null)
+        {
+            GameMap.MapElements.Remove(_geofencePolygon);
+            _geofencePolygon = null;
+        }
+        
+        GC.SuppressFinalize(this);
+    }
+    
     private async void OnLoaded(object? sender, EventArgs e)
     {
-        var location = await Geolocation.GetLastKnownLocationAsync() ?? await Geolocation.GetLocationAsync();
-        if (location is null) 
-            return;
-        
-        var center = new Location(location.Latitude, location.Longitude);
-        GameMap.MoveToRegion(MapSpan.FromCenterAndRadius(center, Distance.FromMeters(100)));
-    }
+        if (InitialGeofence is [])
+        {
+            var location = await Geolocation.GetLastKnownLocationAsync() ?? await Geolocation.GetLocationAsync();
+            if (location is null) 
+                return;
+            
+            var mapCenter = new Location(location.Latitude, location.Longitude);
+            var radius = Distance.FromMeters(500);
+            GameMap.MoveToRegion(MapSpan.FromCenterAndRadius(mapCenter, radius));
+        }
 
+        if (_geofencePolygon is null)
+        {
+            _geofencePolygon = CreatePolygon();
+            foreach (var location in InitialGeofence)
+            {
+                _geofencePolygon.Geopath.Add(new Location(location.Latitude, location.Longitude));
+            }
+        }
+        if (!GameMap.MapElements.Contains(_geofencePolygon))
+            GameMap.MapElements.Add(_geofencePolygon);
+    }
+    
     private void OnPinchUpdated(object sender, PinchGestureUpdatedEventArgs e)
     {
         switch (e.Status)
@@ -106,8 +141,6 @@ public partial class GeofenceEditor : ContentView
         }
     }
 
-
-
     private void OnTouchAction(object sender, LongPressCompletedEventArgs e)
     {
 
@@ -116,28 +149,25 @@ public partial class GeofenceEditor : ContentView
     private void DrawBoxViewAsPolygon()
     {
         var corners = GetBoxViewCorners();
-        var polygon = new Polygon
-        {
-            StrokeColor = Colors.OrangeRed,
-            StrokeWidth = 3,
-            FillColor = new Color(1, 0.6f, 0f, 0.2f)
-        };
 
+        if (_geofencePolygon?.Count > 0)
+        {
+            GameMap.MapElements.Remove(_geofencePolygon);
+            _geofencePolygon = CreatePolygon();
+            GameMap.MapElements.Add(_geofencePolygon);
+        }
         foreach (var screenPoint in corners)
         {
             var location = (GameMap.Handler as AdvancedMapHandler)?
                 .ConvertScreenToLocation(screenPoint, Overlay);
 
             if (location is not null)
-                polygon.Geopath.Add(location);
+                _geofencePolygon!.Geopath.Add(location);
         }
-
-        GameMap.MapElements.Clear();
-        GameMap.MapElements.Add(polygon);
         
-        GeofenceChangedCommand?.Execute(polygon.Geopath);
+        GeofenceChangedCommand?.Execute(_geofencePolygon!.Geopath);
     }
-
+    
     private List<Point> GetBoxViewCorners()
     {
 #if ANDROID
@@ -188,6 +218,14 @@ public partial class GeofenceEditor : ContentView
 
         return corners;
     }
-    
-    
+
+    private static Polygon CreatePolygon()
+    {
+        return new Polygon
+        {
+            StrokeColor = Colors.OrangeRed,
+            StrokeWidth = 3,
+            FillColor = new Color(1, 0.6f, 0f, 0.2f)
+        };
+    }
 }

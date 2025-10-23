@@ -61,12 +61,12 @@ public partial class RoomSettingsModalVm(
     }
 
     [RelayCommand]
-    private void UpdateGameAreaAsync(IList<Location> points)
+    private void UpdateGameArea(IList<Location> points)
     {
         var locations = points
             .Select(point => new TagGame.Shared.Domain.Common.Location(point.Latitude, point.Longitude));
         
-        _settings.Area.Boundary = locations.ToArray();
+        GameArea.Boundary = locations.ToArray();
     }
     
     [RelayCommand]

@@ -12,7 +12,7 @@
                     <Setter Property="TextColor" Value="White" />
                 </Trigger>
                 <Trigger TargetType="Button" Property="IsEnabled" Value="False">
-                    <Setter Property="BackgroundColor" Value="Grey" />
+                    <Setter Property="BackgroundColor" Value="Gray" />
                     <Setter Property="TextColor" Value="Black" />
                 </Trigger>
             </Style.Triggers>
@@ -20,7 +20,7 @@
         </Style>
         
         <Style TargetType="Entry" ApplyToDerivedTypes="True">
-            <Setter Property="PlaceholderColor" Value="LightGrey"/>
+            <Setter Property="PlaceholderColor" Value="LightGray"/>
             <Setter Property="TextColor" Value="Black"/>
             <Setter Property="BackgroundColor" Value="Azure"/>
         </Style>
@@ -39,7 +39,7 @@
                 <Trigger TargetType="Picker"
                          Property="IsEnabled"
                          Value="False">
-                    <Setter Property="BackgroundColor" Value="LightGrey"/>
+                    <Setter Property="BackgroundColor" Value="LightGray"/>
                 </Trigger>
                 <Trigger TargetType="Picker"
                          Property="IsEnabled"
@@ -51,4 +51,3 @@
 
     </Application.Resources>
 </Application>
-

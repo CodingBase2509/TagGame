@@ -101,17 +101,21 @@
                Margin="10, 0" />
         
         <c:AdvancedMap Grid.Row="3" 
-                  Margin="10, 0, 10, 10"
-                  IsVisible="{Binding CanNotEdit}"
-                  IsZoomEnabled="False"
-                  IsRotationEnabled="False"
-                  IsScrollEnabled="False"
-                  IsTrafficEnabled="False"
-                  MapType="Hybrid"/>
+                       x:Name="Map"
+                       Margin="10, 0, 10, 10"
+                       IsVisible="{Binding CanNotEdit}"
+                       IsZoomEnabled="False"
+                       IsRotationEnabled="False"
+                       IsScrollEnabled="False"
+                       IsTrafficEnabled="False"
+                       InitialGeofence="{Binding GameArea.Boundary}"
+                       IsShowingUser="True"
+                       MapType="Hybrid"/>
         
         <c:GeofenceEditor Grid.Row="3"
                           Margin="10, 0, 10, 10"
                           IsVisible="{Binding CanEdit}"
+                          InitialGeofence="{Binding GameArea.Boundary}"
                           GeofenceChangedCommand="{Binding UpdateGameAreaCommand}"/>
         
     </Grid>
