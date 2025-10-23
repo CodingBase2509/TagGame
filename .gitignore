@@ -38,3 +38,6 @@ Desktop.ini
 **/Data
 **/Directory.Build.props
 **/Directory.Build.*.props
+
+# v1 Files
+/v1/**
