@@ -42,6 +42,8 @@ graph LR
 - Core (Api.Core): Feature‑Services je Bereich (z. B. Game, Player, Rooms), Orchestrierung, Transaktionen, Persistenz via Repositories/EF Core. Keine strikte CQRS/CQS, komplexere Reads optional über Reader/Queries.
 - Transport (Endpoints/Hubs): AuthZ/AuthN, DTOs, Fehlerformate (ProblemDetails), Throttling/Rate‑Limiting; ruft Feature‑Services direkt auf.
 - Client.Core: State‑Management, ViewModels, API‑Zugriff, Offline‑Robustheit; Benachrichtigungen via `IToastPublisher` (siehe 13-Client-Benachrichtigungen.md); Lokalisierung via `ILocalizer` + Live‑Updates (siehe 14-Lokalisierung.md).
+- Statistiken: Aggregation am Rundenende im Core (Service), private Abrufe via API; Details: 16-Statistiken.md
+- Chat: In‑Round Chat via SignalR mit Rollen‑Subgruppen (`@all/@hider/@seeker`); Details: 17-GameChat.md
 
 ## Sicherheit & AuthZ
 - AuthN: JWT Access + Refresh Tokens (kurzlebig/rotierend).

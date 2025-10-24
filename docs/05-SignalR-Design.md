@@ -9,6 +9,15 @@ Hubs: Entweder 1 Hub mit zwei Phasen oder getrennt in `LobbyHub` und `GameHub`. 
 - Reconnect: exponential backoff, clientseitig Statuscache, serverseitig Snapshot bei Rejoin
  - Autorisierung: Connection‑Level `[Authorize]` prüft Token; ressourcenbasierte Checks (Membership/Permissions) pro Methode oder via `IHubFilter` (siehe 15-Autorisierung-und-Permissions.md)
 
+### Rundenchat (In-Game)
+- Subgruppen pro Runde und Rolle für Chat:
+  - Basis: `room:{roomId}:round:{roundId}`
+  - Rollen: `...:hider`, `...:seeker`
+- Senden (Client → Server): `SendChatMessage({ roomId, roundId, audience, content, clientTs, idempotencyKey })`
+- Empfangen (Server → Client): `ChatMessagePosted(ChatMessageDto)`
+- Snapshot: `GetRecentMessages(roomId, roundId, take)` (optional, serverseitig nach Sichtbarkeit gefiltert)
+- Regeln: Nur während aktiver Runde; Audience‑Routing serverseitig (kein Client‑Filter). Details: 17-GameChat.md
+
 ## Client → Server (Beispiele)
 - `JoinRoom(roomId, displayName)`
 - `SetReady(roomId, isReady)`
@@ -17,6 +26,7 @@ Hubs: Entweder 1 Hub mit zwei Phasen oder getrennt in `LobbyHub` und `GameHub`. 
 - `UpdateLocation(roomId, { lat, lng, acc, ts })` (rate-limited)
 - `TagPlayer(roomId, taggedPlayerId, clientTs, idempotencyKey)`
 - `LeaveRoom(roomId)`
+ - `SendChatMessage(...)` (siehe oben)
 
 ## Server → Client (Beispiele)
 - `LobbyState(state)` — Vollständiger Snapshot (Owner, Players, Ready-Status)
@@ -27,6 +37,7 @@ Hubs: Entweder 1 Hub mit zwei Phasen oder getrennt in `LobbyHub` und `GameHub`. 
 - `LocationUpdate(playerId, location)` — nur wenn erlaubt/aggregiert
 - `PlayerTagged(taggerId, taggedId, roundState)`
 - `RoundEnded(summary)` / `MatchEnded(result)`
+ - `ChatMessagePosted(message)` (siehe oben)
 
 ## Nachrichtenformate (Schema-Auszug)
 ```json

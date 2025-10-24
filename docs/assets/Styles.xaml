@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+  <!-- ========================= -->
+  <!--         STYLES.XAML       -->
+  <!-- ========================= -->
+
+  <!-- Page Background -->
+  <Style TargetType="ContentPage">
+    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource ColorBackgroundLight}, Dark={StaticResource ColorBackgroundDark}}" />
+  </Style>
+
+  <!-- Labels -->
+  <Style x:Key="H1Label" TargetType="Label">
+    <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource ColorTextPrimaryLight}, Dark={StaticResource ColorTextPrimaryDark}}" />
+    <Setter Property="FontSize" Value="28" />
+    <Setter Property="FontAttributes" Value="Bold" />
+  </Style>
+
+  <Style x:Key="H2Label" TargetType="Label">
+    <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource ColorTextPrimaryLight}, Dark={StaticResource ColorTextPrimaryDark}}" />
+    <Setter Property="FontSize" Value="22" />
+    <Setter Property="FontAttributes" Value="Bold" />
+  </Style>
+
+  <Style x:Key="BodyLabel" TargetType="Label">
+    <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource ColorTextPrimaryLight}, Dark={StaticResource ColorTextPrimaryDark}}" />
+    <Setter Property="FontSize" Value="14" />
+  </Style>
+
+  <!-- Buttons -->
+  <Style x:Key="PrimaryButton" TargetType="Button">
+    <Setter Property="CornerRadius" Value="12" />
+    <Setter Property="FontSize" Value="16" />
+    <Setter Property="Padding" Value="16,12" />
+    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource ColorPrimaryLight}, Dark={StaticResource ColorPrimaryDark}}" />
+    <Setter Property="TextColor" Value="White" />
+  </Style>
+
+  <Style x:Key="SecondaryButton" TargetType="Button">
+    <Setter Property="CornerRadius" Value="12" />
+    <Setter Property="FontSize" Value="16" />
+    <Setter Property="Padding" Value="16,12" />
+    <Setter Property="BackgroundColor" Value="Transparent" />
+    <Setter Property="BorderWidth" Value="1" />
+    <Setter Property="BorderColor" Value="{AppThemeBinding Light={StaticResource ColorPrimaryLight}, Dark={StaticResource ColorPrimaryDark}}" />
+    <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource ColorPrimaryLight}, Dark={StaticResource ColorPrimaryDark}}" />
+  </Style>
+
+  <Style x:Key="DangerButton" TargetType="Button">
+    <Setter Property="CornerRadius" Value="12" />
+    <Setter Property="FontSize" Value="16" />
+    <Setter Property="Padding" Value="16,12" />
+    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource ColorErrorLight}, Dark={StaticResource ColorErrorDark}}" />
+    <Setter Property="TextColor" Value="White" />
+  </Style>
+
+  <!-- Entries / Editors -->
+  <Style TargetType="Entry">
+    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource ColorSurfaceLight}, Dark={StaticResource ColorSurfaceDark}}" />
+    <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource ColorTextPrimaryLight}, Dark={StaticResource ColorTextPrimaryDark}}" />
+    <Setter Property="PlaceholderColor" Value="{AppThemeBinding Light={StaticResource ColorTextSecondaryLight}, Dark={StaticResource ColorTextSecondaryDark}}" />
+    <Setter Property="HeightRequest" Value="44" />
+    <Setter Property="Margin" Value="0,6" />
+  </Style>
+
+  <Style TargetType="Editor">
+    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource ColorSurfaceLight}, Dark={StaticResource ColorSurfaceDark}}" />
+    <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource ColorTextPrimaryLight}, Dark={StaticResource ColorTextPrimaryDark}}" />
+    <Setter Property="PlaceholderColor" Value="{AppThemeBinding Light={StaticResource ColorTextSecondaryLight}, Dark={StaticResource ColorTextSecondaryDark}}" />
+    <Setter Property="AutoSize" Value="TextChanges" />
+  </Style>
+
+  <!-- Frames / Cards -->
+  <Style x:Key="Card" TargetType="Frame">
+    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource ColorSurfaceLight}, Dark={StaticResource ColorSurfaceDark}}" />
+    <Setter Property="CornerRadius" Value="16" />
+    <Setter Property="HasShadow" Value="True" />
+    <Setter Property="Padding" Value="16" />
+  </Style>
+
+  <!-- Sliders / Switches / ProgressBar -->
+  <Style TargetType="Slider">
+    <Setter Property="MinimumTrackColor" Value="{AppThemeBinding Light={StaticResource ColorPrimaryLight}, Dark={StaticResource ColorPrimaryDark}}" />
+    <Setter Property="MaximumTrackColor" Value="{AppThemeBinding Light={StaticResource ColorDividerLight}, Dark={StaticResource ColorDividerDark}}" />
+  </Style>
+
+  <Style TargetType="Switch">
+    <Setter Property="OnColor" Value="{AppThemeBinding Light={StaticResource ColorPrimaryLight}, Dark={StaticResource ColorPrimaryDark}}" />
+  </Style>
+
+  <Style TargetType="ProgressBar">
+    <Setter Property="ProgressColor" Value="{AppThemeBinding Light={StaticResource ColorPrimaryLight}, Dark={StaticResource ColorPrimaryDark}}" />
+  </Style>
+
+  <!-- Toasts -->
+  <Style x:Key="ToastFrame" TargetType="Frame">
+    <Setter Property="CornerRadius" Value="12" />
+    <Setter Property="Padding" Value="12,8" />
+    <Setter Property="HasShadow" Value="False" />
+    <Setter Property="HorizontalOptions" Value="Center" />
+    <Setter Property="VerticalOptions" Value="Start" />
+    <Setter Property="Margin" Value="0,40,0,0" />
+  </Style>
+
+  <!-- Chat Popup -->
+  <Style x:Key="ChatPopup" TargetType="Border">
+    <Setter Property="CornerRadius" Value="12" />
+    <Setter Property="Padding" Value="12" />
+    <Setter Property="BackgroundColor" Value="#1E293BCC" />
+  </Style>
+
+  <!-- Floating Button -->
+  <Style x:Key="FloatingActionButton" TargetType="Frame">
+    <Setter Property="CornerRadius" Value="30" />
+    <Setter Property="HeightRequest" Value="60" />
+    <Setter Property="WidthRequest" Value="60" />
+    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource ColorPrimaryLight}, Dark={StaticResource ColorPrimaryDark}}" />
+    <Setter Property="HasShadow" Value="True" />
+    <Setter Property="Margin" Value="16" />
+  </Style>
+
+</ResourceDictionary>

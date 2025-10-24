@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+  <!-- ========================= -->
+  <!--        COLORS.XAML        -->
+  <!-- ========================= -->
+
+  <!-- Primary Palette -->
+  <Color x:Key="ColorPrimaryLight">#00BFA6</Color>
+  <Color x:Key="ColorPrimaryDark">#00E1C6</Color>
+  <Color x:Key="ColorPrimaryActiveLight">#009C88</Color>
+  <Color x:Key="ColorPrimaryActiveDark">#00C0A7</Color>
+
+  <!-- Backgrounds -->
+  <Color x:Key="ColorBackgroundLight">#F8FAFC</Color>
+  <Color x:Key="ColorBackgroundDark">#0F172A</Color>
+  <Color x:Key="ColorSurfaceLight">#FFFFFF</Color>
+  <Color x:Key="ColorSurfaceDark">#1E293B</Color>
+
+  <!-- Text Colors -->
+  <Color x:Key="ColorTextPrimaryLight">#1A1A1A</Color>
+  <Color x:Key="ColorTextPrimaryDark">#F1F5F9</Color>
+  <Color x:Key="ColorTextSecondaryLight">#4A4A4A</Color>
+  <Color x:Key="ColorTextSecondaryDark">#CBD5E1</Color>
+
+  <!-- Borders & Dividers -->
+  <Color x:Key="ColorDividerLight">#E5E7EB</Color>
+  <Color x:Key="ColorDividerDark">#334155</Color>
+
+  <!-- Status Colors -->
+  <Color x:Key="ColorSuccessLight">#10B981</Color>
+  <Color x:Key="ColorSuccessDark">#34D399</Color>
+  <Color x:Key="ColorWarningLight">#F59E0B</Color>
+  <Color x:Key="ColorWarningDark">#FBBF24</Color>
+  <Color x:Key="ColorErrorLight">#EF4444</Color>
+  <Color x:Key="ColorErrorDark">#F87171</Color>
+  <Color x:Key="ColorInfoLight">#3B82F6</Color>
+  <Color x:Key="ColorInfoDark">#60A5FA</Color>
+
+  <!-- Shadows -->
+  <Color x:Key="ColorShadowLight">#14000000</Color>
+  <Color x:Key="ColorShadowDark">#66000000</Color>
+
+  <!-- Group Accent Colors -->
+  <Color x:Key="ColorAll">#00BFA6</Color>
+  <Color x:Key="ColorHider">#3B82F6</Color>
+  <Color x:Key="ColorSeeker">#F59E0B</Color>
+
+</ResourceDictionary>
