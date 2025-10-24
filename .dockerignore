@@ -1,0 +1,27 @@
+# General
+.git
+.gitignore
+.DS_Store
+.idea/
+.vscode/
+**/*.user
+**/*.swp
+**/*.suo
+
+# Build outputs
+**/bin/
+**/obj/
+
+# Local data volumes
+Data/
+
+# Node / frontend (if any)
+node_modules/
+
+# Test artifacts
+**/TestResults/
+**/coverage/
+
+# Docker
+docker-compose.override.yml
+
