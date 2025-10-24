@@ -28,7 +28,8 @@ Basierend auf Minimal APIs. Auth per JWT (anonymes Bootstrap + optionaler Accoun
 
 ## Diagnostics
 - GET `/healthz` — Liveness
-- GET `/readyz` — Readiness
+- GET `/readyz` — Readiness (DB u. a. Abhängigkeiten)
+- Format: `application/health+json` (IETF Entwurf), `status: pass|warn|fail`, `checks: { name: [{ status, time, duration, description, error }] }`
 
 ## Autorisierung (Policies)
 - Endpoints deklarieren Policies statt Rollen:
@@ -42,3 +43,11 @@ Basierend auf Minimal APIs. Auth per JWT (anonymes Bootstrap + optionaler Accoun
 - 401/403 für Auth/Autorisierung
 - 409 für Konflikte (z. B. Raum voll)
 - 429 Throttling
+
+## Statistiken (privat)
+- `GET /api/v1/stats/me` — persönliche, private Statistiken des aktuellen Nutzers (Auth erforderlich).
+- `GET /api/v1/rounds/{roundId}/summary` — Runden‑Summary für Teilnehmende.
+
+Hinweise:
+- Aggregation erfolgt intern am Rundenende via Service (kein öffentlicher Write‑Endpoint).
+- Details und Datenmodell: 16-Statistiken.md

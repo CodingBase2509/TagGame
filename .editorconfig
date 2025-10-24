@@ -25,6 +25,8 @@ csharp_style_expression_bodied_indexers = when_on_single_line:suggestion
 csharp_style_expression_bodied_accessors = when_on_single_line:suggestion
 csharp_style_namespace_declarations = file_scoped:suggestion
 
+# Disable IDE0058 (expression value is never used)
+dotnet_diagnostic.IDE0058.severity = none
 # Enforce code style as warnings; in Core libs warnings become errors via Directory.Build.props
 dotnet_analyzer_diagnostic.category-Style.severity = warning
 dotnet_analyzer_diagnostic.category-Design.severity = warning
@@ -36,3 +38,23 @@ dotnet_analyzer_diagnostic.category-Usage.severity = warning
 dotnet_diagnostic.IDE0005.severity = silent    # remove unused usings (avoid build dependency on XML docs)
 dotnet_diagnostic.IDE0060.severity = suggestion # remove unused parameters (keep suggestion)
 dotnet_diagnostic.CA1822.severity = suggestion  # mark members as static when possible
+
+# Suppress analyzer warnings in EF migrations (Core)
+[TagGame.Api.Core/Persistence/Migrations/**/*.cs]
+dotnet_analyzer_diagnostic.severity = none
+
+# Generic fallback for any Migrations folder
+[**/Migrations/**/*.cs]
+dotnet_analyzer_diagnostic.severity = none
+generated_code = true
+
+# Suppress noisy platform warnings in Client (iOS/Android)
+[TagGame.Client/Platforms/iOS/**/*.cs]
+dotnet_diagnostic.IDE0130.severity = none
+dotnet_diagnostic.IDE0040.severity = none
+dotnet_diagnostic.IDE0290.severity = none
+
+[TagGame.Client/Platforms/Android/**/*.cs]
+dotnet_diagnostic.IDE0130.severity = none
+dotnet_diagnostic.IDE0040.severity = none
+dotnet_diagnostic.IDE0290.severity = none
