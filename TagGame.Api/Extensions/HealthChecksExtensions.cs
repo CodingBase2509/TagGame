@@ -4,6 +4,8 @@ namespace TagGame.Api.Extensions;
 
 public static class HealthChecksExtensions
 {
+    private static readonly string[] Tags = ["db", "sql", "readiness", "ready"];
+
     public static IServiceCollection AddHostHealthChecks(this IServiceCollection services, IConfiguration configuration)
     {
         var connectionString = configuration.GetConnectionString("DefaultConnection");
@@ -16,7 +18,7 @@ public static class HealthChecksExtensions
                 connectionString: connectionString!,
                 name: "postgres",
                 failureStatus: HealthStatus.Unhealthy,
-                tags: new[] { "db", "sql", "readiness" });
+                tags: Tags);
         }
 
         // add more checks (e.g., cache, external APIs) here as needed
@@ -24,4 +26,3 @@ public static class HealthChecksExtensions
         return services;
     }
 }
-
