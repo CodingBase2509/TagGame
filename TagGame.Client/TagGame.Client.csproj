@@ -63,7 +63,6 @@
         <Folder Include="Ui/Extensions/" />
         <Folder Include="Ui/Services/" />
     </ItemGroup>
-
     <ItemGroup>
         <ProjectReference Include="..\TagGame.Client.Core\TagGame.Client.Core.csproj"/>
         <ProjectReference Include="..\TagGame.Shared\TagGame.Shared.csproj"/>

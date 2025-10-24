@@ -27,7 +27,6 @@ csharp_style_namespace_declarations = file_scoped:suggestion
 
 # Disable IDE0058 (expression value is never used)
 dotnet_diagnostic.IDE0058.severity = none
-
 # Enforce code style as warnings; in Core libs warnings become errors via Directory.Build.props
 dotnet_analyzer_diagnostic.category-Style.severity = warning
 dotnet_analyzer_diagnostic.category-Design.severity = warning

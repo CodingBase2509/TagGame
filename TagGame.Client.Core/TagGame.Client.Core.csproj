@@ -26,5 +26,4 @@
     <Folder Include="Localization/" />
     <Folder Include="Notifications/" />
   </ItemGroup>
-
 </Project>
