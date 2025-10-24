@@ -1,6 +1,7 @@
 using Carter;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using TagGame.Api.Extensions;
 using TagGame.Api.Infrastructure.Health;
 
 namespace TagGame.Api.Endpoints;
@@ -29,6 +30,8 @@ public sealed class HealthModule : CarterModule
             ResponseWriter = IetfHealthResponseWriter.WriteResponse
         });
 
-        app.MapGet("/ping", () => Results.Ok(new { pong = true, at = DateTimeOffset.UtcNow }));
+        app.MapGet("/ping", () => Results.Ok(new { pong = true, at = DateTimeOffset.UtcNow }))
+            .WithTags("Health")
+            .WithOpenApi();
     }
 }

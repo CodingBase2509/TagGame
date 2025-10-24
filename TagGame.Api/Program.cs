@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using TagGame.Api.Core;
 using TagGame.Api.Extensions;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCore(builder.Configuration);
 builder.Services.AddHostHealthChecks(builder.Configuration);
 builder.Services.AddCarter();
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApiWithJwt();
 
 builder.Services.AddProblemDetailsSupport(builder.Environment);
 
@@ -34,6 +35,11 @@ app.UseStatusCodePages(async context =>
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference(options =>
+    {
+        options.Title = "TagGame API";
+        options.DarkMode = true;
+    });
 }
 
 app.MapCarter();
