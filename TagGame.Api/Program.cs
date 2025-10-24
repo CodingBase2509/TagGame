@@ -14,6 +14,7 @@ builder.Services.AddCarter();
 builder.Services.AddOpenApiWithJwt();
 
 builder.Services.AddProblemDetailsSupport(builder.Environment);
+builder.Services.AddDevCors(builder.Configuration, builder.Environment);
 
 var app = builder.Build();
 
@@ -34,6 +35,7 @@ app.UseStatusCodePages(async context =>
 
 if (app.Environment.IsDevelopment())
 {
+    app.UseCors(CorsExtensions.DevCorsPolicy);
     app.MapOpenApi();
     app.MapScalarApiReference(options =>
     {
