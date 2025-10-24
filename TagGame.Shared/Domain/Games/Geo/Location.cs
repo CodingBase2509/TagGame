@@ -1,9 +1,9 @@
-namespace TagGame.Shared.Domain.Games;
+namespace TagGame.Shared.Domain.Games.Geo;
 
 /// <summary>
 /// Represents a single location sample from a client, normalized on the server.
 /// </summary>
-public sealed class LocationSample
+public sealed class Location
 {
     /// <summary>Latitude in degrees (−90..+90).</summary>
     public double Latitude { get; set; }

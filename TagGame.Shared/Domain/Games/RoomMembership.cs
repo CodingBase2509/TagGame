@@ -18,6 +18,9 @@ public class RoomMembership
     /// <summary>Foreign key: room id.</summary>
     public Guid RoomId { get; set; }
 
+    /// <summary>The role of the player in the game.</summary>
+    public PlayerType Type { get; set; } = PlayerType.Hider;
+
     /// <summary>Role of the user within the room.</summary>
     public RoomRole Role { get; set; } = RoomRole.Player;
 
