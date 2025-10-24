@@ -17,8 +17,6 @@
   <!-- Explicit folders to show in Solution Explorer even when empty -->
   <ItemGroup>
     <Folder Include="Endpoints/" />
-    <Folder Include="Extensions/" />
-    <Folder Include="Middleware/" />
     <Folder Include="Filters/" />
     <Folder Include="Auth/" />
     <Folder Include="Hubs/" />
