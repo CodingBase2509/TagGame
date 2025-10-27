@@ -11,14 +11,13 @@
     <PackageReference Include="Carter" />
     <PackageReference Include="AspNetCore.HealthChecks.NpgSql" />
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" />
+    <PackageReference Include="Scalar.AspNetCore" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" PrivateAssets="all" />
   </ItemGroup>
 
   <!-- Explicit folders to show in Solution Explorer even when empty -->
   <ItemGroup>
     <Folder Include="Endpoints/" />
-    <Folder Include="Extensions/" />
-    <Folder Include="Middleware/" />
     <Folder Include="Filters/" />
     <Folder Include="Auth/" />
     <Folder Include="Hubs/" />

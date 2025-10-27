@@ -9,6 +9,9 @@ Project layout (v2)
 - Client Core: `TagGame.Client.Core` (ViewModels/Services)
 - Shared: `TagGame.Shared` (domain/DTOs)
 
+Getting Started
+- Siehe `docs/00-Getting-Started-v2.md` für lokales Setup (Docker DB, API starten, CORS/EF‑Hinweise).
+
 Build
 - `dotnet restore`
 - `dotnet build TagGame.sln -c Debug`

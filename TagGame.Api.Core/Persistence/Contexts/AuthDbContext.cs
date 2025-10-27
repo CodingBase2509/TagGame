@@ -1,5 +1,5 @@
-using TagGame.Shared.Domain.Auth;
 using TagGame.Api.Core.Persistence.Configurations;
+using TagGame.Shared.Domain.Auth;
 
 namespace TagGame.Api.Core.Persistence.Contexts;
 
