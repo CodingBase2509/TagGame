@@ -10,7 +10,7 @@ public static class CorsExtensions
         {
             options.AddPolicy(DevCorsPolicy, policy =>
             {
-                var origins = configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
+                var origins = configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
 
                 if (origins.Length > 0)
                 {

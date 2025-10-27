@@ -1,7 +1,6 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using TagGame.Api.Core.Common.Exceptions;
 
 namespace TagGame.Api.Middleware;
@@ -57,7 +56,7 @@ public sealed class GlobalExceptionHandler(IProblemDetailsService problemDetails
     private static (int status, string title, IDictionary<string, string[]>? errors, Dictionary<string, string>? headers) MapException(Exception ex) =>
         ex switch
         {
-            FluentValidation.ValidationException fve => (
+            ValidationException fve => (
                 StatusCodes.Status400BadRequest,
                 "Validation failed",
                 ToDictionary(fve),
@@ -85,10 +84,14 @@ public sealed class GlobalExceptionHandler(IProblemDetailsService problemDetails
             _ => (StatusCodes.Status500InternalServerError, "An unexpected error occurred", null, null)
         };
 
-    private static Dictionary<string, string[]> ToDictionary(FluentValidation.ValidationException ve) =>
+    private static Dictionary<string, string[]> ToDictionary(ValidationException ve) =>
         ve.Errors
             .GroupBy(e => e.PropertyName ?? string.Empty)
-            .ToDictionary(g => g.Key, g => g.Select(e => e.ErrorMessage).ToArray());
+            .ToDictionary(
+                g => g.Key,
+                g => g
+                    .Select(e => e.ErrorMessage)
+                    .ToArray());
 
     private static Dictionary<string, string>? ToRetryAfterHeaders(RateLimitExceededException ex)
     {

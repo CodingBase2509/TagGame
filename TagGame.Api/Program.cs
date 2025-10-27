@@ -1,9 +1,8 @@
 using Carter;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Scalar.AspNetCore;
 using TagGame.Api.Core;
 using TagGame.Api.Extensions;
-using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,5 +1,5 @@
-using TagGame.Shared.Domain.Games;
 using TagGame.Api.Core.Persistence.Configurations;
+using TagGame.Shared.Domain.Games;
 
 namespace TagGame.Api.Core.Persistence.Contexts;
 
