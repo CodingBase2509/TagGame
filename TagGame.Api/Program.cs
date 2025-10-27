@@ -35,7 +35,7 @@ app.UseStatusCodePages(async context =>
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseCors(CorsExtensions.DevCorsPolicy);
+    app.UseCors(ServiceCollectionCorsExtensions.DevCorsPolicy);
     app.MapOpenApi();
     app.MapScalarApiReference(options =>
     {
