@@ -20,7 +20,6 @@
   <!-- Explicit folders to show in Solution Explorer even when empty -->
   <ItemGroup>
     <Folder Include="Ui/ViewModels/" />
-    <Folder Include="Http/" />
     <Folder Include="Storage/" />
     <Folder Include="State/" />
     <Folder Include="Navigation/" />
