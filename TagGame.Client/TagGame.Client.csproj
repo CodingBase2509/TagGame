@@ -54,6 +54,7 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.Maui.Controls"/>
         <PackageReference Include="Microsoft.Extensions.Logging.Debug"/>
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json"/>
     </ItemGroup>
 
     <!-- Explicit folders to show in Solution Explorer even when empty -->
@@ -63,6 +64,7 @@
         <Folder Include="Ui/Extensions/" />
         <Folder Include="Ui/Services/" />
     </ItemGroup>
+
     <ItemGroup>
         <ProjectReference Include="..\TagGame.Client.Core\TagGame.Client.Core.csproj"/>
         <ProjectReference Include="..\TagGame.Shared\TagGame.Shared.csproj"/>

@@ -65,6 +65,22 @@ dotnet build TagGame.Client/TagGame.Client.csproj -f net9.0-android -c Debug
 # Mit -t:Run auf einem angeschlossenen Gerät/Emulator starten
 ```
 
+### Client-Konfiguration (appsettings)
+- Der MAUI‑Client lädt `Resources/Raw/appsettings.json` sowie im Debug `appsettings.Development.json` aus dem App‑Paket.
+- Wichtige Schlüssel:
+  - `Api:BaseUrl` / `Api:BaseAddress` — Basis‑Adresse der API (http im Dev; https in Prod)
+  - `Networking:Http` — Retry/Timeout‑Einstellungen für den typed HttpClient
+  - `Networking:Hub` — Reconnect‑Delays für SignalR
+- Emulator‑Hinweise:
+  - Android: Host‑Loopback ist `http://10.0.2.2:<port>`
+  - iOS Simulator: `http://127.0.0.1:<port>` (oder `http://localhost:<port>`)
+
+### Client‑Networking & JSON
+- Typed Client: `IApiClient` in Client.Core kapselt JSON‑GET/POST/PATCH/DELETE
+- Resilience: Retry + Total‑Timeout über `NetworkResilienceOptions` (#80)
+- Fehler: `application/problem+json` wird zu `ApiProblemException` gemappt (inkl. traceId, Validation‑Errors)
+- JSON Defaults: Gemeinsame Optionen (camelCase, Enums als Strings, Null‑Omit, TimeSpan‑Converter) auf Server und Client (#91/#93)
+
 ## Tests
 ```bash
 dotnet test --collect:"XPlat Code Coverage"
@@ -77,4 +93,3 @@ dotnet test --collect:"XPlat Code Coverage"
 ## Troubleshooting
 - Port belegt: Passen Sie Ports in `docker-compose.yml` an oder stoppen Sie konkurrierende Prozesse.
 - EF‑Migration schlägt fehl: Prüfen Sie Connection String/DB‑Erreichbarkeit und stellen Sie sicher, dass der DB‑Container läuft (`docker ps`).
-

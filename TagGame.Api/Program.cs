@@ -11,6 +11,7 @@ builder.Services.AddCore(builder.Configuration);
 builder.Services.AddHostHealthChecks(builder.Configuration);
 builder.Services.AddCarter();
 builder.Services.AddOpenApiWithJwt();
+builder.Services.AddSharedJsonOptions();
 
 builder.Services.AddProblemDetailsSupport(builder.Environment);
 builder.Services.AddDevCors(builder.Configuration, builder.Environment);
@@ -34,7 +35,7 @@ app.UseStatusCodePages(async context =>
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseCors(CorsExtensions.DevCorsPolicy);
+    app.UseCors(ServiceCollectionCorsExtensions.DevCorsPolicy);
     app.MapOpenApi();
     app.MapScalarApiReference(options =>
     {

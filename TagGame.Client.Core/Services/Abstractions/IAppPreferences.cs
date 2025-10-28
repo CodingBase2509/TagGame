@@ -1,0 +1,37 @@
+using TagGame.Client.Core.Options;
+
+namespace TagGame.Client.Core.Services.Abstractions;
+
+/// <summary>
+/// App-wide preferences (theme, language, notifications) with change events and persistence.
+/// </summary>
+public interface IAppPreferences
+{
+    /// <summary>
+    /// Current preferences snapshot. Treated as immutable; a new instance is published on changes.
+    /// </summary>
+    AppPreferencesSnapshot Snapshot { get; }
+
+    /// <summary>
+    /// Changes the app theme mode and persists the value.
+    /// No-op when the value is unchanged.
+    /// </summary>
+    Task ChangeThemeAsync(ThemeMode newTheme);
+
+    /// <summary>
+    /// Changes the app language and persists the value.
+    /// No-op when the value is unchanged.
+    /// </summary>
+    Task ChangeLanguageAsync(Language newLanguage);
+
+    /// <summary>
+    /// Enables or disables notification preferences and persists the value.
+    /// No-op when the value is unchanged.
+    /// </summary>
+    Task SetNotificationsEnabledAsync(bool enabled);
+
+    /// <summary>
+    /// Raised after a preference change with the updated snapshot.
+    /// </summary>
+    event EventHandler<AppPreferencesSnapshot> PreferencesChanged;
+}

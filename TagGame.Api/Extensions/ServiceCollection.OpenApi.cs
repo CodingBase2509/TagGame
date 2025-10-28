@@ -3,8 +3,14 @@ using Microsoft.OpenApi.Models;
 
 namespace TagGame.Api.Extensions;
 
-public static class OpenApiExtensions
+/// <summary>
+/// ServiceCollection extensions for OpenAPI/Swagger with JWT bearer security.
+/// </summary>
+public static class ServiceCollectionOpenApiExtensions
 {
+    /// <summary>
+    /// Adds OpenAPI generation and configures a JWT bearer security scheme for the document.
+    /// </summary>
     public static IServiceCollection AddOpenApiWithJwt(this IServiceCollection services)
     {
         services.AddOpenApi(options =>
@@ -48,4 +54,3 @@ public static class OpenApiExtensions
         return services;
     }
 }
-
