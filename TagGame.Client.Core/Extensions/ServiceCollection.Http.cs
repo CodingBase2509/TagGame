@@ -12,6 +12,7 @@ public static class ServiceCollectionHttpExtensions
 {
     public static IServiceCollection AddHttpServices(this IServiceCollection services, IConfiguration configuration, Func<IConfiguration, string?> baseAddressConfiguration)
     {
+        services.AddTransient<ProblemDetailsHandler>();
         services.AddTransient<AuthorizedHttpHandler>();
 
         var baseAddress = baseAddressConfiguration(configuration) ?? "http://localhost:5240";
@@ -27,6 +28,7 @@ public static class ServiceCollectionHttpExtensions
                                          DecompressionMethods.Brotli,
                 PooledConnectionLifetime = TimeSpan.FromMinutes(2)
             })
+            .AddHttpMessageHandler<ProblemDetailsHandler>()
             .AddHttpMessageHandler<AuthorizedHttpHandler>();
 
         services.ConfigureResilienceHandler(httpBuilder);
