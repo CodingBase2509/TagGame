@@ -86,6 +86,9 @@ dotnet build TagGame.Client/TagGame.Client.csproj -f net9.0-android -c Debug
 dotnet test --collect:"XPlat Code Coverage"
 ```
 
+## PR & Commits
+- Siehe Konventionen in `docs/19-PR-und-Commit-Guidelines.md`.
+
 ## Nützliche Befehle
 - Komplettstack (nur DB + pgAdmin in Compose aktiv): `docker compose up -d`
 - Formatprüfung lokal wie in CI: `dotnet tool install -g dotnet-format && dotnet format --verify-no-changes`

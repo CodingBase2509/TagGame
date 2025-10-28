@@ -7,12 +7,19 @@
         <IsPackable>false</IsPackable>
     </PropertyGroup>
 
-    <ItemGroup>
+  <ItemGroup>
     <PackageReference Include="coverlet.collector" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.runner.visualstudio" />
-    </ItemGroup>
+    <PackageReference Include="Npgsql" />
+    <PackageReference Include="DotNet.Testcontainers" />
+    <PackageReference Include="FluentAssertions" />
+    <PackageReference Include="AutoFixture" />
+    <PackageReference Include="AutoFixture.AutoMoq" />
+    <PackageReference Include="Moq" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+  </ItemGroup>
 
   <ItemGroup>
     <Using Include="Xunit"/>
@@ -22,5 +29,10 @@
   <ItemGroup>
     <Folder Include="Unit/" />
     <Folder Include="Integration/" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../TagGame.Api.Core/TagGame.Api.Core.csproj" />
+    <ProjectReference Include="../TagGame.Shared/TagGame.Shared.csproj" />
   </ItemGroup>
 </Project>

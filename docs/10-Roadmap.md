@@ -38,34 +38,41 @@
 - SignalR: Snapshot + Deltas, Idempotency für `TagPlayer`
 - Observability-Dashboards (Grafana/Seq/ELK)
 
-## v2 M0 — Umsetzung (Plan)
-- Ziel: Lauffähiges Skelett mit echter DB, sauberer API-Basis und CI.
+## v2 M1 — Umsetzung (Plan)
+- Ziel: Authentifizierung und Autorisierung produktionsreif — JWT Access + rotierende Refresh Tokens, Ressourcen‑basierte Policies, Membership‑Kontext. Client kann anonym bootstrappen, Tokens speichern/refreshen und Profil pflegen.
 
-- Sequenz A: Persistence + Container (Startpunkt)
-  - #43 EF Core: Npgsql + DbContext + DI + design-time factory
-  - #44 EF Core: initial migration + apply to dev DB
-  - #21 Docker Compose: API + Postgres
-  - #47 Dockerfile for API + .dockerignore
-  - #49 Basic health endpoints with DB check
+- Sequenz A: AuthN (Server‑Fundament)
+  - #23 User + RefreshToken entities & migrations (Verifikation, ggf. Deltas)
+  - #24 JWT access + refresh rotation (TokenService, Signing/Validation, DI)
+  - #25 Auth endpoints: /v1/users, /v1/auth/refresh, /v1/auth/logout
+  - #55 JWT refresh reuse detection + rotation tests (Familien‑Sperre bei Reuse)
+  - Tests: Unit (TokenService), Integration (Create → Refresh → Logout, Fehlerfälle)
 
-- Sequenz B: API Platform Baseline
-  - #19 ProblemDetails + error pipeline (RFC7807)
-  - #20 OpenAPI/Swagger baseline (Bearer, IDs, Tags)
-  - #46 API versioning: /api/v1 + route groups
-  - #45 CORS policy for MAUI dev
-  - #48 CI: dotnet format verification
+- Sequenz B: AuthZ (Policies/Membership)
+  - #26 Bitflags permissions enum + role masks
+  - #27 RoomMembership entity + repository (EF + Uniqueness)
+  - #28 Dynamic policy provider: RoomPermission:*
+  - #29 Membership endpoint filter (HTTP) — lädt Membership in HttpContext
+  - #30 SignalR auth guards for room methods (IAuthorizationService/IHubFilter)
+  - Tests: Policy‑Erzwingung (200/403), Filter (fehlende Membership → 403)
 
-- Sequenz C: Abschluss M0
-  - #50 Developer docs: Getting started v2
-  - Schließen per PR: #42 Centralized NuGet, #18 Directory.Build.props + analyzers, #22 CI build/test/coverage
+- Sequenz C: Client Auth‑Flow
+  - #54 Client.Core: AuthService + TokenStorage + AuthorizedHttpHandler (Attach/Refresh on 401)
+  - #92 HttpClientFactory + typed clients wiring (nutzt #54/#80/#91)
+  - #67 Client UI: SetupProfilePage (First‑Run Modal)
+  - #64 API: Update profile (PATCH /v1/users/me, ETag/If‑Match)
+  - #65 Client UI: Profile screen (DisplayName/Avatar) — nutzt #64
 
-- PR-Strategie
+- Sequenz D: Docs & Security
+  - Aktualisieren: 04‑API‑Design (ETag/If‑Match für PATCH, bereits ergänzt), Auth‑Flows (Create/Refresh/Logout), Fehlerkonventionen (412)
+  - Kurze Developer‑Notes zu Token‑Rotation/Reuse‑Detection und ProblemDetails‑Mappung im Client
+
+- PR‑Strategie
   - Kleine, fokussierte PRs (1–3 Issues), Beschreibung mit „Closes #…“.
+  - Reihenfolge: A → B → C, Docs kontinuierlich (D). Client‑PRs können parallel nach Abschluss A laufen.
   - CI prüft Build/Tests/Format; Merge schließt Issues automatisch.
 
-- Definition of Done (M0)
-  - API startet lokal und im Container, verbindet zu Postgres.
-  - Health-/Readiness-Endpunkte vorhanden (DB‑Check).
-  - Einheitliches Fehlermodell (ProblemDetails), Dokumentation via Swagger.
-  - Versionierte Routen (/api/v1) und CORS für MAUI‑Dev.
-  - CI grün (Restore/Build/Test/Coverage/Format‑Check).
+- Definition of Done (M1)
+  - Server: JWT Access/Refresh mit Rotation + Reuse‑Detection; Endpoints funktionieren inkl. ProblemDetails bei Fehlern; Policies/Filter/Hubs erzwingen AuthZ korrekt.
+  - Client: Anonymer Bootstrap, Tokens gespeichert + Auto‑Refresh bei 401, AuthorizedHttpHandler aktiv; SetupProfile + Profil‑Update funktionieren (ETag/412 abgedeckt).
+  - Tests grün (Unit/Integration); OpenAPI beschreibt Auth‑Endpoints/Scopes; Developer‑Docs aktualisiert.
