@@ -2,8 +2,14 @@ using Microsoft.AspNetCore.WebUtilities;
 
 namespace TagGame.Api.Extensions;
 
+/// <summary>
+/// ServiceCollection extensions to configure RFC7807 ProblemDetails output consistently.
+/// </summary>
 public static class ServiceCollectionProblemDetailsExtensions
 {
+    /// <summary>
+    /// Adds ProblemDetails with environment-aware details and consistent extensions (traceId).
+    /// </summary>
     public static IServiceCollection AddProblemDetailsSupport(this IServiceCollection services, IWebHostEnvironment env)
     {
         services.AddProblemDetails(options =>

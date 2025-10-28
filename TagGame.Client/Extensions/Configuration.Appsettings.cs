@@ -1,7 +1,11 @@
 using Microsoft.Extensions.Configuration;
+using Microsoft.Maui.Storage;
 
 namespace TagGame.Client.Extensions;
 
+/// <summary>
+/// IConfigurationBuilder extensions to load appsettings files from the app package (Resources/Raw).
+/// </summary>
 public static class ConfigurationAppSettings
 {
 #if DEBUG
@@ -10,6 +14,9 @@ public static class ConfigurationAppSettings
     private const string Env = "";
 #endif
 
+    /// <summary>
+    /// Loads the environment specific appsettings file from the package and adds it to the builder.
+    /// </summary>
     public static IConfigurationBuilder AddAppSettingsFile(this IConfigurationBuilder config)
     {
         try

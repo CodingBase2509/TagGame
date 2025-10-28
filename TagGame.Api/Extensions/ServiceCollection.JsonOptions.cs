@@ -3,10 +3,16 @@ using TagGame.Shared.Json;
 
 namespace TagGame.Api.Extensions;
 
+/// <summary>
+/// ServiceCollection extensions to align ASP.NET Core JSON options with shared defaults.
+/// </summary>
 public static class ServiceCollectionJsonOptionsExtensions
 {
     /// <summary>
     /// Configure ASP.NET Core JSON serializers (Minimal APIs and MVC) to use shared defaults.
+    /// </summary>
+    /// <summary>
+    /// Configures Minimal API (HttpJsonOptions) and MVC (JsonOptions) to use shared JSON defaults.
     /// </summary>
     public static IServiceCollection AddSharedJsonOptions(this IServiceCollection services)
     {

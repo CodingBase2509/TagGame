@@ -7,12 +7,19 @@ using TagGame.Client.Core.Services.Abstractions;
 
 namespace TagGame.Client.Core.Services.Implementations;
 
+/// <summary>
+/// Applies resilient retry and total-timeout strategies to typed HttpClients using v9 APIs.
+/// </summary>
 public class HttpResilienceConfigurator : IHttpResilienceConfigurator
 {
+    /// <inheritdoc />
     public void Configure(IHttpClientBuilder builder, NetworkResilienceOptions.HttpOptions httpOptions) =>
         builder.AddResilienceHandler("default", p =>
             BuildPipeline(p, httpOptions));
 
+    /// <summary>
+    /// Builds the resilience pipeline (retry + total timeout) with the given options.
+    /// </summary>
     private static void BuildPipeline(
         ResiliencePipelineBuilder<HttpResponseMessage> pipeline,
         NetworkResilienceOptions.HttpOptions http)

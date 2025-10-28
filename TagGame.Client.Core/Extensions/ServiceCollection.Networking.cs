@@ -6,6 +6,9 @@ using TagGame.Client.Core.Services.Implementations;
 
 namespace TagGame.Client.Core.Extensions;
 
+/// <summary>
+/// ServiceCollection extensions for networking resilience (HTTP + SignalR) in the client.
+/// </summary>
 public static class ServiceCollectionNetworkingExtensions
 {
     public static IServiceCollection AddNetworkingResilience(this IServiceCollection services, IConfiguration? configuration = null)
@@ -27,4 +30,3 @@ public static class ServiceCollectionNetworkingExtensions
         return services;
     }
 }
-

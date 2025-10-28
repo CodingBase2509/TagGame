@@ -1,9 +1,15 @@
 namespace TagGame.Api.Extensions;
 
+/// <summary>
+/// ServiceCollection extensions for development CORS policy.
+/// </summary>
 public static class ServiceCollectionCorsExtensions
 {
     public const string DevCorsPolicy = "DevCors";
 
+    /// <summary>
+    /// Adds a permissive development CORS policy. Uses configured origins when present, otherwise allows loopback origins.
+    /// </summary>
     public static IServiceCollection AddDevCors(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
     {
         services.AddCors(options =>

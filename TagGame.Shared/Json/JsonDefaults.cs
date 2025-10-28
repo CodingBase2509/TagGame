@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 namespace TagGame.Shared.Json;
 
 /// <summary>
-/// Central JSON defaults for server and client. Keep framework-agnostic.
+/// Central JSON defaults for server and client. Keep framework-agnostic and align both sides.
 /// </summary>
 public static class JsonDefaults
 {
@@ -41,6 +41,9 @@ public static class JsonDefaults
         return o;
     }
 
+    /// <summary>
+    /// Simple TimeSpan converter that reads ISO8601 constant ("c") or numeric milliseconds and writes constant format.
+    /// </summary>
     private sealed class TimeSpanConverter : JsonConverter<TimeSpan>
     {
         public override TimeSpan Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) =>

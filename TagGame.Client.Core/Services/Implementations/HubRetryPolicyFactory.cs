@@ -4,6 +4,9 @@ using TagGame.Client.Core.Services.Abstractions;
 
 namespace TagGame.Client.Core.Services.Implementations;
 
+/// <summary>
+/// Creates a fixed-delays reconnect policy for SignalR based on configured hub options.
+/// </summary>
 public sealed class HubRetryPolicyFactory : IHubRetryPolicyFactory
 {
     public IRetryPolicy Create(NetworkResilienceOptions.HubOptions hub)
@@ -19,6 +22,9 @@ public sealed class HubRetryPolicyFactory : IHubRetryPolicyFactory
         return new FixedDelaysRetryPolicy(delays, maxWindow);
     }
 
+    /// <summary>
+    /// Simple retry policy that yields the configured delay sequence and stops after an optional window.
+    /// </summary>
     private sealed class FixedDelaysRetryPolicy(TimeSpan[] delays, TimeSpan? maxWindow) : IRetryPolicy
     {
         public TimeSpan? NextRetryDelay(RetryContext retryContext)

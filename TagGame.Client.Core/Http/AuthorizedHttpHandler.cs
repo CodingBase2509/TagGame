@@ -2,8 +2,8 @@ namespace TagGame.Client.Core.Http;
 
 /// <summary>
 /// Placeholder delegating handler that will attach Authorization headers
-/// once the AuthService/TokenStorage from #54 is available.
-/// Currently, it passes requests through unchanged.
+/// once the AuthService/TokenStorage (#54) is available. Currently a no-op.
+/// Keep this handler first in the chain so downstream handlers see final headers.
 /// </summary>
 public sealed class AuthorizedHttpHandler : DelegatingHandler
 {
@@ -13,4 +13,3 @@ public sealed class AuthorizedHttpHandler : DelegatingHandler
         return base.SendAsync(request, cancellationToken);
     }
 }
-

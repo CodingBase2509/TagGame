@@ -3,12 +3,18 @@ using Connection = Microsoft.Maui.Networking.Connectivity;
 
 namespace TagGame.Client.Infrastructure.Connectivity;
 
+/// <summary>
+/// MAUI-based network connectivity monitor.
+/// Provides current online state, a debounced change event, and a one-shot wait for online.
+/// </summary>
 public sealed class NetworkConnectivity : INetworkConnectivity, IDisposable
 {
     private CancellationTokenSource? _debounceCts;
     private volatile bool _isOnline;
 
+    /// <inheritdoc />
     public bool IsOnline => _isOnline;
+    /// <inheritdoc />
     public event EventHandler<bool>? OnlineChanged;
 
     public NetworkConnectivity()
@@ -17,6 +23,7 @@ public sealed class NetworkConnectivity : INetworkConnectivity, IDisposable
         Connection.ConnectivityChanged += OnConnectivityChanged;
     }
 
+    /// <inheritdoc />
     public Task WaitForOnlineAsync(CancellationToken ct = default)
     {
         if (IsOnline)

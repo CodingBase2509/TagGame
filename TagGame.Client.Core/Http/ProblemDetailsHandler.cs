@@ -36,4 +36,3 @@ public sealed class ProblemDetailsHandler(IJsonOptionsProvider json) : Delegatin
         throw new ApiProblemException(response.StatusCode, message, problem);
     }
 }
-

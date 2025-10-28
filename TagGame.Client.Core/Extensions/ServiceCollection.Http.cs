@@ -8,8 +8,17 @@ using TagGame.Client.Core.Services.Abstractions;
 
 namespace TagGame.Client.Core.Extensions;
 
+/// <summary>
+/// ServiceCollection extensions for configuring the typed HTTP API client and handlers.
+/// </summary>
 public static class ServiceCollectionHttpExtensions
 {
+    /// <summary>
+    /// Registers the typed API client and configures the HTTP pipeline (decompression, handlers, resilience).
+    /// </summary>
+    /// <param name="services">Service collection.</param>
+    /// <param name="configuration">Application configuration.</param>
+    /// <param name="baseAddressConfiguration">Function that resolves the base address from configuration (e.g., platform specific).</param>
     public static IServiceCollection AddHttpServices(this IServiceCollection services, IConfiguration configuration, Func<IConfiguration, string?> baseAddressConfiguration)
     {
         services.AddTransient<ProblemDetailsHandler>();
@@ -36,6 +45,9 @@ public static class ServiceCollectionHttpExtensions
         return services;
     }
 
+    /// <summary>
+    /// Applies the custom resilience configuration to the given HttpClient builder using registered options/services.
+    /// </summary>
     private static void ConfigureResilienceHandler(this IServiceCollection services, IHttpClientBuilder builder)
     {
         var provider = services.BuildServiceProvider();

@@ -3,6 +3,9 @@ using TagGame.Client.Core.Json;
 
 namespace TagGame.Client.Core.Http;
 
+/// <summary>
+/// Default implementation of the typed API client using HttpClient and shared JSON options.
+/// </summary>
 public sealed class ApiClient(HttpClient client, IJsonOptionsProvider jsonProvider) : IApiClient
 {
     public async Task<T?> GetAsync<T>(string path, CancellationToken ct = default) =>
