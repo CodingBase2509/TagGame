@@ -19,6 +19,7 @@
     <PackageReference Include="AutoFixture.AutoMoq" />
     <PackageReference Include="Moq" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
   </ItemGroup>
 
   <ItemGroup>

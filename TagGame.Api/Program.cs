@@ -8,13 +8,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 // DI composition
 builder.Services.AddCore(builder.Configuration);
-builder.Services.AddHostHealthChecks(builder.Configuration);
-builder.Services.AddCarter();
-builder.Services.AddOpenApiWithJwt();
 builder.Services.AddSharedJsonOptions();
+builder.Services.AddHostHealthChecks(builder.Configuration);
+builder.Services.AddOpenApiWithJwt();
 
-builder.Services.AddProblemDetailsSupport(builder.Environment);
+builder.Services.AddCarter();
 builder.Services.AddDevCors(builder.Configuration, builder.Environment);
+builder.Services.AddJwtAuth(builder.Configuration);
+builder.Services.AddProblemDetailsSupport(builder.Environment);
 
 var app = builder.Build();
 
@@ -32,6 +33,9 @@ app.UseStatusCodePages(async context =>
         });
     }
 });
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 if (app.Environment.IsDevelopment())
 {
