@@ -1,12 +1,18 @@
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using TagGame.Api.Core.Abstractions.Auth;
+using TagGame.Api.Core.Common.Exceptions;
 using TagGame.Api.Core.Persistence.Contexts;
 using TagGame.Shared.Domain.Auth;
 using TagGame.Shared.DTOs.Auth;
 
 namespace TagGame.Api.Core.Features.Auth;
 
-public class AuthTokenService(AuthDbContext db, IOptions<JwtOptions> jwtOptions, TimeProvider clock) : IAuthTokenService
+public class AuthTokenService(
+    AuthDbContext db,
+    IOptions<JwtOptions> jwtOptions,
+    TimeProvider clock,
+    ILogger<AuthTokenService> logger) : IAuthTokenService
 {
     public async Task<TokenPairDto> IssueTokenAsync(User user, CancellationToken ct = default)
     {
@@ -49,6 +55,13 @@ public class AuthTokenService(AuthDbContext db, IOptions<JwtOptions> jwtOptions,
 
         var now = clock.GetUtcNow();
         var existing = await GetRefreshToken(refreshToken, ct);
+        if (existing?.ReplacedById.HasValue ?? false)
+        {
+            await RevokeFamilyAsync(existing.FamilyId, now, ct);
+            logger.LogWarning("Refresh token reuse detected: UserId={UserId}, TokenId={TokenId}, FamilyId={FamilyId}",
+                existing.UserId, existing.Id, existing.FamilyId);
+            throw new RefreshTokenReuseException(existing.UserId, existing.Id, existing.FamilyId);
+        }
         AuthTokenHelper.EnsureToken(existing, now);
 
         var user = await db.Users.FindAsync([existing!.UserId], ct)
@@ -106,5 +119,18 @@ public class AuthTokenService(AuthDbContext db, IOptions<JwtOptions> jwtOptions,
         return await db.RefreshTokens
             .AsTracking()
             .FirstOrDefaultAsync(t => t.TokenHash == hash, ct);
+    }
+
+    private async Task RevokeFamilyAsync(Guid familyId, DateTimeOffset now, CancellationToken ct = default)
+    {
+        var tokens = await db.RefreshTokens
+            .AsTracking()
+            .Where(t => t.FamilyId == familyId && !t.RevokedAt.HasValue)
+            .ToListAsync(ct);
+
+        foreach (var token in tokens)
+            token.RevokedAt = now;
+
+        await db.SaveChangesAsync(ct);
     }
 }

@@ -3,8 +3,10 @@ using System.Text;
 using AutoFixture;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Moq;
 using TagGame.Api.Core.Abstractions.Auth;
 using TagGame.Api.Core.Features.Auth;
 using TagGame.Api.Core.Persistence.Contexts;
@@ -31,7 +33,9 @@ public sealed class AuthTokenServiceTests
         var db = new AuthDbContext(options);
         var now = DateTimeOffset.UtcNow;
         var tp = new FixedTimeProvider(now);
-        var svc = new AuthTokenService(db, Options.Create(CreateOptions()), tp);
+        var logger = new Mock<ILogger<AuthTokenService>>().Object;
+
+        var svc = new AuthTokenService(db, Options.Create(CreateOptions()), tp, logger);
         return (db, svc, now);
     }
 
