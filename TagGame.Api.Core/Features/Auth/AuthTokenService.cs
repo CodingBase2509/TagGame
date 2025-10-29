@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using TagGame.Api.Core.Abstractions.Auth;
+using TagGame.Api.Core.Abstractions.Persistence;
 using TagGame.Api.Core.Common.Exceptions;
 using TagGame.Api.Core.Persistence.Contexts;
 using TagGame.Shared.Domain.Auth;
@@ -9,7 +10,7 @@ using TagGame.Shared.DTOs.Auth;
 namespace TagGame.Api.Core.Features.Auth;
 
 public class AuthTokenService(
-    AuthDbContext db,
+    IAuthUoW uow,
     IOptions<JwtOptions> jwtOptions,
     TimeProvider clock,
     ILogger<AuthTokenService> logger) : IAuthTokenService
@@ -36,8 +37,8 @@ public class AuthTokenService(
             RevokedAt = null,
         };
 
-        await db.RefreshTokens.AddAsync(rt, ct);
-        await db.SaveChangesAsync(ct);
+        await uow.RefreshTokens.AddAsync(rt, ct);
+        await uow.SaveChangesAsync(ct);
 
         return new TokenPairDto
         {
@@ -64,7 +65,7 @@ public class AuthTokenService(
         }
         AuthTokenHelper.EnsureToken(existing, now);
 
-        var user = await db.Users.FindAsync([existing!.UserId], ct)
+        var user = await uow.Users.GetByIdAsync([existing!.UserId], null, ct)
                    ?? throw new InvalidOperationException("User not found for refresh token.");
 
         var (rawNew, newHash, newExp, _) = AuthTokenHelper.CreateRefreshToken(existing.FamilyId, now, jwtOptions.Value);
@@ -82,11 +83,11 @@ public class AuthTokenService(
         existing.RevokedAt = now;
         existing.ReplacedById = newRt.Id;
 
-        db.RefreshTokens.Add(newRt);
+        await uow.RefreshTokens.AddAsync(newRt, ct);
 
         var (access, accessExp) = AuthTokenHelper.CreateJwtToken(user, now, jwtOptions.Value);
 
-        await db.SaveChangesAsync(ct);
+        await uow.SaveChangesAsync(ct);
 
         return new TokenPairDto
         {
@@ -109,28 +110,32 @@ public class AuthTokenService(
             return;
 
         existing.RevokedAt = now;
-        await db.SaveChangesAsync(ct);
+        await uow.SaveChangesAsync(ct);
     }
 
     private async Task<RefreshToken?> GetRefreshToken(string refreshToken, CancellationToken ct = default)
     {
         var hash = AuthTokenHelper.HashRefreshToken(refreshToken);
 
-        return await db.RefreshTokens
-            .AsTracking()
-            .FirstOrDefaultAsync(t => t.TokenHash == hash, ct);
+        return await uow.RefreshTokens
+            .FirstOrDefaultAsync(t => t.TokenHash == hash, new()
+            {
+                AsNoTracking = false
+            }, ct);
     }
 
     private async Task RevokeFamilyAsync(Guid familyId, DateTimeOffset now, CancellationToken ct = default)
     {
-        var tokens = await db.RefreshTokens
-            .AsTracking()
-            .Where(t => t.FamilyId == familyId && !t.RevokedAt.HasValue)
-            .ToListAsync(ct);
+        var tokens = await uow.RefreshTokens
+            // .Where(t => t.FamilyId == familyId && !t.RevokedAt.HasValue)
+            .ListAsync(t => t.FamilyId == familyId && !t.RevokedAt.HasValue, new()
+            {
+                AsNoTracking = false
+            }, ct);
 
         foreach (var token in tokens)
             token.RevokedAt = now;
 
-        await db.SaveChangesAsync(ct);
+        await uow.SaveChangesAsync(ct);
     }
 }

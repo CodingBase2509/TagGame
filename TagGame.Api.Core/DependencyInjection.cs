@@ -1,15 +1,28 @@
 using TagGame.Api.Core.Abstractions.Auth;
+using TagGame.Api.Core.Abstractions.Persistence;
 using TagGame.Api.Core.Features.Auth;
 using TagGame.Api.Core.Persistence.Contexts;
+using TagGame.Api.Core.Persistence.Repositories;
 namespace TagGame.Api.Core;
 
 public static class DependencyInjection
 {
     public static IServiceCollection AddCore(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddDbContexts(configuration);
-        services.AddAuthenticationServices();
         services.AddSingleton(TimeProvider.System);
+        services.AddAuthenticationServices();
+
+        services.AddDbContexts(configuration);
+        services.AddRepositories();
+
+        return services;
+    }
+
+    private static IServiceCollection AddRepositories(this IServiceCollection services)
+    {
+        services.AddScoped(typeof(IDbRepository<>), typeof(EfDbRepository<>));
+        services.AddScoped<IAuthUoW, AuthUnitOfWork>();
+        services.AddScoped<IGamesUoW, GamesUnitOfWork>();
 
         return services;
     }
