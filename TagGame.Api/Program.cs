@@ -14,7 +14,7 @@ builder.Services.AddOpenApiWithJwt();
 
 builder.Services.AddCarter();
 builder.Services.AddDevCors(builder.Configuration, builder.Environment);
-builder.Services.AddJwtAuth(builder.Configuration);
+builder.Services.AddAuth(builder.Configuration);
 builder.Services.AddProblemDetailsSupport(builder.Environment);
 
 var app = builder.Build();
@@ -53,5 +53,3 @@ app.MapCarter();
 app.Run();
 
 public partial class Program {}
-
-public partial class Program;
