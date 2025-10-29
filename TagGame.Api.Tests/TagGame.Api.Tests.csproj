@@ -7,33 +7,35 @@
         <IsPackable>false</IsPackable>
     </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="coverlet.collector" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" />
-    <PackageReference Include="xunit" />
-    <PackageReference Include="xunit.runner.visualstudio" />
-    <PackageReference Include="Npgsql" />
-    <PackageReference Include="DotNet.Testcontainers" />
-    <PackageReference Include="FluentAssertions" />
-    <PackageReference Include="AutoFixture" />
-    <PackageReference Include="AutoFixture.AutoMoq" />
-    <PackageReference Include="Moq" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="coverlet.collector"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk"/>
+        <PackageReference Include="xunit"/>
+        <PackageReference Include="xunit.runner.visualstudio"/>
+        <PackageReference Include="Npgsql"/>
+        <PackageReference Include="Testcontainers"/>
+        <PackageReference Include="Testcontainers.PostgreSql"/>
+        <PackageReference Include="FluentAssertions"/>
+        <PackageReference Include="AutoFixture"/>
+        <PackageReference Include="AutoFixture.AutoMoq"/>
+        <PackageReference Include="Moq"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory"/>
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <Using Include="Xunit"/>
-  </ItemGroup>
+    <ItemGroup>
+        <Using Include="Xunit"/>
+    </ItemGroup>
 
-  <!-- Explicit folders to show in Solution Explorer even when empty -->
-  <ItemGroup>
-    <Folder Include="Unit/" />
-    <Folder Include="Integration/" />
-  </ItemGroup>
+    <!-- Explicit folders to show in Solution Explorer even when empty -->
+    <ItemGroup>
+        <Folder Include="Unit/"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="../TagGame.Api.Core/TagGame.Api.Core.csproj" />
-    <ProjectReference Include="../TagGame.Shared/TagGame.Shared.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="../TagGame.Api.Core/TagGame.Api.Core.csproj"/>
+        <ProjectReference Include="../TagGame.Shared/TagGame.Shared.csproj"/>
+        <ProjectReference Include="../TagGame.Api/TagGame.Api.csproj"/>
+    </ItemGroup>
 </Project>

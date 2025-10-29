@@ -1,12 +1,15 @@
 using System.Text;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using TagGame.Api.Core.Abstractions.Auth;
 using TagGame.Api.Core.Features.Auth;
 using TagGame.Api.Core.Persistence.Contexts;
+using TagGame.Api.Core.Abstractions.Persistence;
+using TagGame.Api.Core.Persistence.Repositories;
 using TagGame.Shared.Domain.Auth;
 
 namespace TagGame.Api.Tests.Unit.Auth;
@@ -22,7 +25,7 @@ public sealed class AuthTokenServiceReuseTests
         RefreshDays = 7
     };
 
-    private static (AuthDbContext db, IAuthTokenService svc, DateTimeOffset now) CreateSut()
+    private static (AuthDbContext db, IAuthTokenService svc, IAuthUoW uow, DateTimeOffset now) CreateSut()
     {
         var options = new DbContextOptionsBuilder<AuthDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
@@ -31,21 +34,25 @@ public sealed class AuthTokenServiceReuseTests
         var now = DateTimeOffset.UtcNow;
         var tp = new FixedTimeProvider(now);
 
-        // Support both 3-arg and 4-arg constructors (with optional ILogger<AuthTokenService>)
         var logger = new Mock<ILogger<AuthTokenService>>().Object;
-        var svc = new AuthTokenService(db, Options.Create(CreateOptions()), tp, logger);
+        var sp = new ServiceCollection()
+            .AddSingleton(db)
+            .AddScoped(typeof(IDbRepository<>), typeof(EfDbRepository<>))
+            .BuildServiceProvider();
+        IAuthUoW uow = new AuthUnitOfWork(db, sp);
+        var svc = new AuthTokenService(uow, Options.Create(CreateOptions()), tp, logger);
 
-        return (db, svc, now);
+        return (db, svc, uow, now);
     }
 
     [Fact]
     public async Task RefreshToken_Reuse_Detected_Revokes_Family_And_Throws()
     {
         // Arrange
-        var (db, svc, now) = CreateSut();
+        var (db, svc, uow, now) = CreateSut();
         var user = new User { Id = Guid.NewGuid(), CreatedAt = now };
-        db.Users.Add(user);
-        await db.SaveChangesAsync();
+        await uow.Users.AddAsync(user);
+        await uow.SaveChangesAsync();
 
         var pair1 = await svc.IssueTokenAsync(user);
         var pair2 = await svc.RefreshTokenAsync(pair1.RefreshToken);
@@ -67,10 +74,10 @@ public sealed class AuthTokenServiceReuseTests
     public async Task After_Reuse_Family_Revoked_Subsequent_Refresh_Fails()
     {
         // Arrange
-        var (db, svc, now) = CreateSut();
+        var (db, svc, uow, now) = CreateSut();
         var user = new User { Id = Guid.NewGuid(), CreatedAt = now };
-        db.Users.Add(user);
-        await db.SaveChangesAsync();
+        await uow.Users.AddAsync(user);
+        await uow.SaveChangesAsync();
 
         var pair1 = await svc.IssueTokenAsync(user);
         var pair2 = await svc.RefreshTokenAsync(pair1.RefreshToken);
@@ -89,10 +96,8 @@ public sealed class AuthTokenServiceReuseTests
         next.Which.Message.Should().ContainEquivalentOf("revoked");
     }
 
-    private sealed class FixedTimeProvider : TimeProvider
+    private sealed class FixedTimeProvider(DateTimeOffset now) : TimeProvider
     {
-        private readonly DateTimeOffset _now;
-        public FixedTimeProvider(DateTimeOffset now) => _now = now;
-        public override DateTimeOffset GetUtcNow() => _now;
+        public override DateTimeOffset GetUtcNow() => now;
     }
 }

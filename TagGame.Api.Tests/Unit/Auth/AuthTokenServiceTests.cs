@@ -3,12 +3,15 @@ using System.Text;
 using AutoFixture;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Moq;
 using TagGame.Api.Core.Abstractions.Auth;
 using TagGame.Api.Core.Features.Auth;
+using TagGame.Api.Core.Abstractions.Persistence;
+using TagGame.Api.Core.Persistence.Repositories;
 using TagGame.Api.Core.Persistence.Contexts;
 using TagGame.Shared.Domain.Auth;
 
@@ -25,7 +28,7 @@ public sealed class AuthTokenServiceTests
         RefreshDays = 7
     };
 
-    private static (AuthDbContext db, IAuthTokenService svc, DateTimeOffset now) CreateSut()
+    private static (AuthDbContext db, IAuthTokenService svc, IAuthUoW uow, DateTimeOffset now) CreateSut()
     {
         var options = new DbContextOptionsBuilder<AuthDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
@@ -35,18 +38,23 @@ public sealed class AuthTokenServiceTests
         var tp = new FixedTimeProvider(now);
         var logger = new Mock<ILogger<AuthTokenService>>().Object;
 
-        var svc = new AuthTokenService(db, Options.Create(CreateOptions()), tp, logger);
-        return (db, svc, now);
+        var sp = new ServiceCollection()
+            .AddSingleton(db)
+            .AddScoped(typeof(IDbRepository<>), typeof(EfDbRepository<>))
+            .BuildServiceProvider();
+        IAuthUoW uow = new AuthUnitOfWork(db, sp);
+        var svc = new AuthTokenService(uow, Options.Create(CreateOptions()), tp, logger);
+        return (db, svc, uow, now);
     }
 
     [Fact]
     public async Task IssueTokenAsync_Creates_Refresh_Row_And_Returns_Pair()
     {
         // Arrange
-        var (db, svc, now) = CreateSut();
+        var (db, svc, uow, now) = CreateSut();
         var user = new User { Id = Guid.NewGuid(), DisplayName = "Zeus", CreatedAt = now };
-        db.Users.Add(user);
-        await db.SaveChangesAsync();
+        await uow.Users.AddAsync(user);
+        await uow.SaveChangesAsync();
 
         // Act
         var pair = await svc.IssueTokenAsync(user);
@@ -87,10 +95,10 @@ public sealed class AuthTokenServiceTests
     public async Task RefreshTokenAsync_Rotates_And_Revokes_Old()
     {
         // Arrange
-        var (db, svc, now) = CreateSut();
+        var (db, svc, uow, now) = CreateSut();
         var user = new User { Id = Guid.NewGuid(), CreatedAt = now };
-        db.Users.Add(user);
-        await db.SaveChangesAsync();
+        await uow.Users.AddAsync(user);
+        await uow.SaveChangesAsync();
 
         var first = await svc.IssueTokenAsync(user);
 
@@ -116,10 +124,10 @@ public sealed class AuthTokenServiceTests
     public async Task RefreshTokenAsync_InvalidToken_Throws()
     {
         // Arrange
-        var (db, svc, _) = CreateSut();
+        var (db, svc, uow, _) = CreateSut();
         var user = new User { Id = Guid.NewGuid(), CreatedAt = DateTimeOffset.UtcNow };
-        db.Users.Add(user);
-        await db.SaveChangesAsync();
+        await uow.Users.AddAsync(user);
+        await uow.SaveChangesAsync();
 
         // Act
         Func<Task> act = () => svc.RefreshTokenAsync("does-not-exist");
@@ -133,10 +141,10 @@ public sealed class AuthTokenServiceTests
     public async Task RefreshTokenAsync_RevokedToken_Throws()
     {
         // Arrange
-        var (db, svc, _) = CreateSut();
+        var (db, svc, uow, _) = CreateSut();
         var user = new User { Id = Guid.NewGuid(), CreatedAt = DateTimeOffset.UtcNow };
-        db.Users.Add(user);
-        await db.SaveChangesAsync();
+        await uow.Users.AddAsync(user);
+        await uow.SaveChangesAsync();
 
         var issued = await svc.IssueTokenAsync(user);
         await svc.RevokeTokenAsync(issued.RefreshToken);
@@ -153,10 +161,10 @@ public sealed class AuthTokenServiceTests
     public async Task RefreshTokenAsync_ExpiredToken_Throws()
     {
         // Arrange
-        var (db, svc, now) = CreateSut();
+        var (db, svc, uow, now) = CreateSut();
         var user = new User { Id = Guid.NewGuid(), CreatedAt = now };
-        db.Users.Add(user);
-        await db.SaveChangesAsync();
+        await uow.Users.AddAsync(user);
+        await uow.SaveChangesAsync();
 
         var pair = await svc.IssueTokenAsync(user);
 
@@ -177,7 +185,7 @@ public sealed class AuthTokenServiceTests
     public async Task IssueTokenAsync_EmptyUserId_Throws()
     {
         // Arrange
-        var (db, svc, now) = CreateSut();
+        var (db, svc, uow, now) = CreateSut();
         var user = new User { Id = Guid.Empty, CreatedAt = now };
 
         // Act
@@ -192,10 +200,10 @@ public sealed class AuthTokenServiceTests
     public async Task RevokeTokenAsync_Is_Idempotent()
     {
         // Arrange
-        var (db, svc, now) = CreateSut();
+        var (db, svc, uow, now) = CreateSut();
         var user = new User { Id = Guid.NewGuid(), CreatedAt = now };
-        db.Users.Add(user);
-        await db.SaveChangesAsync();
+        await uow.Users.AddAsync(user);
+        await uow.SaveChangesAsync();
 
         var issued = await svc.IssueTokenAsync(user);
 
@@ -208,10 +216,8 @@ public sealed class AuthTokenServiceTests
         token.RevokedAt.Should().Be(now);
     }
 
-    private sealed class FixedTimeProvider : TimeProvider
+    private sealed class FixedTimeProvider(DateTimeOffset now) : TimeProvider
     {
-        private readonly DateTimeOffset _now;
-        public FixedTimeProvider(DateTimeOffset now) => _now = now;
-        public override DateTimeOffset GetUtcNow() => _now;
+        public override DateTimeOffset GetUtcNow() => now;
     }
 }
