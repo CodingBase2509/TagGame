@@ -97,22 +97,28 @@ public sealed class EfDbRepository<T>(AuthDbContext db) : IDbRepository<T> where
     private T? FindTrackedByKey(T entity)
     {
         var entityType = db.Model.FindEntityType(typeof(T));
-        if (entityType is null) return default;
-        var key = entityType.FindPrimaryKey();
-        if (key is null) return default;
+        var key = entityType?.FindPrimaryKey();
+
+        if (key is null)
+            return null;
 
         foreach (var tracked in db.Set<T>().Local)
         {
-            bool match = true;
+            var match = true;
             foreach (var prop in key.Properties)
             {
                 var trackedVal = db.Entry(tracked).Property(prop.Name).CurrentValue;
                 var newVal = db.Entry(entity).Property(prop.Name).CurrentValue;
-                if (!Equals(trackedVal, newVal)) { match = false; break; }
+                if (Equals(trackedVal, newVal))
+                    continue;
+
+                match = false;
+                break;
             }
-            if (match) return tracked;
+            if (match)
+                return tracked;
         }
 
-        return default;
+        return null;
     }
 }

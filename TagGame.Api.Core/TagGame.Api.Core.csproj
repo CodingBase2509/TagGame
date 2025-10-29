@@ -23,7 +23,6 @@
 
   <!-- Explicit folders to show in Solution Explorer even when empty -->
   <ItemGroup>
-    <Folder Include="Abstractions/Persistence/" />
     <Folder Include="Abstractions/System/" />
     <Folder Include="Features/Game/" />
     <Folder Include="Features/Player/" />
@@ -31,7 +30,6 @@
     <Folder Include="Persistence\Migrations\" />
     <Folder Include="Persistence\Migrations\Auth\" />
     <Folder Include="Persistence\Migrations\Games\" />
-    <Folder Include="Persistence\Repositories\" />
     <Folder Include="Validation/" />
     <Folder Include="Mapping/" />
     <Folder Include="External/" />
