@@ -9,6 +9,7 @@ public static class ServiceCollectionServices
 {
     public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration config)
     {
+        services.AddSingleton(TimeProvider.System);
         services.AddSingleton<IAuthService, AuthService>();
         services.AddOptions<AuthServiceOptions>()
             .Bind(config.GetSection("Auth"));

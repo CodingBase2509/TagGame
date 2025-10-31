@@ -11,6 +11,7 @@ namespace TagGame.Client.Core.Services.Implementations;
 public class AuthService(
     IApiClient api,
     ITokenStorage tokenStorage,
+    IAppPreferences preferences,
     IOptions<AuthServiceOptions> options,
     TimeProvider clock,
     ILogger<AuthService> logger) : IAuthService
@@ -87,6 +88,7 @@ public class AuthService(
                 new LogoutRequestDto { RefreshToken = t.RefreshToken }, ct);
 
             await tokenStorage.ClearAsync(ct);
+            await preferences.SetUserId(Guid.Empty, ct);
         }
         catch (Exception ex)
         {
@@ -107,6 +109,7 @@ public class AuthService(
                 return false;
 
             await SetTokensAsync(resp.Tokens, ct);
+            await preferences.SetUserId(resp.UserId, ct);
             return true;
         }
         catch (Exception ex)
