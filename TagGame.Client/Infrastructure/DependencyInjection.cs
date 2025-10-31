@@ -14,8 +14,18 @@ public static class DependencyInjection
     /// </summary>
     public static IServiceCollection AddInfrastructure(this IServiceCollection services)
     {
+        services.AddMauiDefaults();
+
         services.AddSingleton<INetworkConnectivity, NetworkConnectivity>();
         services.AddSingleton<IAppPreferences, AppPreferences>();
+        return services;
+    }
+
+    private static IServiceCollection AddMauiDefaults(this IServiceCollection services)
+    {
+        services.AddSingleton(Microsoft.Maui.Storage.Preferences.Default);
+        services.AddSingleton(Microsoft.Maui.Storage.SecureStorage.Default);
+
         return services;
     }
 }
