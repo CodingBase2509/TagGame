@@ -30,8 +30,8 @@ app.UseAuthorization();
 app.MapDevOptions();
 
 app.MapCarter();
-app.MapHub<LobbyHub>("hub/lobby");
-app.MapHub<GameHub>("hub/game");
+app.MapHub<LobbyHub>("/hubs/lobby");
+app.MapHub<GameHub>("/hubs/game");
 
 app.Run();
 

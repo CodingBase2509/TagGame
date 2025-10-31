@@ -1,13 +1,16 @@
 # SignalR Design (Lobby & In-Game)
 
-Hubs: Entweder 1 Hub mit zwei Phasen oder getrennt in `LobbyHub` und `GameHub`. Empfehlung: 1 Hub mit Raum-Gruppen, getrennte Event-Namen nach Phase.
+Wir nutzen getrennte, stark typisierte Hubs: `LobbyHub : Hub<ILobbyClient>` und `GameHub : Hub<IGameClient>` (Separation of Concerns). Gruppen laufen weiterhin pro Room.
 
 ## Verbindung & Gruppen
-- URL: `/hubs/lobby`
+- URLs: `/hubs/lobby` (Lobby), `/hubs/game` (In‑Game)
 - Auth: Bearer JWT verpflichtend
 - Group pro RoomId: `room:{roomId}`
 - Reconnect: exponential backoff, clientseitig Statuscache, serverseitig Snapshot bei Rejoin
- - Autorisierung: Connection‑Level `[Authorize]` prüft Token; ressourcenbasierte Checks (Membership/Permissions) pro Methode oder via `IHubFilter` (siehe 15-Autorisierung-und-Permissions.md)
+ - Autorisierung: Connection‑Level `[Authorize]` prüft Token; ressourcenbasierte Checks pro Methode via `[Authorize(Policy=...)]` und `IHubFilter` (siehe 15-Autorisierung-und-Permissions.md)
+
+Hinweis Typisierung
+- Server → Client ist über `Hub<ILobbyClient>`/`Hub<IGameClient>` typisiert; Client → Server nutzt die Hub‑Methoden (Wrapper optional im Client).
 
 ### Rundenchat (In-Game)
 - Subgruppen pro Runde und Rolle für Chat:

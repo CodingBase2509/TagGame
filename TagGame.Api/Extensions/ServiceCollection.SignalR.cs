@@ -11,8 +11,7 @@ public static class ServiceCollectionSignalR
         services.AddSignalR()
             .AddJsonProtocol(o => JsonDefaults.Apply(o.PayloadSerializerOptions));
 
-        // Global Hub filters
-        services.AddSingleton<IHubFilter, RoomAuthHubFilter>();
+        services.AddScoped<IHubFilter, RoomAuthHubFilter>();
 
         return services;
     }

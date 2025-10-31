@@ -10,17 +10,17 @@ namespace TagGame.Api.Hubs;
 public class LobbyHub : Hub<ILobbyClient>
 {
     [Authorize(Policy = AuthPolicyPrefix.RoomMember)]
-    Task JoinRoom(Guid roomId) => throw new NotImplementedException();
+    public Task JoinRoom(Guid roomId) => throw new NotImplementedException();
 
     [Authorize(Policy = AuthPolicyPrefix.RoomMember)]
-    Task LeaveRoom(Guid roomId) => throw new NotImplementedException();
+    public Task LeaveRoom(Guid roomId) => throw new NotImplementedException();
 
     [Authorize(Policy = AuthPolicyPrefix.RoomPermission + nameof(RoomPermission.ManageRoles))]
-    Task UpdatePlayer(Guid roomId, Guid playerId) => throw new NotImplementedException();
+    public Task UpdatePlayer(Guid roomId, Guid playerId) => throw new NotImplementedException();
 
     [Authorize(Policy = AuthPolicyPrefix.RoomPermission + nameof(RoomPermission.EditSettings))]
-    Task UpdateSettings(Guid roomId) => throw new NotImplementedException();
+    public Task UpdateSettings(Guid roomId) => throw new NotImplementedException();
 
     [Authorize(Policy = AuthPolicyPrefix.RoomPermission + nameof(RoomPermission.StartGame))]
-    Task StartGame(Guid roomId) => throw new NotImplementedException();
+    public Task StartGame(Guid roomId) => throw new NotImplementedException();
 }
