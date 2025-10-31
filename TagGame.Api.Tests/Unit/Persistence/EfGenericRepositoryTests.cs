@@ -17,7 +17,13 @@ public sealed class EfGenericRepositoryTests
         return new AuthDbContext(options);
     }
 
-    private static EfDbRepository<User> CreateUserRepo(AuthDbContext db) => new(db);
+    private static EfDbRepository<User> CreateUserRepo(AuthDbContext db)
+    {
+        var services = new ServiceCollection();
+        services.AddSingleton(db);
+        var sp = services.BuildServiceProvider();
+        return new EfDbRepository<User>(sp);
+    }
 
     [Fact]
     public async Task AddAsync_Persists_User_On_SaveChanges()

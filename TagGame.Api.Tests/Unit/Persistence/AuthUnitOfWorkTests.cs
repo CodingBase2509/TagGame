@@ -23,8 +23,11 @@ public sealed class AuthUnitOfWorkTests
     {
         // Arrange
         await using var db = CreateDb();
-        var repo = new EfDbRepository<User>(db);
-        var uow = new AuthUnitOfWork(db, new ServiceCollection().BuildServiceProvider());
+        var services = new ServiceCollection();
+        services.AddSingleton(db);
+        var sp = services.BuildServiceProvider();
+        var repo = new EfDbRepository<User>(sp);
+        var uow = new AuthUnitOfWork(db, sp);
 
         var user = new User { Id = Guid.NewGuid(), CreatedAt = DateTimeOffset.UtcNow };
         await repo.AddAsync(user);
