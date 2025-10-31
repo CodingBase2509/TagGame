@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using TagGame.Api.Infrastructure.Auth.Requirements;
 using TagGame.Shared.Domain.Games.Enums;

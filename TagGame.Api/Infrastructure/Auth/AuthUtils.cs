@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Microsoft.AspNetCore.SignalR;
 using TagGame.Api.Core.Abstractions.Persistence;
 using TagGame.Shared.Domain.Games;
 
@@ -6,20 +7,33 @@ namespace TagGame.Api.Infrastructure.Auth;
 
 public static class AuthUtils
 {
-    public static bool TryGetUserId(HttpContext http, out Guid userId)
-    {
-        var sub = http.User.FindFirstValue("sub") ??
-                  http.User.FindFirstValue(ClaimTypes.NameIdentifier);
-        return Guid.TryParse(sub, out userId);
-    }
+    public static bool TryGetUserId(HttpContext http, out Guid userId) => TryGetUserId(http.User, out userId);
+
+    public static bool TryGetUserId(HubCallerContext context, out Guid userId) => TryGetUserId(context.User, out userId);
 
     public static bool TryGetRoomId(HttpContext http, out Guid roomId)
     {
         var rv = http.Request.RouteValues;
-        return Try(rv, "roomId", out roomId) || Try(rv, "id", out roomId) || Try(rv, "room", out roomId);
+        return TryGetRoomId(rv, "roomId", out roomId) || TryGetRoomId(rv, "id", out roomId) || TryGetRoomId(rv, "room", out roomId);
     }
 
-    private static bool Try(RouteValueDictionary rv, string key, out Guid id)
+    public static RoomMembership? TryGetMembershipFromItems(HttpContext http) =>
+        http.Items.TryGetValue("Membership", out var value) ? value as RoomMembership : null;
+
+    public static Task<RoomMembership?> LoadMembershipAsync(
+        IGamesUoW uow,
+        Guid userId,
+        Guid roomId, CancellationToken ct) =>
+        uow.RoomMemberships.FirstOrDefaultAsync(m => m.UserId == userId && m.RoomId == roomId,
+            new QueryOptions<RoomMembership> { AsNoTracking = true }, ct);
+
+    private static bool TryGetUserId(ClaimsPrincipal? principal, out Guid userId)
+    {
+        var sub = principal?.FindFirstValue("sub") ?? principal?.FindFirstValue(ClaimTypes.NameIdentifier);
+        return Guid.TryParse(sub, out userId);
+    }
+
+    private static bool TryGetRoomId(RouteValueDictionary rv, string key, out Guid id)
     {
         if (rv.TryGetValue(key, out var raw))
         {
@@ -33,14 +47,4 @@ public static class AuthUtils
         id = Guid.Empty;
         return false;
     }
-
-    public static RoomMembership? TryGetMembershipFromItems(HttpContext http) =>
-        http.Items.TryGetValue("Membership", out var value) ? value as RoomMembership : null;
-
-    public static Task<RoomMembership?> LoadMembershipAsync(
-        IGamesUoW uow,
-        Guid userId,
-        Guid roomId, CancellationToken ct) =>
-        uow.RoomMemberships.FirstOrDefaultAsync(m => m.UserId == userId && m.RoomId == roomId,
-            new QueryOptions<RoomMembership> { AsNoTracking = true }, ct);
 }
