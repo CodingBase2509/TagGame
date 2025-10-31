@@ -8,10 +8,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-    <PackageReference Include="coverlet.collector" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" />
-    <PackageReference Include="xunit" />
-    <PackageReference Include="xunit.runner.visualstudio" />
+      <PackageReference Include="coverlet.collector" />
+      <PackageReference Include="Microsoft.NET.Test.Sdk" />
+      <PackageReference Include="xunit" />
+      <PackageReference Include="xunit.runner.visualstudio" />
+      <PackageReference Include="FluentAssertions" />
+      <PackageReference Include="Moq" />
     </ItemGroup>
 
   <ItemGroup>
@@ -22,5 +24,10 @@
   <ItemGroup>
     <Folder Include="Unit/" />
     <Folder Include="Integration/" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../TagGame.Client.Core/TagGame.Client.Core.csproj" />
+    <ProjectReference Include="../TagGame.Shared/TagGame.Shared.csproj" />
   </ItemGroup>
 </Project>

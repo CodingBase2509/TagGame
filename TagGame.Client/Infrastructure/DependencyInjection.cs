@@ -1,6 +1,8 @@
 using TagGame.Client.Core.Services.Abstractions;
+using TagGame.Client.Core.Storage;
 using TagGame.Client.Infrastructure.Connectivity;
 using TagGame.Client.Infrastructure.Preferences;
+using TagGame.Client.Infrastructure.Storage;
 
 namespace TagGame.Client.Infrastructure;
 
@@ -18,6 +20,8 @@ public static class DependencyInjection
 
         services.AddSingleton<INetworkConnectivity, NetworkConnectivity>();
         services.AddSingleton<IAppPreferences, AppPreferences>();
+        services.AddSingleton<ITokenStorage, TokenStorage>();
+
         return services;
     }
 

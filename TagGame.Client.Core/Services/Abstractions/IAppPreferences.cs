@@ -30,6 +30,10 @@ public interface IAppPreferences
     /// </summary>
     Task SetNotificationsEnabledAsync(bool enabled, CancellationToken ct = default);
 
+    Task SetDeviceId(Guid id, CancellationToken ct = default);
+
+    Task SetUserId(Guid id, CancellationToken ct = default);
+
     /// <summary>
     /// Raised after a preference change with the updated snapshot.
     /// </summary>
