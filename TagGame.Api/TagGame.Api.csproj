@@ -19,7 +19,6 @@
   <!-- Explicit folders to show in Solution Explorer even when empty -->
   <ItemGroup>
     <Folder Include="Auth/" />
-    <Folder Include="Hubs/" />
   </ItemGroup>
 
   <ItemGroup>

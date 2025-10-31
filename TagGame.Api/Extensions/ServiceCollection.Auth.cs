@@ -1,6 +1,5 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using TagGame.Api.Infrastructure.Auth;
 using TagGame.Api.Infrastructure.Auth.Handler;
