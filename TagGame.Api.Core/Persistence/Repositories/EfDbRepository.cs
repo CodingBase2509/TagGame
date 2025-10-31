@@ -1,11 +1,23 @@
 using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
 using TagGame.Api.Core.Abstractions.Persistence;
 using TagGame.Api.Core.Persistence.Contexts;
+using TagGame.Shared.Domain.Auth;
 
 namespace TagGame.Api.Core.Persistence.Repositories;
 
-public sealed class EfDbRepository<T>(AuthDbContext db) : IDbRepository<T> where T : class
+public sealed class EfDbRepository<T> : IDbRepository<T> where T : class
 {
+    private readonly DbContext db;
+
+    public EfDbRepository(IServiceProvider serviceProvider)
+    {
+        IEnumerable<Type> authTypes = [typeof(User), typeof(RefreshToken), typeof(Entitlement)];
+        db = authTypes.Contains(typeof(T))
+            ? serviceProvider.GetRequiredService<AuthDbContext>()
+            : serviceProvider.GetRequiredService<GamesDbContext>();
+    }
+
     public async Task<T?> GetByIdAsync(object[] keyValues, QueryOptions<T>? options = null, CancellationToken ct = default)
     {
         // Build a predicate based on the primary key metadata to allow Includes/AsNoTracking

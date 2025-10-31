@@ -1,12 +1,32 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using TagGame.Api.Infrastructure.Auth;
+using TagGame.Api.Infrastructure.Auth.Handler;
 
 namespace TagGame.Api.Extensions;
 
 public static class ServiceCollectionAuth
 {
-    public static IServiceCollection AddJwtAuth(this IServiceCollection services, IConfiguration config)
+    public static IServiceCollection AddAuth(this IServiceCollection services, IConfiguration config)
+    {
+        services.AddJwtAuthentication(config);
+        services.AddCustomAuthorization();
+
+        return services;
+    }
+
+    private static IServiceCollection AddCustomAuthorization(this IServiceCollection services)
+    {
+        services.AddSingleton<IAuthorizationPolicyProvider, AuthPolicyProvider>();
+        services.AddScoped<IAuthorizationHandler, RoomMemberHandler>();
+        services.AddScoped<IAuthorizationHandler, RoomPermissionHandler>();
+        services.AddScoped<IAuthorizationHandler, RoomRoleHandler>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddJwtAuthentication(this IServiceCollection services, IConfiguration config)
     {
         var section = config.GetSection("Jwt");
         var issuer = section["Issuer"] ?? string.Empty;

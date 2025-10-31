@@ -20,7 +20,9 @@ public static class DependencyInjection
 
     private static IServiceCollection AddRepositories(this IServiceCollection services)
     {
+        // Default repo for AuthDbContext-backed entities
         services.AddScoped(typeof(IDbRepository<>), typeof(EfDbRepository<>));
+
         services.AddScoped<IAuthUoW, AuthUnitOfWork>();
         services.AddScoped<IGamesUoW, GamesUnitOfWork>();
 

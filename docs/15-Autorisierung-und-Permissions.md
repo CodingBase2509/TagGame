@@ -52,9 +52,9 @@ Ziel: Ressourcenbasierte, performante und testbare Autorisierung für Räume (Ro
 
 ## SignalR‑Flow
 - `[Authorize]` am Hub prüft nur Token (Connection‑Level).
-- Ressourcenbasierte Checks sind methodennah (Hub‑Methoden oder `IHubFilter`):
-  - Beim `JoinRoom(roomId)`: Membership laden/prüfen; bei Erfolg `Context.Items["Membership"]` setzen, `Groups.AddToGroupAsync("room:{roomId}")`.
-  - Weitere Methoden (`StartGame`, `UpdateSettings`, `TagPlayer`) prüfen via Guard oder `IAuthorizationService` gegen `roomId`/`membership`.
+- Methoden sind mit Policies annotiert, z. B. `RoomMember`, `RoomPermission:StartGame`.
+- Ein zentraler `IHubFilter` lädt aus Methodenargumenten die `roomId`, lädt die Membership, legt sie in `Context.Items["Membership"]` ab und kombiniert die `[Authorize]`‑Daten zu einer Policy (`IAuthorizationPolicyProvider`). Die Prüfung erfolgt über `IAuthorizationService.AuthorizeAsync(User, invocationContext, policy)`.
+- Die bestehenden `AuthorizationHandler` unterstützen neben `HttpContext` auch `HubInvocationContext` (lesen Membership aus `Context.Items` oder DB).
 - Wichtig: `roomId` ist erst zur Methodenzeit bekannt; deshalb „alles in Middleware“ hier nicht ausreichend.
 
 ## Caching & Invalidierung
@@ -76,4 +76,3 @@ Ziel: Ressourcenbasierte, performante und testbare Autorisierung für Räume (Ro
 - Authentifizierung: zentral JwtBearer‑Middleware.
 - HTTP‑Autorisierung: gut zentralisierbar; Membership‑Lader als Endpoint‑Filter/Middleware vor `AuthorizationMiddleware`.
 - SignalR: Connection‑Authorize nur Token; ressourcenbasierte Prüfungen in Hub‑Methoden/`IHubFilter`.
-
