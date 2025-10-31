@@ -1,61 +1,57 @@
 using TagGame.Client.Core.Options;
 using TagGame.Client.Core.Services.Abstractions;
-using MauiPreferences = Microsoft.Maui.Storage.Preferences;
 
 namespace TagGame.Client.Infrastructure.Preferences;
 
-public class AppPreferences : IAppPreferences
+public class AppPreferences(IPreferences preferences) : IAppPreferences
 {
     private const int LockEnterWaitMs = 50;
-    private readonly Lock _lock = new();
+    private readonly SemaphoreSlim _lock = new(1, 1);
 
     public AppPreferencesSnapshot Snapshot { get; private set; } = new(
-        MauiPreferences.Default.Get(PreferenceKeys.Theme, ThemeMode.System),
-        MauiPreferences.Default.Get(PreferenceKeys.Language, Language.English),
-        MauiPreferences.Default.Get(PreferenceKeys.NotificationsEnabled, false)
+        preferences.Get(PreferenceKeys.Theme, ThemeMode.System),
+        preferences.Get(PreferenceKeys.Language, Language.English),
+        preferences.Get(PreferenceKeys.NotificationsEnabled, false)
     );
 
     public event EventHandler<AppPreferencesSnapshot>? PreferencesChanged;
 
-    public Task ChangeThemeAsync(ThemeMode newTheme)
+    public async Task ChangeThemeAsync(ThemeMode newTheme, CancellationToken ct = default)
     {
-        if (!_lock.TryEnter(LockEnterWaitMs) || Snapshot.ThemeMode == newTheme)
-            return Task.CompletedTask;
+        await _lock.WaitAsync(ct);
+        if (Snapshot.ThemeMode == newTheme)
+            return;
 
         Snapshot = Snapshot with { ThemeMode = newTheme };
-        MauiPreferences.Default.Set(PreferenceKeys.Theme, newTheme);
+        preferences.Set(PreferenceKeys.Theme, newTheme);
 
-        _lock.Exit();
+        _lock.Release();
         PreferencesChanged?.Invoke(this, Snapshot);
-
-        return Task.CompletedTask;
     }
 
-    public Task ChangeLanguageAsync(Language newLanguage)
+    public async Task ChangeLanguageAsync(Language newLanguage, CancellationToken ct = default)
     {
-        if (!_lock.TryEnter(LockEnterWaitMs) || Snapshot.Language == newLanguage)
-            return Task.CompletedTask;
+        await _lock.WaitAsync(ct);
+        if (Snapshot.Language == newLanguage)
+            return;
 
         Snapshot = Snapshot with { Language = newLanguage };
-        MauiPreferences.Default.Set(PreferenceKeys.Language, newLanguage);
+        preferences.Set(PreferenceKeys.Language, newLanguage);
 
-        _lock.Exit();
+        _lock.Release();
         PreferencesChanged?.Invoke(this, Snapshot);
-
-        return Task.CompletedTask;
     }
 
-    public Task SetNotificationsEnabledAsync(bool enabled)
+    public async Task SetNotificationsEnabledAsync(bool enabled, CancellationToken ct = default)
     {
-        if (!_lock.TryEnter(LockEnterWaitMs) || Snapshot.NotificationsEnabled == enabled)
-            return Task.CompletedTask;
+        await _lock.WaitAsync(ct);
+        if (Snapshot.NotificationsEnabled == enabled)
+            return;
 
         Snapshot = Snapshot with { NotificationsEnabled = enabled };
-        MauiPreferences.Default.Set(PreferenceKeys.NotificationsEnabled, enabled);
+        preferences.Set(PreferenceKeys.NotificationsEnabled, enabled);
 
-        _lock.Exit();
+        _lock.Release();
         PreferencesChanged?.Invoke(this, Snapshot);
-
-        return Task.CompletedTask;
     }
 }

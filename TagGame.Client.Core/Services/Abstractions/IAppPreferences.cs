@@ -16,19 +16,19 @@ public interface IAppPreferences
     /// Changes the app theme mode and persists the value.
     /// No-op when the value is unchanged.
     /// </summary>
-    Task ChangeThemeAsync(ThemeMode newTheme);
+    Task ChangeThemeAsync(ThemeMode newTheme, CancellationToken ct = default);
 
     /// <summary>
     /// Changes the app language and persists the value.
     /// No-op when the value is unchanged.
     /// </summary>
-    Task ChangeLanguageAsync(Language newLanguage);
+    Task ChangeLanguageAsync(Language newLanguage, CancellationToken ct = default);
 
     /// <summary>
     /// Enables or disables notification preferences and persists the value.
     /// No-op when the value is unchanged.
     /// </summary>
-    Task SetNotificationsEnabledAsync(bool enabled);
+    Task SetNotificationsEnabledAsync(bool enabled, CancellationToken ct = default);
 
     /// <summary>
     /// Raised after a preference change with the updated snapshot.
