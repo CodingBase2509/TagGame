@@ -11,4 +11,6 @@ public static class PreferenceKeys
     public const string Language = "Language";
     /// <summary>Notifications enabled preference key.</summary>
     public const string NotificationsEnabled = "NotificationsEnabled";
+    public const string DeviceId = "DeviceId";
+    public const string UserId = "UserId";
 }

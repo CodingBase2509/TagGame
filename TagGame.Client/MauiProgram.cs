@@ -18,20 +18,21 @@ public static class MauiProgram
 
         builder.Configuration.AddAppSettingsFile();
 
-        builder.Services.AddJsonOptionsProvider()
-            .AddNetworkingResilience()
-            .AddHttpServices(builder.Configuration, config =>
-            {
-#if IOS
-                return config["Api:BaseAddress"];
-#elif ANDROID
-                return config["Api:BaseUrl"];
-#else
-                return "http://localhost:5240";
-#endif
-            });
-
         builder.Services.AddInfrastructure();
+        builder.Services.AddServices(builder.Configuration);
+
+        builder.Services.AddJsonOptionsProvider();
+        builder.Services.AddNetworkingResilience();
+        builder.Services.AddHttpServices(builder.Configuration, config =>
+        {
+#if IOS
+            return config["Api:BaseAddress"];
+#elif ANDROID
+            return config["Api:BaseUrl"];
+#else
+            return "http://localhost:5240";
+#endif
+        });
 
 #if DEBUG
         builder.Logging.AddDebug();
