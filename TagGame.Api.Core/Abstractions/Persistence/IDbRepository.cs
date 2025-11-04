@@ -21,4 +21,6 @@ public interface IDbRepository<T> where T : class
     Task UpdateAsync(T entity, CancellationToken ct = default);
 
     Task DeleteAsync(T entity, CancellationToken ct = default);
+
+    Task<uint> GetConcurrencyToken(T entity, CancellationToken ct = default);
 }

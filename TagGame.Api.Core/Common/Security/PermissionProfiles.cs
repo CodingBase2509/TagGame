@@ -2,7 +2,7 @@ using TagGame.Shared.Domain.Games.Enums;
 
 namespace TagGame.Api.Core.Common.Security;
 
-public class PermissionProfiles
+public static class PermissionProfiles
 {
     public static RoomPermission OwnerMask => RoomPermission.StartGame
                                       | RoomPermission.EditSettings

@@ -1,38 +1,39 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
+    <PropertyGroup>
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-  </PropertyGroup>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\TagGame.Shared\TagGame.Shared.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\TagGame.Shared\TagGame.Shared.csproj"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
-    <PackageReference Include="Npgsql" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions"/>
+        <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" PrivateAssets="all"/>
+        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions"/>
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt"/>
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL"/>
+        <PackageReference Include="Npgsql"/>
+        <PackageReference Include="FluentValidation" />
+        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
+    </ItemGroup>
 
-  <!-- Explicit folders to show in Solution Explorer even when empty -->
-  <ItemGroup>
-    <Folder Include="Abstractions/System/" />
-    <Folder Include="Features/Game/" />
-    <Folder Include="Features/Player/" />
-    <Folder Include="Persistence\Configurations\" />
-    <Folder Include="Persistence\Migrations\" />
-    <Folder Include="Persistence\Migrations\Auth\" />
-    <Folder Include="Persistence\Migrations\Games\" />
-    <Folder Include="Validation/" />
-    <Folder Include="Mapping/" />
-    <Folder Include="External/" />
-  </ItemGroup>
+    <!-- Explicit folders to show in Solution Explorer even when empty -->
+    <ItemGroup>
+        <Folder Include="Abstractions/System/"/>
+        <Folder Include="Features/Game/"/>
+        <Folder Include="Features/Player/"/>
+        <Folder Include="Persistence\Configurations\"/>
+        <Folder Include="Persistence\Migrations\"/>
+        <Folder Include="Persistence\Migrations\Auth\"/>
+        <Folder Include="Persistence\Migrations\Games\"/>
+        <Folder Include="Mapping/"/>
+        <Folder Include="External/"/>
+    </ItemGroup>
 
 </Project>

@@ -26,6 +26,11 @@ public sealed class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.CreatedAt)
             .IsRequired();
 
+        builder.Property<uint>("xmin")
+            .HasColumnName("xmin")
+            .IsConcurrencyToken()
+            .ValueGeneratedOnAddOrUpdate();
+
         builder.HasIndex(u => u.Email)
             .IsUnique();
 
