@@ -7,6 +7,10 @@ public abstract class EndpointBase
     protected static IResult NoContent() => Results.NoContent();
     protected static IResult Created(string location, object? value = null) => Results.Created(location, value);
 
+    // 3xx
+    protected static IResult NotModified() =>
+        Results.StatusCode(StatusCodes.Status304NotModified);
+
     // 4xx (ProblemDetails)
     protected static IResult BadRequest(string detail, string? code = null, string? title = null) =>
         Problem(StatusCodes.Status400BadRequest, title ?? "Bad request", detail, code);

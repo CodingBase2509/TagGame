@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TagGame.Api.Core.Common.Http;
 using TagGame.Api.Infrastructure.Auth;
+using TagGame.Shared.Domain.Auth;
 using TagGame.Shared.DTOs.Users;
 
 namespace TagGame.Api.Endpoints;
@@ -15,17 +16,69 @@ public class UserModule : EndpointBase, ICarterModule
         var users = app.MapV1()
             .MapGroup("users");
 
+        users.MapGet("/me", GetOwnUserAccount)
+            .WithName("Users_GetOwnProfile")
+            .Produces(StatusCodes.Status200OK)
+            .RequireAuthorization()
+            .WithOpenApi();
+
         users.MapPatch("/me", PatchUserAccount)
             .WithName("Users_UpdateOwnProfile")
             .Accepts<PatchUserAccountDto>(MediaTypeNames.Application.Json)
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status400BadRequest, MediaTypeNames.Application.Json)
+            .ProducesProblem(StatusCodes.Status401Unauthorized, MediaTypeNames.Application.Json)
             .ProducesProblem(StatusCodes.Status404NotFound, MediaTypeNames.Application.Json)
             .ProducesProblem(StatusCodes.Status409Conflict, MediaTypeNames.Application.Json)
             .ProducesProblem(StatusCodes.Status412PreconditionFailed, MediaTypeNames.Application.Json)
             .ProducesProblem(StatusCodes.Status428PreconditionRequired, MediaTypeNames.Application.Json)
             .RequireAuthorization()
             .WithOpenApi();
+    }
+
+    private static async Task<IResult> GetOwnUserAccount(
+        [FromServices] IAuthUoW authUoW,
+        [FromServices] IHttpContextAccessor httpAccessor,
+        [FromHeader(Name = "If-None-Match")] string? ifNoneMatch,
+        CancellationToken ct
+    )
+    {
+        var http = httpAccessor.HttpContext;
+        if (!AuthUtils.TryGetUserId(http!, out var userId))
+            return Unauthorized("Missing subject claim.", "auth.missing_sub");
+
+        var user = await authUoW.Users.GetByIdAsync([userId], new QueryOptions<User>
+        {
+            AsNoTracking = true
+        }, ct);
+        if (user is null)
+            return NotFound("User not found.", "user.not_found");
+
+        var ccToken = await authUoW.Users.GetConcurrencyToken(user, ct);
+        var result = EtagUtils.CheckIfNoneMatch(ifNoneMatch, ccToken);
+        switch (result)
+        {
+            case IfNoneMatchDecision.InvalidIfNoneMatch:
+                return BadRequest("Invalid If-None-Match.", "invalid.if_none_match");
+            case IfNoneMatchDecision.NotModified:
+                http?.Response.SetEtag(ccToken);
+                return NotModified();
+            case IfNoneMatchDecision.Proceed:
+            default:
+                break;
+        }
+
+        var dto = new UserProfileDto
+        {
+            Id = user.Id,
+            DisplayName = user.DisplayName,
+            DeviceId = user.DeviceId ?? string.Empty,
+            Email = user.Email,
+            AvatarColor = user.AvatarColor ?? string.Empty,
+        };
+
+        http?.Response.SetEtag(ccToken);
+        return Ok(dto);
     }
 
     private static async Task<IResult> PatchUserAccount(
@@ -47,7 +100,7 @@ public class UserModule : EndpointBase, ICarterModule
         if (!AuthUtils.TryGetUserId(http!, out var userId))
             return Unauthorized("Missing subject claim.", "auth.missing_sub");
 
-        var user = await authUoW.Users.GetByIdAsync([userId], new()
+        var user = await authUoW.Users.GetByIdAsync([userId], new QueryOptions<User>
         {
             AsNoTracking = false
         }, ct);
