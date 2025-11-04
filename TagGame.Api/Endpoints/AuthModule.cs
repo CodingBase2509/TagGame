@@ -1,10 +1,7 @@
-using System.Net.Mime;
 using Carter;
 using Microsoft.AspNetCore.Mvc;
 using TagGame.Api.Core.Abstractions.Auth;
-using TagGame.Api.Core.Abstractions.Persistence;
 using TagGame.Api.Core.Common.Exceptions;
-using TagGame.Api.Extensions;
 using TagGame.Shared.Domain.Auth;
 using TagGame.Shared.DTOs.Auth;
 
