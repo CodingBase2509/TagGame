@@ -37,6 +37,11 @@ public class UserModule : EndpointBase, ICarterModule
         CancellationToken ct = default)
     {
         var http = httpAccessor.HttpContext;
+
+        // Precondition: If-Match must be present before we bother validating body
+        if (string.IsNullOrWhiteSpace(ifMatch))
+            return PreconditionRequired("If-Match header required.", "missing.if-match");
+
         await validator.ValidateAndThrowAsync(request, ct);
 
         if (!AuthUtils.TryGetUserId(http!, out var userId))
