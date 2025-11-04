@@ -18,7 +18,11 @@ public class UserModule : EndpointBase, ICarterModule
 
         users.MapGet("/me", GetOwnUserAccount)
             .WithName("Users_GetOwnProfile")
-            .Produces(StatusCodes.Status200OK)
+            .Produces<UserProfileDto>()
+            .Produces(StatusCodes.Status304NotModified)
+            .ProducesProblem(StatusCodes.Status401Unauthorized, MediaTypeNames.Application.Json)
+            .ProducesProblem(StatusCodes.Status400BadRequest, MediaTypeNames.Application.Json)
+            .ProducesProblem(StatusCodes.Status404NotFound, MediaTypeNames.Application.Json)
             .RequireAuthorization()
             .WithOpenApi();
 
