@@ -12,6 +12,7 @@ builder.Services.AddCore(builder.Configuration);
 builder.Services.AddSharedJsonOptions();
 builder.Services.AddHostHealthChecks(builder.Configuration);
 builder.Services.AddOpenApiWithJwt();
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddCarter();
 builder.Services.AddDevCors(builder.Configuration, builder.Environment);

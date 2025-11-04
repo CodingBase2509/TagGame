@@ -6,24 +6,25 @@
         <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
-    <PackageReference Include="Carter" />
-    <PackageReference Include="AspNetCore.HealthChecks.NpgSql" />
-    <PackageReference Include="AspNetCore.HealthChecks.UI.Client" />
-    <PackageReference Include="Scalar.AspNetCore" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" PrivateAssets="all" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi"/>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer"/>
+        <PackageReference Include="Carter"/>
+        <PackageReference Include="AspNetCore.HealthChecks.NpgSql"/>
+        <PackageReference Include="AspNetCore.HealthChecks.UI.Client"/>
+        <PackageReference Include="Scalar.AspNetCore"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" PrivateAssets="all"/>
+        <PackageReference Include="FluentValidation" />
+    </ItemGroup>
 
-  <!-- Explicit folders to show in Solution Explorer even when empty -->
-  <ItemGroup>
-    <Folder Include="Auth/" />
-  </ItemGroup>
+    <!-- Explicit folders to show in Solution Explorer even when empty -->
+    <ItemGroup>
+        <Folder Include="Auth/"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\TagGame.Api.Core\TagGame.Api.Core.csproj" />
-    <ProjectReference Include="..\TagGame.Shared\TagGame.Shared.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\TagGame.Api.Core\TagGame.Api.Core.csproj"/>
+        <ProjectReference Include="..\TagGame.Shared\TagGame.Shared.csproj"/>
+    </ItemGroup>
 
 </Project>

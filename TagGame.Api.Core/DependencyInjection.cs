@@ -1,8 +1,10 @@
+using FluentValidation;
 using TagGame.Api.Core.Abstractions.Auth;
 using TagGame.Api.Core.Abstractions.Persistence;
 using TagGame.Api.Core.Features.Auth;
 using TagGame.Api.Core.Persistence.Contexts;
 using TagGame.Api.Core.Persistence.Repositories;
+using TagGame.Api.Core.Validation.Users;
 namespace TagGame.Api.Core;
 
 public static class DependencyInjection
@@ -14,6 +16,9 @@ public static class DependencyInjection
 
         services.AddDbContexts(configuration);
         services.AddRepositories();
+
+        // Register validators from this assembly (FluentValidation)
+        services.AddValidatorsFromAssemblyContaining<PatchUserAccountValidator>();
 
         return services;
     }
