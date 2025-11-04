@@ -18,9 +18,6 @@
     </ItemGroup>
 
     <!-- Explicit folders to show in Solution Explorer even when empty -->
-    <ItemGroup>
-        <Folder Include="Auth/"/>
-    </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\TagGame.Api.Core\TagGame.Api.Core.csproj"/>

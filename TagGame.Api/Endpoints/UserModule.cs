@@ -1,10 +1,9 @@
-using System.Linq.Expressions;
 using Carter;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using TagGame.Api.Core.Common.Http;
 using TagGame.Api.Infrastructure.Auth;
-using TagGame.Shared.Domain.Auth;
 using TagGame.Shared.DTOs.Users;
 
 namespace TagGame.Api.Endpoints;
@@ -33,13 +32,14 @@ public class UserModule : EndpointBase, ICarterModule
         [FromBody] PatchUserAccountDto request,
         [FromServices] IAuthUoW authUoW,
         [FromServices] IValidator<PatchUserAccountDto> validator,
+        [FromServices] IHttpContextAccessor httpAccessor,
         [FromHeader(Name = "If-Match")] string? ifMatch,
-        IHttpContextAccessor httpAccessor,
         CancellationToken ct = default)
     {
+        var http = httpAccessor.HttpContext;
         await validator.ValidateAndThrowAsync(request, ct);
 
-        if (!AuthUtils.TryGetUserId(httpAccessor.HttpContext!, out var userId))
+        if (!AuthUtils.TryGetUserId(http!, out var userId))
             return Unauthorized("Missing subject claim.", "auth.missing_sub");
 
         var user = await authUoW.Users.GetByIdAsync([userId], new()
@@ -49,19 +49,44 @@ public class UserModule : EndpointBase, ICarterModule
         if (user is null)
             return NotFound("User not found.", "user.not_found");
 
+        var ccToken = await authUoW.Users.GetConcurrencyToken(user, ct);
+        var result = EtagUtils.CheckIfMatch(ifMatch, ccToken);
+        switch (result)
+        {
+            case IfMatchCheckResult.MissingIfMatch:
+                return PreconditionRequired("if-match", "missing.if-match");
+            case IfMatchCheckResult.InvalidIfMatch:
+                return BadRequest("if-match", "invalid.if-match");
+            case IfMatchCheckResult.EtagMismatch:
+                http?.Response.SetEtag(ccToken);
+                return PreconditionFailed("if-match", "mismatch.if-match");
+            case IfMatchCheckResult.Ok:
+            case IfMatchCheckResult.Wildcard:
+            default:
+                break;
+        }
+
         if (!string.IsNullOrWhiteSpace(request.AvatarColor))
             user.AvatarColor = request.AvatarColor;
         if (!string.IsNullOrWhiteSpace(request.DisplayName))
             user.DisplayName = request.DisplayName;
         if (!string.IsNullOrWhiteSpace(request.DeviceId))
             user.DeviceId = request.DeviceId;
-        if(!string.IsNullOrWhiteSpace(request.Email))
+        if (!string.IsNullOrWhiteSpace(request.Email))
             user.Email = request.Email;
 
         try
         {
             await authUoW.SaveChangesAsync(ct);
+            var newCcToken = await authUoW.Users.GetConcurrencyToken(user, ct);
+            http?.Response.SetEtag(newCcToken);
             return NoContent();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            var latest = await authUoW.Users.GetConcurrencyToken(user, ct);
+            http?.Response.SetEtag(latest);
+            return PreconditionFailed("if-match", "mismatch.if-match");
         }
         catch (DbUpdateException ex) when (IsUniqueViolationOnEmail(ex))
         {
@@ -91,7 +116,7 @@ public class UserModule : EndpointBase, ICarterModule
                     }
 
                     // Fallback: inspect message for the Email column indicator
-                    if (current.Message?.IndexOf("(Email)", StringComparison.OrdinalIgnoreCase) >= 0)
+                    if (current.Message.Contains("(Email)", StringComparison.OrdinalIgnoreCase))
                         return true;
                 }
             }
@@ -100,7 +125,7 @@ public class UserModule : EndpointBase, ICarterModule
         }
 
         // Final fallback by message (provider-agnostic but brittle)
-        var msg = ex.GetBaseException().Message ?? ex.Message;
+        var msg = ex.GetBaseException().Message;
         return msg.Contains("duplicate key", StringComparison.OrdinalIgnoreCase)
                && msg.Contains("(Email)", StringComparison.OrdinalIgnoreCase);
     }

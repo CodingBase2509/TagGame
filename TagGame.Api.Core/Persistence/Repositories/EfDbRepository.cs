@@ -88,6 +88,12 @@ public sealed class EfDbRepository<T> : IDbRepository<T> where T : class
         return Task.CompletedTask;
     }
 
+    public async Task<uint> GetConcurrencyToken(T entity, CancellationToken ct = default)
+    {
+        await db.Entry(entity).ReloadAsync(ct);
+        return db.Entry(entity).Property<uint>("xmin").CurrentValue;
+    }
+
     private static IQueryable<T> ApplyOptions(IQueryable<T> query, QueryOptions<T>? options)
     {
         if (options is null)
