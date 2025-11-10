@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+  <!-- ========================= -->
+  <!--          STYLES          -->
+  <!-- ========================= -->
+
+  <!-- Seiten-Background -->
+  <Style TargetType="ContentPage">
+    <Setter Property="BackgroundColor" Value="{AppThemeBinding
+                                        Light={StaticResource ColorBackgroundLight},
+                                        Dark={StaticResource ColorBackgroundDark}}" />
+  </Style>
+
+  <!-- Labels -->
+  <!-- Basis-Label (als expliziter Style) -->
+  <Style x:Key="BaseLabel" TargetType="Label">
+    <Setter Property="FontFamily" Value="ManropeRegular"/>
+    <Setter Property="TextColor" Value="{AppThemeBinding
+                                    Light={StaticResource ColorTextPrimaryLight},
+                                    Dark={StaticResource ColorTextPrimaryDark}}"/>
+  </Style>
+
+  <!-- Impliziter Label-Style: alle Label erben von BaseLabel -->
+  <Style TargetType="Label" BasedOn="{StaticResource BaseLabel}" />
+
+  <!-- Titel / Untertitel -->
+  <Style x:Key="TitleLabel" TargetType="Label" BasedOn="{StaticResource BaseLabel}">
+    <Setter Property="FontFamily" Value="ManropeSemiBold"/>
+    <Setter Property="FontSize" Value="28"/>
+  </Style>
+
+  <Style x:Key="SubtitleLabel" TargetType="Label" BasedOn="{StaticResource BaseLabel}">
+    <Setter Property="FontFamily" Value="ManropeMedium"/>
+    <Setter Property="FontSize" Value="18"/>
+    <Setter Property="TextColor" Value="{AppThemeBinding
+                                    Light={StaticResource ColorTextSecondaryLight},
+                                    Dark={StaticResource ColorTextSecondaryDark}}"/>
+  </Style>
+
+  <!-- Buttons -->
+  <Style x:Key="PrimaryButton" TargetType="Button">
+    <Setter Property="FontFamily" Value="ManropeMedium"/>
+    <Setter Property="CornerRadius" Value="12"/>
+    <Setter Property="FontSize" Value="16"/>
+    <Setter Property="Padding" Value="16,12"/>
+    <Setter Property="BackgroundColor" Value="{AppThemeBinding
+                                        Light={StaticResource ColorPrimaryLight},
+                                        Dark={StaticResource ColorPrimaryDark}}"/>
+    <Setter Property="TextColor" Value="White"/>
+  </Style>
+
+  <Style x:Key="SecondaryButton" TargetType="Button">
+    <Setter Property="FontFamily" Value="ManropeMedium"/>
+    <Setter Property="CornerRadius" Value="12"/>
+    <Setter Property="FontSize" Value="16"/>
+    <Setter Property="Padding" Value="16,12"/>
+    <Setter Property="BackgroundColor" Value="Transparent"/>
+    <Setter Property="BorderColor" Value="{AppThemeBinding
+                                    Light={StaticResource ColorPrimaryLight},
+                                    Dark={StaticResource ColorPrimaryDark}}"/>
+    <Setter Property="BorderWidth" Value="1"/>
+    <Setter Property="TextColor" Value="{AppThemeBinding
+                                    Light={StaticResource ColorPrimaryLight},
+                                    Dark={StaticResource ColorPrimaryDark}}"/>
+  </Style>
+
+  <Style x:Key="DangerButton" TargetType="Button">
+    <Setter Property="FontFamily" Value="ManropeMedium"/>
+    <Setter Property="CornerRadius" Value="12"/>
+    <Setter Property="FontSize" Value="16"/>
+    <Setter Property="Padding" Value="16,12"/>
+    <Setter Property="BackgroundColor" Value="{AppThemeBinding
+                                        Light={StaticResource ColorErrorLight},
+                                        Dark={StaticResource ColorErrorDark}}"/>
+    <Setter Property="TextColor" Value="White"/>
+  </Style>
+
+  <!-- Floating Action Button (rund) -->
+  <Style x:Key="FabButton" TargetType="Button">
+    <Setter Property="BackgroundColor" Value="{AppThemeBinding
+                                            Light={StaticResource ColorPrimaryLight},
+                                            Dark={StaticResource ColorPrimaryDark}}"/>
+    <Setter Property="TextColor" Value="White"/>
+    <Setter Property="CornerRadius" Value="30"/>
+    <Setter Property="HeightRequest" Value="60"/>
+    <Setter Property="WidthRequest" Value="60"/>
+    <Setter Property="FontFamily" Value="ManropeMedium"/>
+  </Style>
+
+  <!-- Eingaben -->
+  <Style TargetType="Entry">
+    <Setter Property="FontFamily" Value="ManropeRegular"/>
+    <Setter Property="TextColor" Value="{AppThemeBinding
+                                    Light={StaticResource ColorTextPrimaryLight},
+                                    Dark={StaticResource ColorTextPrimaryDark}}"/>
+    <Setter Property="PlaceholderColor" Value="{AppThemeBinding
+                                            Light={StaticResource ColorTextSecondaryLight},
+                                            Dark={StaticResource ColorTextSecondaryDark}}"/>
+    <Setter Property="BackgroundColor" Value="{AppThemeBinding
+                                        Light={StaticResource ColorSurfaceLight},
+                                        Dark={StaticResource ColorSurfaceDark}}"/>
+    <Setter Property="HeightRequest" Value="44"/>
+    <Setter Property="Margin" Value="0,6"/>
+  </Style>
+
+  <Style TargetType="Editor">
+    <Setter Property="FontFamily" Value="ManropeRegular"/>
+    <Setter Property="TextColor" Value="{AppThemeBinding
+                                    Light={StaticResource ColorTextPrimaryLight},
+                                    Dark={StaticResource ColorTextPrimaryDark}}"/>
+    <Setter Property="PlaceholderColor" Value="{AppThemeBinding
+                                            Light={StaticResource ColorTextSecondaryLight},
+                                            Dark={StaticResource ColorTextSecondaryDark}}"/>
+    <Setter Property="BackgroundColor" Value="{AppThemeBinding
+                                            Light={StaticResource ColorSurfaceLight},
+                                            Dark={StaticResource ColorSurfaceDark}}"/>
+  </Style>
+
+  <!-- Border (Card / Toast / Popup) -->
+  <!-- Card -->
+  <Style x:Key="CardBorder" TargetType="Border">
+    <Setter Property="Background" Value="{AppThemeBinding
+                                    Light={StaticResource SurfaceBrushLight},
+                                    Dark={StaticResource SurfaceBrushDark}}"/>
+    <Setter Property="Stroke" Value="{AppThemeBinding
+                                    Light={StaticResource DividerBrushLight},
+                                    Dark={StaticResource DividerBrushDark}}"/>
+    <Setter Property="StrokeThickness" Value="1"/>
+    <Setter Property="Padding" Value="16"/>
+    <Setter Property="StrokeShape">
+      <Setter.Value>
+        <RoundRectangle CornerRadius="16"/>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <!-- Toast -->
+  <Style x:Key="ToastBorder" TargetType="Border">
+    <Setter Property="Background" Value="{AppThemeBinding
+                                    Light={StaticResource SurfaceBrushLight},
+                                    Dark={StaticResource SurfaceBrushDark}}"/>
+    <Setter Property="Padding" Value="12,8"/>
+    <Setter Property="Stroke" Value="Transparent"/>
+    <Setter Property="StrokeShape">
+      <Setter.Value>
+        <RoundRectangle CornerRadius="12"/>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <!-- Chat-Popup / Modal Overlay -->
+  <Style x:Key="OverlayPanel" TargetType="Border">
+    <Setter Property="Background" Value="{AppThemeBinding
+                                    Light={StaticResource BackgroundBrushLight},
+                                    Dark={StaticResource BackgroundBrushDark}}"/>
+    <Setter Property="Stroke" Value="Transparent"/>
+  </Style>
+
+  <Style x:Key="PopupCard" TargetType="Border">
+    <Setter Property="Background" Value="{AppThemeBinding
+                                    Light={StaticResource SurfaceBrushLight},
+                                    Dark={StaticResource SurfaceBrushDark}}"/>
+    <Setter Property="Padding" Value="12"/>
+    <Setter Property="Stroke" Value="Transparent"/>
+    <Setter Property="StrokeShape">
+      <Setter.Value>
+        <RoundRectangle CornerRadius="12"/>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <!-- Misc Controls -->
+  <Style TargetType="CollectionView">
+    <Setter Property="BackgroundColor" Value="Transparent"/>
+  </Style>
+
+  <Style TargetType="Slider">
+    <Setter Property="MinimumTrackColor" Value="{AppThemeBinding Light={StaticResource ColorPrimaryLight}, Dark={StaticResource ColorPrimaryDark}}"/>
+    <Setter Property="MaximumTrackColor" Value="{AppThemeBinding Light={StaticResource ColorDividerLight}, Dark={StaticResource ColorDividerDark}}"/>
+    <Setter Property="ThumbColor" Value="{AppThemeBinding Light={StaticResource ColorPrimaryActiveLight}, Dark={StaticResource ColorPrimaryActiveDark}}"/>
+  </Style>
+
+  <Style TargetType="Switch">
+    <Setter Property="OnColor" Value="{AppThemeBinding Light={StaticResource ColorPrimaryLight}, Dark={StaticResource ColorPrimaryDark}}"/>
+    <Setter Property="ThumbColor" Value="{AppThemeBinding Light={StaticResource ColorSurfaceLight}, Dark={StaticResource ColorSurfaceDark}}"/>
+  </Style>
+
+  <Style TargetType="ProgressBar">
+    <Setter Property="ProgressColor" Value="{AppThemeBinding Light={StaticResource ColorPrimaryLight}, Dark={StaticResource ColorPrimaryDark}}"/>
+    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource ColorDividerLight}, Dark={StaticResource ColorDividerDark}}"/>
+  </Style>
+
+</ResourceDictionary>
