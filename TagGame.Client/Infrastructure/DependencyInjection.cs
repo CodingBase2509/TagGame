@@ -20,7 +20,10 @@ public static class DependencyInjection
 
         services.AddSingleton<INetworkConnectivity, NetworkConnectivity>();
         services.AddSingleton<IAppPreferences, AppPreferences>();
+
         services.AddSingleton<ITokenStorage, TokenStorage>();
+        services.AddSingleton<IProtectedStorage, ProtectedStorage>();
+        services.AddSingleton(typeof(IDataStore<>), typeof(DataStore<>));
 
         return services;
     }

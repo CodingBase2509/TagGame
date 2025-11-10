@@ -14,6 +14,8 @@ public static class ServiceCollectionServices
         services.AddOptions<AuthServiceOptions>()
             .Bind(config.GetSection("Auth"));
 
+        services.AddSingleton<ICrypto, Crypto>();
+
         return services;
     }
 }
