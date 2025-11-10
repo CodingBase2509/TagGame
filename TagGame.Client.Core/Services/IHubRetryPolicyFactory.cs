@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.SignalR.Client;
 using TagGame.Client.Core.Options;
 
-namespace TagGame.Client.Core.Services.Abstractions;
+namespace TagGame.Client.Core.Services;
 
 /// <summary>
 /// Creates SignalR reconnect retry policies based on configured delays/options.

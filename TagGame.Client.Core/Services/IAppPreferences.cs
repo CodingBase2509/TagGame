@@ -1,6 +1,6 @@
 using TagGame.Client.Core.Options;
 
-namespace TagGame.Client.Core.Services.Abstractions;
+namespace TagGame.Client.Core.Services;
 
 /// <summary>
 /// App-wide preferences (theme, language, notifications) with change events and persistence.

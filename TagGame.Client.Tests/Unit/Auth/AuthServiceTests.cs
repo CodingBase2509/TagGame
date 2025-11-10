@@ -2,8 +2,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using TagGame.Client.Core.Http;
 using TagGame.Client.Core.Options;
-using TagGame.Client.Core.Services.Abstractions;
-using TagGame.Client.Core.Services.Implementations;
+using TagGame.Client.Core.Security;
+using TagGame.Client.Core.Services;
 using TagGame.Client.Core.Storage;
 using TagGame.Shared.DTOs.Auth;
 
@@ -66,8 +66,8 @@ public class AuthServiceTests
             RefreshExpiresAt = DateTimeOffset.UtcNow.AddHours(2)
         };
         // GetAsync is called before refresh, inside refresh, and after refresh
-        var seq = new Queue<TokenPairDto?>(new[] { expired, expired, refreshed });
-        store.Setup(s => s.GetAsync(It.IsAny<CancellationToken>())).ReturnsAsync(() => seq.Dequeue());
+        var seq = new Queue<TokenPairDto?>([expired, expired, refreshed]);
+        store.Setup(s => s.GetAsync(It.IsAny<CancellationToken>())).ReturnsAsync(seq.Dequeue);
         api.Setup(a => a.PostAsync<RefreshRequestDto, RefreshResponseDto>(opts.RefreshPath,
             It.IsAny<RefreshRequestDto>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new RefreshResponseDto { Tokens = refreshed });

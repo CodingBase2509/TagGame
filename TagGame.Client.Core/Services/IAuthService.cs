@@ -1,6 +1,6 @@
 using TagGame.Shared.DTOs.Auth;
 
-namespace TagGame.Client.Core.Services.Abstractions;
+namespace TagGame.Client.Core.Services;
 
 public interface IAuthService
 {

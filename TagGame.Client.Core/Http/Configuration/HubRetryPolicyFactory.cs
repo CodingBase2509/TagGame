@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.SignalR.Client;
 using TagGame.Client.Core.Options;
-using TagGame.Client.Core.Services.Abstractions;
+using TagGame.Client.Core.Services;
 
-namespace TagGame.Client.Core.Services.Implementations;
+namespace TagGame.Client.Core.Http.Configuration;
 
 /// <summary>
 /// Creates a fixed-delays reconnect policy for SignalR based on configured hub options.

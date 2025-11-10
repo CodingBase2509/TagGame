@@ -1,9 +1,9 @@
 using TagGame.Client.Core.Options;
-using TagGame.Client.Core.Services.Abstractions;
+using TagGame.Client.Core.Services;
 
 namespace TagGame.Client.Infrastructure.Preferences;
 
-public class AppPreferences(IPreferences preferences) : IAppPreferences
+public class AppPreferences(IPreferences preferences) : IAppPreferences, IDisposable
 {
     private readonly SemaphoreSlim _lock = new(1, 1);
 
@@ -80,5 +80,11 @@ public class AppPreferences(IPreferences preferences) : IAppPreferences
 
         _lock.Release();
         PreferencesChanged?.Invoke(this, Snapshot);
+    }
+
+    public void Dispose()
+    {
+        GC.SuppressFinalize(this);
+        _lock.Dispose();
     }
 }

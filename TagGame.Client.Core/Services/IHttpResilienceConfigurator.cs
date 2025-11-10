@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using TagGame.Client.Core.Options;
 
-namespace TagGame.Client.Core.Services.Abstractions;
+namespace TagGame.Client.Core.Services;
 
 /// <summary>
 /// Configures the HttpClient resilience pipeline (retry/timeout) for a typed client.

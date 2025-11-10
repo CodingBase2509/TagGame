@@ -3,9 +3,9 @@ using Microsoft.Extensions.Http.Resilience;
 using Polly;
 using Polly.Retry;
 using TagGame.Client.Core.Options;
-using TagGame.Client.Core.Services.Abstractions;
+using TagGame.Client.Core.Services;
 
-namespace TagGame.Client.Core.Services.Implementations;
+namespace TagGame.Client.Core.Http.Configuration;
 
 /// <summary>
 /// Applies resilient retry and total-timeout strategies to typed HttpClients using v9 APIs.

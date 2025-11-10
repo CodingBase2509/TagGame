@@ -1,4 +1,4 @@
-namespace TagGame.Client.Core.Services.Abstractions;
+namespace TagGame.Client.Core.Services;
 
 /// <summary>
 /// Abstraction for monitoring network connectivity in a UI-agnostic way.

@@ -2,11 +2,11 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using TagGame.Client.Core.Http;
 using TagGame.Client.Core.Options;
-using TagGame.Client.Core.Services.Abstractions;
+using TagGame.Client.Core.Services;
 using TagGame.Client.Core.Storage;
 using TagGame.Shared.DTOs.Auth;
 
-namespace TagGame.Client.Core.Services.Implementations;
+namespace TagGame.Client.Core.Security;
 
 public class AuthService(
     IApiClient api,
