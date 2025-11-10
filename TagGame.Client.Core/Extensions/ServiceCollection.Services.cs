@@ -7,7 +7,7 @@ namespace TagGame.Client.Core.Extensions;
 
 public static class ServiceCollectionServices
 {
-    public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration config)
+    public static IServiceCollection AddCoreServices(this IServiceCollection services, IConfiguration config)
     {
         services.AddSingleton(TimeProvider.System);
         services.AddSingleton<IAuthService, AuthService>();

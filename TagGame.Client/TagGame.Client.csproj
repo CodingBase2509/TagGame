@@ -34,15 +34,16 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <!-- App Icon -->
-        <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4"/>
+        <!-- App Icon (base) -->
+        <MauiIcon Include="Resources\AppIcon\appicon.svg" />
+        <!-- Android round icon (optional) -->
+        <MauiIcon Include="Resources\AppIcon\appicon_round.svg" Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'" />
 
         <!-- Splash Screen -->
-        <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128"/>
+        <MauiSplashScreen Include="Resources\Splash\splash_round.svg" BaseSize="128,128" Color="#020D15" />
 
         <!-- Images -->
         <MauiImage Include="Resources\Images\*"/>
-        <MauiImage Update="Resources\Images\dotnet_bot.png" Resize="True" BaseSize="300,185"/>
 
         <!-- Custom Fonts -->
         <MauiFont Include="Resources\Fonts\*"/>
@@ -59,6 +60,7 @@
 
     <!-- Explicit folders to show in Solution Explorer even when empty -->
     <ItemGroup>
+        <Folder Include="Platforms\Android\Resources\" />
         <Folder Include="Ui/Views/" />
         <Folder Include="Ui/Components/" />
         <Folder Include="Ui/Extensions/" />
