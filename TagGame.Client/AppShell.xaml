@@ -5,4 +5,9 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     Title="TagGame.Client">
 
+    <ShellContent Route="start"
+                  Title="Start"
+                  ContentTemplate="{DataTemplate }"
+    />
+
 </Shell>

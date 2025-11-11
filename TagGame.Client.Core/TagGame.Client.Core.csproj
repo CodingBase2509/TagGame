@@ -21,7 +21,6 @@
   <ItemGroup>
     <Folder Include="Ui/ViewModels/" />
     <Folder Include="State/" />
-    <Folder Include="Navigation/" />
     <Folder Include="Localization/" />
     <Folder Include="Notifications/" />
   </ItemGroup>

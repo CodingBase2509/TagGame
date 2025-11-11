@@ -1,6 +1,8 @@
+using TagGame.Client.Core.Navigation;
 using TagGame.Client.Core.Services;
 using TagGame.Client.Core.Storage;
 using TagGame.Client.Infrastructure.Connectivity;
+using TagGame.Client.Infrastructure.Navigation;
 using TagGame.Client.Infrastructure.Preferences;
 using TagGame.Client.Infrastructure.Storage;
 
@@ -24,6 +26,8 @@ public static class DependencyInjection
         services.AddSingleton<ITokenStorage, TokenStorage>();
         services.AddSingleton<IProtectedStorage, ProtectedStorage>();
         services.AddSingleton(typeof(IDataStore<>), typeof(DataStore<>));
+
+        services.AddSingleton<INavigationService, ShellNavService>();
 
         return services;
     }
