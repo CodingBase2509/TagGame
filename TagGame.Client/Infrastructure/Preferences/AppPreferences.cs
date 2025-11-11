@@ -9,7 +9,7 @@ public class AppPreferences(IPreferences preferences) : IAppPreferences, IDispos
 
     public AppPreferencesSnapshot Snapshot { get; private set; } = new(
         preferences.Get(PreferenceKeys.Theme, ThemeMode.System),
-        preferences.Get(PreferenceKeys.Language, Language.English),
+        preferences.Get(PreferenceKeys.Language, Language.System),
         preferences.Get(PreferenceKeys.NotificationsEnabled, false),
         preferences.Get(PreferenceKeys.DeviceId, Guid.Empty),
         preferences.Get(PreferenceKeys.UserId, Guid.Empty)

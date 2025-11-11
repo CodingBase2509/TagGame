@@ -1,8 +1,10 @@
+using TagGame.Client.Core.Localization;
 using TagGame.Client.Core.Navigation;
 using TagGame.Client.Core.Services;
 using TagGame.Client.Core.Storage;
 using TagGame.Client.Infrastructure.Connectivity;
 using TagGame.Client.Infrastructure.Navigation;
+using TagGame.Client.Infrastructure.Localization;
 using TagGame.Client.Infrastructure.Preferences;
 using TagGame.Client.Infrastructure.Storage;
 
@@ -19,14 +21,11 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services)
     {
         services.AddMauiDefaults();
+        services.AddStorages();
+        services.AddLocalization();
 
         services.AddSingleton<INetworkConnectivity, NetworkConnectivity>();
         services.AddSingleton<IAppPreferences, AppPreferences>();
-
-        services.AddSingleton<ITokenStorage, TokenStorage>();
-        services.AddSingleton<IProtectedStorage, ProtectedStorage>();
-        services.AddSingleton(typeof(IDataStore<>), typeof(DataStore<>));
-
         services.AddSingleton<INavigationService, ShellNavService>();
 
         return services;
@@ -36,6 +35,24 @@ public static class DependencyInjection
     {
         services.AddSingleton(Microsoft.Maui.Storage.Preferences.Default);
         services.AddSingleton(Microsoft.Maui.Storage.SecureStorage.Default);
+
+        return services;
+    }
+
+    private static IServiceCollection AddStorages(this IServiceCollection services)
+    {
+        services.AddSingleton<ITokenStorage, TokenStorage>();
+        services.AddSingleton<IProtectedStorage, ProtectedStorage>();
+        services.AddSingleton(typeof(IDataStore<>), typeof(DataStore<>));
+
+        return services;
+    }
+
+    private static IServiceCollection AddLocalization(this IServiceCollection services)
+    {
+        services.AddSingleton<ILocalizationCatalog, ResxCatalog>();
+        services.AddSingleton<ILocalizer, Localizer>();
+        services.AddSingleton<LocalizationInitializer>();
 
         return services;
     }

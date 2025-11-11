@@ -23,8 +23,6 @@ public static class MauiProgram
             return config["Api:BaseAddress"];
 #elif ANDROID
             return config["Api:BaseUrl"];
-#else
-            return "http://localhost:5240";
 #endif
         });
 

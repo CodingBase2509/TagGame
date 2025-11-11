@@ -1,27 +1,28 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
+    <PropertyGroup>
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-  </PropertyGroup>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\TagGame.Shared\TagGame.Shared.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\TagGame.Shared\TagGame.Shared.csproj"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
-    <PackageReference Include="Microsoft.Extensions.Http" />
-    <PackageReference Include="Microsoft.Extensions.Http.Resilience" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions"/>
+        <PackageReference Include="Microsoft.Extensions.Http"/>
+        <PackageReference Include="Microsoft.Extensions.Http.Resilience"/>
+        <PackageReference Include="Microsoft.AspNetCore.SignalR.Client"/>
+        <PackageReference Include="SmartFormat"/>
+        <PackageReference Include="SmartFormat.Extensions.Time"/>
+    </ItemGroup>
 
-  <!-- Explicit folders to show in Solution Explorer even when empty -->
-  <ItemGroup>
-    <Folder Include="Ui/ViewModels/" />
-    <Folder Include="State/" />
-    <Folder Include="Localization/" />
-    <Folder Include="Notifications/" />
-  </ItemGroup>
+    <!-- Explicit folders to show in Solution Explorer even when empty -->
+    <ItemGroup>
+        <Folder Include="Ui/ViewModels/"/>
+        <Folder Include="State/"/>
+        <Folder Include="Notifications/"/>
+    </ItemGroup>
 </Project>
