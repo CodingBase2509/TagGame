@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace TagGame.Client.Ui.Views.Settings;
 
-public partial class SettingsPage : ContentPage
+public partial class SettingsPage : PageBase
 {
-    public SettingsPage()
+    public SettingsPage(ToastPresenter presenter) : base(presenter)
     {
         InitializeComponent();
     }

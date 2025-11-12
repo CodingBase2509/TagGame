@@ -1,8 +1,8 @@
 ﻿using TagGame.Client.Core.Navigation;
-using TagGame.Client.Ui.Views;
 using TagGame.Client.Ui.Views.Game;
 using TagGame.Client.Ui.Views.Lobby;
 using TagGame.Client.Ui.Views.Settings;
+using TagGame.Client.Ui.Views.Start;
 
 namespace TagGame.Client;
 

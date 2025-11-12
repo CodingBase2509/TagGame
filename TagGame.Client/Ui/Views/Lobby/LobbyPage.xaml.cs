@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace TagGame.Client.Ui.Views.Lobby;
 
-public partial class LobbyPage : ContentPage
+public partial class LobbyPage : PageBase
 {
-    public LobbyPage()
+    public LobbyPage(ToastPresenter presenter) : base(presenter)
     {
         InitializeComponent();
     }

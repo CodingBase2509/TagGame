@@ -80,7 +80,7 @@ public partial class ToastHost : ContentView, IDisposable
                 await _gate.WaitAsync(ct);
                 try
                 {
-                    pendingCount = _pending.Count;
+                    pendingCount = _pending.Count - 1;
                 }
                 finally
                 {
@@ -177,7 +177,7 @@ public partial class ToastHost : ContentView, IDisposable
             await _gate.WaitAsync(linked.Token);
             try
             {
-                pendingCount = _pending.Count;
+                pendingCount = _pending.Count -1;
             }
             finally
             {

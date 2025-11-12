@@ -3,12 +3,12 @@
     x:Class="TagGame.Client.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:views="clr-namespace:TagGame.Client.Ui.Views"
+    xmlns:start="clr-namespace:TagGame.Client.Ui.Views.Start"
     Title="TagGame.Client">
 
     <ShellContent Route="start"
                   Title="Start"
-                  ContentTemplate="{DataTemplate views:StartPage}"
+                  ContentTemplate="{DataTemplate start:StartPage}"
     />
 
 </Shell>

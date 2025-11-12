@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace TagGame.Client.Ui.Views.Game;
 
-public partial class GamePlayerListPage : ContentPage
+public partial class GamePlayerListPage : PageBase
 {
-    public GamePlayerListPage()
+    public GamePlayerListPage(ToastPresenter presenter) : base(presenter)
     {
         InitializeComponent();
     }

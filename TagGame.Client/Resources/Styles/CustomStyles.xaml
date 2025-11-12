@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                    xmlns:views="clr-namespace:TagGame.Client.Ui.Views">
 
   <!-- ========================= -->
   <!--          STYLES          -->
   <!-- ========================= -->
 
   <!-- Seiten-Background -->
-  <Style TargetType="ContentPage">
+  <Style TargetType="views:PageBase">
     <Setter Property="BackgroundColor" Value="{AppThemeBinding
                                         Light={StaticResource ColorBackgroundLight},
                                         Dark={StaticResource ColorBackgroundDark}}" />
@@ -142,7 +143,11 @@
                                     Light={StaticResource SurfaceBrushLight},
                                     Dark={StaticResource SurfaceBrushDark}}"/>
     <Setter Property="Padding" Value="12,8"/>
-    <Setter Property="Stroke" Value="Transparent"/>
+    <!-- Dezent sichtbare Kontur für bessere Abhebung vom Hintergrund -->
+    <Setter Property="Stroke" Value="{AppThemeBinding
+                                    Light={StaticResource DividerBrushLight},
+                                    Dark={StaticResource DividerBrushDark}}"/>
+    <Setter Property="StrokeThickness" Value="1"/>
     <Setter Property="StrokeShape">
       <Setter.Value>
         <RoundRectangle CornerRadius="12"/>

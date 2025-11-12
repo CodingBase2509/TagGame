@@ -13,6 +13,7 @@ public static class MauiProgram
 
         builder.Configuration.AddAppSettingsFile();
         builder.Services.AddInfrastructure();
+        builder.Services.AddPages();
 
         builder.Services.AddCoreServices(builder.Configuration);
         builder.Services.AddJsonOptionsProvider();

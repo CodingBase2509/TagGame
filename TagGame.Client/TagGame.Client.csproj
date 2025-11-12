@@ -82,6 +82,23 @@
         <AutoGen>True</AutoGen>
         <DependentUpon>App.de.resx</DependentUpon>
       </Compile>
+      <Compile Update="Ui\Views\Start\StartPage.xaml.cs">
+        <DependentUpon>StartPage.xaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Ui\Views\Start\UserInitModal.xaml.cs">
+        <DependentUpon>UserInitModal.xaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <MauiXaml Update="Ui\Views\Start\StartPage.xaml">
+        <SubType>Designer</SubType>
+      </MauiXaml>
+      <MauiXaml Update="Ui\Views\Start\UserInitModal.xaml">
+        <SubType>Designer</SubType>
+      </MauiXaml>
     </ItemGroup>
 
 </Project>

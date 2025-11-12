@@ -7,7 +7,6 @@
 
     <Grid BackgroundColor="Transparent" InputTransparent="True" x:Name="ToastContainer">
         <Border x:Name="Badge"
-                BackgroundColor="#CC000000"
                 Stroke="Transparent"
                 Padding="4,0"
                 HorizontalOptions="End"
@@ -17,7 +16,7 @@
                 ZIndex="1"
                 StrokeShape="RoundRectangle">
             <Label x:Name="BadgeLabel"
-                   TextColor="White"
+                   Style="{StaticResource BaseLabel}"
                    FontSize="12"
                    FontAttributes="Bold"/>
         </Border>

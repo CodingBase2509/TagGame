@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace TagGame.Client.Ui.Views.Settings;
 
-public partial class ProfilePage : ContentPage
+public partial class ProfilePage : PageBase
 {
-    public ProfilePage()
+    public ProfilePage(ToastPresenter presenter) : base(presenter)
     {
         InitializeComponent();
     }

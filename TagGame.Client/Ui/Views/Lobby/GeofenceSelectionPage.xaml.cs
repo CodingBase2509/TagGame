@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace TagGame.Client.Ui.Views.Lobby;
 
-public partial class GeofenceSelectionPage : ContentPage
+public partial class GeofenceSelectionPage : PageBase
 {
-    public GeofenceSelectionPage()
+    public GeofenceSelectionPage(ToastPresenter presenter) : base(presenter)
     {
         InitializeComponent();
     }

@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace TagGame.Client.Ui.Views.Lobby;
 
-public partial class QrCodeModal : ContentPage
+public partial class QrCodeModal : PageBase
 {
-    public QrCodeModal()
+    public QrCodeModal(ToastPresenter presenter) : base(presenter)
     {
         InitializeComponent();
     }
