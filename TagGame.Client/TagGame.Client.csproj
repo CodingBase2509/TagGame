@@ -53,8 +53,6 @@
     <!-- Explicit folders to show in Solution Explorer even when empty -->
     <ItemGroup>
         <Folder Include="Platforms\Android\Resources\" />
-        <Folder Include="Ui/Components/" />
-        <Folder Include="Ui/Services/" />
     </ItemGroup>
 
     <ItemGroup>

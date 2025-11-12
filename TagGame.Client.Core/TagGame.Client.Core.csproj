@@ -23,6 +23,5 @@
     <ItemGroup>
         <Folder Include="Ui/ViewModels/"/>
         <Folder Include="State/"/>
-        <Folder Include="Notifications/"/>
     </ItemGroup>
 </Project>
