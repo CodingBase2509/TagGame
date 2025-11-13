@@ -12,8 +12,11 @@ public class PageBase : ContentPage
 {
     private readonly ToastPresenter _toastPresenter;
 
-    public PageBase(ToastPresenter toastPresenter)
+    protected PageBase(ToastPresenter toastPresenter)
     {
+        Shell.SetNavBarIsVisible(this, false);
+        Shell.SetTabBarIsVisible(this, false);
+
         _toastPresenter = toastPresenter;
         ControlTemplate = new ControlTemplate(CreateTemplate);
     }

@@ -12,6 +12,7 @@ public partial class StartPage : PageBase
         InitializeComponent();
     }
 
-    private void Button_OnClicked(object? sender, EventArgs e) => _toast.Info("Test 1234 Test 1234 Test 1234", false);
+    private void Button_OnClicked(object? sender, EventArgs e) =>
+        _toast.Info("Test 1234 Test 1234 Test 1234", false);
 }
 

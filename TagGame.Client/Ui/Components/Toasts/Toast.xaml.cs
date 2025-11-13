@@ -4,6 +4,8 @@ namespace TagGame.Client.Ui.Components.Toasts;
 
 public partial class Toast : Border
 {
+    private const string ToastStylePrefix = "Toast";
+
     public required string Text { get; init; }
 
     public required ToastType Type { get; init; }
@@ -15,6 +17,9 @@ public partial class Toast : Border
 
     public void Apply()
     {
+        var styleName = $"{ToastStylePrefix}{Type}";
+        var style = Resources[styleName] as Style;
+        Style = style;
         TextLabel.Text = Text ?? string.Empty;
         Icon.Source = Type switch
         {
