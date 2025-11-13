@@ -6,7 +6,6 @@ public static class ApiVersioningExtensions
     {
         return app.MapGroup("/v1")
             .WithTags("v1")
-            .WithGroupName("v1")
-            .WithOpenApi();
+            .WithGroupName("v1");
     }
 }

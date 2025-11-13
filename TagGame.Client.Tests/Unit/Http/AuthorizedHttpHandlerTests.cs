@@ -99,7 +99,11 @@ public class AuthorizedHttpHandlerTests
     private sealed class FakePrefs : IAppPreferences
     {
         public AppPreferencesSnapshot Snapshot { get; private set; } = new(ThemeMode.System, Language.English, false, Guid.NewGuid(), Guid.Empty);
-        public event EventHandler<AppPreferencesSnapshot>? PreferencesChanged;
+        public event EventHandler<AppPreferencesSnapshot>? PreferencesChanged
+        {
+            add { }
+            remove { }
+        }
         public Task ChangeLanguageAsync(Language newLanguage, CancellationToken ct = default) => Task.CompletedTask;
         public Task ChangeThemeAsync(ThemeMode newTheme, CancellationToken ct = default) => Task.CompletedTask;
         public Task SetDeviceId(Guid id, CancellationToken ct = default) { Snapshot = Snapshot with { DeviceId = id }; return Task.CompletedTask; }
@@ -107,4 +111,3 @@ public class AuthorizedHttpHandlerTests
         public Task SetUserId(Guid id, CancellationToken ct = default) { Snapshot = Snapshot with { UserId = id }; return Task.CompletedTask; }
     }
 }
-

@@ -10,7 +10,6 @@ namespace TagGame.Client.Ui.Views;
 /// </summary>
 public class PageBase : ContentPage
 {
-    private Grid? _root;
     private readonly ToastPresenter _toastPresenter;
 
     public PageBase(ToastPresenter toastPresenter)
@@ -21,8 +20,6 @@ public class PageBase : ContentPage
 
     private Grid CreateTemplate()
     {
-        _root ??= new Grid();
-
         var presenter = new ContentPresenter();
 
         var host = _toastPresenter.ToastHost;
@@ -33,9 +30,10 @@ public class PageBase : ContentPage
         host.VerticalOptions = LayoutOptions.Start;
         host.Margin = new Thickness(0);
 
-        _root.Children.Add(presenter);
-        _root.Children.Add(host);
+        var root = new Grid();
+        root.Children.Add(presenter);
+        root.Children.Add(host);
 
-        return _root;
+        return root;
     }
 }

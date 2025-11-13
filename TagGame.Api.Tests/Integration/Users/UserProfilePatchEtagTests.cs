@@ -10,7 +10,7 @@ using TagGame.Shared.DTOs.Users;
 
 namespace TagGame.Api.Tests.Integration.Users;
 
-public sealed class UserProfilePatchEtagTests : IntegrationTestBase
+public sealed class UserProfilePatchEtagTests : IntegrationTestBase, IDisposable
 {
     private WebApplicationFactory<Program>? _factory;
 
@@ -37,7 +37,15 @@ public sealed class UserProfilePatchEtagTests : IntegrationTestBase
     {
         if (_factory is not null)
             await _factory.DisposeAsync();
+        _factory = null;
         await base.DisposeAsync();
+    }
+
+    public void Dispose()
+    {
+        _factory?.Dispose();
+        _factory = null;
+        GC.SuppressFinalize(this);
     }
 
     [Fact]

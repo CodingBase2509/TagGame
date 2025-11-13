@@ -18,14 +18,14 @@ public class ProtectedStorage(ISecureStorage storage, ICrypto crypto, ILogger lo
     public async Task<ReadOnlyMemory<byte>?> ReadAsync(string name, CancellationToken ct = default)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
-        byte[] blob = null;
+        byte[]? blob = null;
         try
         {
             blob = await File.ReadAllBytesAsync(Path.Combine(AppDataPath, FileName(name)), ct);
         }
         catch (Exception ex)
         {
-            logger.LogError("ProtectedStorage failed to read {Name}: ${Message}", name, ex.Message);
+            logger.LogError(ex, "ProtectedStorage failed to read {Name}: {Message}", name, ex.Message);
         }
 
         if (blob is null)
@@ -33,7 +33,7 @@ public class ProtectedStorage(ISecureStorage storage, ICrypto crypto, ILogger lo
 
         var key = await storage.GetOrCreateKeyAsync(KeyName);
         var aad = Aad(name);
-        var clearText = await crypto.Decrypt(Encoding.UTF8.GetBytes(key), blob,aad);
+        var clearText = await crypto.Decrypt(Encoding.UTF8.GetBytes(key), blob, aad);
         logger.LogDebug("ProtectedStorage read {Name} ({Length} bytes)", name, clearText.Length);
         return new ReadOnlyMemory<byte>(clearText);
     }
@@ -52,7 +52,9 @@ public class ProtectedStorage(ISecureStorage storage, ICrypto crypto, ILogger lo
     public Task DeleteAsync(string name, CancellationToken ct = default)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
-        File.Delete(FileName(name));
+        var path = Path.Combine(AppDataPath, FileName(name));
+        if (File.Exists(path))
+            File.Delete(path);
         return Task.CompletedTask;
     }
 }
