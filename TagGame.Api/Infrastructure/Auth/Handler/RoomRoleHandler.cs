@@ -15,38 +15,38 @@ public sealed class RoomRoleHandler(IGamesUoW gamesUoW) : AuthorizationHandler<R
         {
             // HTTP path
             case HttpContext http:
-            {
-                if (!AuthUtils.TryGetUserId(http, out var userId))
-                    return;
-                if (!AuthUtils.TryGetRoomId(http, out var roomId))
-                    return;
+                {
+                    if (!AuthUtils.TryGetUserId(http, out var userId))
+                        return;
+                    if (!AuthUtils.TryGetRoomId(http, out var roomId))
+                        return;
 
-                var membership = AuthUtils.TryGetMembershipFromItems(http) ??
-                                 await AuthUtils.LoadMembershipAsync(gamesUoW, userId, roomId, http.RequestAborted);
-                if (membership is null || membership.IsBanned)
-                    return;
+                    var membership = AuthUtils.TryGetMembershipFromItems(http) ??
+                                     await AuthUtils.LoadMembershipAsync(gamesUoW, userId, roomId, http.RequestAborted);
+                    if (membership is null || membership.IsBanned)
+                        return;
 
-                if (RoleSatisfies(membership.Role, requirement.Role))
-                    context.Succeed(requirement);
-                return;
-            }
+                    if (RoleSatisfies(membership.Role, requirement.Role))
+                        context.Succeed(requirement);
+                    return;
+                }
             // Hub path
             case HubInvocationContext hub:
-            {
-                if (!TryGetUserId(hub.Context.User, out var userId))
-                    return;
-                if (!TryGetRoomId(hub, out var roomId))
-                    return;
+                {
+                    if (!TryGetUserId(hub.Context.User!, out var userId))
+                        return;
+                    if (!TryGetRoomId(hub, out var roomId))
+                        return;
 
-                var membership = TryGetMembershipFromItems(hub.Context) ??
-                                 await AuthUtils.LoadMembershipAsync(gamesUoW, userId, roomId, hub.Context.ConnectionAborted);
-                if (membership is null || membership.IsBanned)
-                    return;
+                    var membership = TryGetMembershipFromItems(hub.Context) ??
+                                     await AuthUtils.LoadMembershipAsync(gamesUoW, userId, roomId, hub.Context.ConnectionAborted);
+                    if (membership is null || membership.IsBanned)
+                        return;
 
-                if (RoleSatisfies(membership.Role, requirement.Role))
-                    context.Succeed(requirement);
-                break;
-            }
+                    if (RoleSatisfies(membership.Role, requirement.Role))
+                        context.Succeed(requirement);
+                    break;
+                }
         }
     }
 
@@ -71,15 +71,27 @@ public sealed class RoomRoleHandler(IGamesUoW gamesUoW) : AuthorizationHandler<R
 
         foreach (var arg in ctx.HubMethodArguments)
         {
-            if (arg is Guid gid) { roomId = gid; return true; }
-            if (arg is string s && Guid.TryParse(s, out var gs)) { roomId = gs; return true; }
-            if (arg is null) continue;
+            switch (arg)
+            {
+                case Guid gid:
+                    roomId = gid; return true;
+                case string s when Guid.TryParse(s, out var gs):
+                    roomId = gs; return true;
+                case null:
+                    continue;
+            }
+
             var prop = arg.GetType().GetProperty("RoomId", BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
             var val = prop?.GetValue(arg);
-            if (val is Guid g2) { roomId = g2; return true; }
-            if (val is string s2 && Guid.TryParse(s2, out var gs2)) { roomId = gs2; return true; }
+            switch (val)
+            {
+                case Guid g2:
+                    roomId = g2; return true;
+                case string s2 when Guid.TryParse(s2, out var gs2):
+                    roomId = gs2; return true;
+            }
         }
-        roomId = default;
+        roomId = Guid.Empty;
         return false;
     }
 

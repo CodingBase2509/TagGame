@@ -8,7 +8,7 @@ public partial class StartPage : PageBase
 
     public StartPage(ToastPresenter presenter, IToastPublisher toast) : base(presenter)
     {
-        this._toast = toast;
+        _toast = toast;
         InitializeComponent();
     }
 

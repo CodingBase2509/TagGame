@@ -33,7 +33,7 @@ public sealed class RoomPermissionHandler(IGamesUoW gamesUoW) : AuthorizationHan
             // Hub path
             case HubInvocationContext hub:
             {
-                if (!TryGetUserId(hub.Context.User, out var userId))
+                if (!TryGetUserId(hub.Context.User!, out var userId))
                     return;
                 if (!TryGetRoomId(hub, out var roomId))
                     return;
@@ -50,8 +50,9 @@ public sealed class RoomPermissionHandler(IGamesUoW gamesUoW) : AuthorizationHan
         }
     }
 
-    private static bool TryGetUserId(ClaimsPrincipal user, out Guid userId)
+    private static bool TryGetUserId(ClaimsPrincipal? user, out Guid userId)
     {
+        ArgumentNullException.ThrowIfNull(user);
         var sub = user.FindFirstValue("sub") ?? user.FindFirstValue(ClaimTypes.NameIdentifier);
         return Guid.TryParse(sub, out userId);
     }

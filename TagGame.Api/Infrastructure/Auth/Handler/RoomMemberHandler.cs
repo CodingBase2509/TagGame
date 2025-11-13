@@ -47,8 +47,9 @@ public sealed class RoomMemberHandler(IGamesUoW gamesUoW) : AuthorizationHandler
         }
     }
 
-    private static bool TryGetUserId(ClaimsPrincipal user, out Guid userId)
+    private static bool TryGetUserId(ClaimsPrincipal? user, out Guid userId)
     {
+        ArgumentNullException.ThrowIfNull(user);
         var sub = user.FindFirstValue("sub") ?? user.FindFirstValue(ClaimTypes.NameIdentifier);
         return Guid.TryParse(sub, out userId);
     }
@@ -83,8 +84,6 @@ public sealed class RoomMemberHandler(IGamesUoW gamesUoW) : AuthorizationHandler
                     roomId = g2; return true;
                 case string s2 when Guid.TryParse(s2, out var gs2):
                     roomId = gs2; return true;
-                default:
-                    break;
             }
         }
         roomId = Guid.Empty;

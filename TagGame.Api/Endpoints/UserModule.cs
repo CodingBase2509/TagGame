@@ -1,4 +1,5 @@
 using Carter;
+using Carter.OpenApi;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -24,7 +25,7 @@ public class UserModule : EndpointBase, ICarterModule
             .ProducesProblem(StatusCodes.Status400BadRequest, MediaTypeNames.Application.Json)
             .ProducesProblem(StatusCodes.Status404NotFound, MediaTypeNames.Application.Json)
             .RequireAuthorization()
-            .WithOpenApi();
+            .IncludeInOpenApi();
 
         users.MapPatch("/me", PatchUserAccount)
             .WithName("Users_UpdateOwnProfile")
@@ -37,7 +38,7 @@ public class UserModule : EndpointBase, ICarterModule
             .ProducesProblem(StatusCodes.Status412PreconditionFailed, MediaTypeNames.Application.Json)
             .ProducesProblem(StatusCodes.Status428PreconditionRequired, MediaTypeNames.Application.Json)
             .RequireAuthorization()
-            .WithOpenApi();
+            .IncludeInOpenApi();
     }
 
     private static async Task<IResult> GetOwnUserAccount(

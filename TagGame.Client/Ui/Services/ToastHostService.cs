@@ -1,8 +1,3 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Maui.Controls;
-using Microsoft.Maui.Dispatching;
 using TagGame.Client.Core.Localization;
 using TagGame.Client.Core.Notifications;
 using TagGame.Client.Ui.Components.Toasts;
@@ -30,16 +25,16 @@ public static class ToastHostService
     public static Task AnimateInAsync(View view)
     {
         return Task.WhenAll(
-            view.FadeTo(1, 160, Easing.CubicOut),
-            view.TranslateTo(0, 0, 180, Easing.CubicOut)
+            view.FadeToAsync(1, 160, Easing.CubicOut),
+            view.TranslateToAsync(0, 0, 180, Easing.CubicOut)
         );
     }
 
     public static Task AnimateOutAsync(View view)
     {
         return Task.WhenAll(
-            view.TranslateTo(0, -24, 140, Easing.CubicIn),
-            view.FadeTo(0, 120, Easing.CubicIn)
+            view.TranslateToAsync(0, -24, 140, Easing.CubicIn),
+            view.FadeToAsync(0, 120, Easing.CubicIn)
         );
     }
 
