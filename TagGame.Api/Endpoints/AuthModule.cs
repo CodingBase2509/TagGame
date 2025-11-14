@@ -1,5 +1,6 @@
 using Carter;
 using Carter.OpenApi;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using TagGame.Api.Core.Abstractions.Auth;
 using TagGame.Api.Core.Common.Exceptions;
@@ -48,13 +49,13 @@ public sealed class AuthModule : EndpointBase, ICarterModule
 
     private static async Task<IResult> HandleInitialAsync(
         [FromBody] InitialRequestDto request,
+        [FromServices] IValidator<InitialRequestDto> validator,
         [FromServices] IAuthUoW authUoW,
         [FromServices] IAuthTokenService tokenService,
         [FromServices] TimeProvider clock,
         CancellationToken ct)
     {
-        if (string.IsNullOrWhiteSpace(request.DeviceId))
-            return BadRequest("Device id is required.", code: "device_id_missing");
+        await validator.ValidateAndThrowAsync(request, ct);
 
         var existing = await authUoW.Users.FirstOrDefaultAsync(
             u => Equals(u.DeviceId, request.DeviceId),
