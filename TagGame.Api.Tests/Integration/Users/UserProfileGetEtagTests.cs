@@ -7,7 +7,7 @@ using TagGame.Shared.DTOs.Users;
 
 namespace TagGame.Api.Tests.Integration.Users;
 
-public sealed class UserProfileGetEtagTests : IntegrationTestBase
+public sealed class UserProfileGetEtagTests : IntegrationTestBase, IDisposable
 {
     private WebApplicationFactory<Program>? _factory;
 
@@ -34,7 +34,15 @@ public sealed class UserProfileGetEtagTests : IntegrationTestBase
     {
         if (_factory is not null)
             await _factory.DisposeAsync();
+        _factory = null;
         await base.DisposeAsync();
+    }
+
+    public void Dispose()
+    {
+        _factory?.Dispose();
+        _factory = null;
+        GC.SuppressFinalize(this);
     }
 
     [Fact]
@@ -111,4 +119,3 @@ public sealed class UserProfileGetEtagTests : IntegrationTestBase
         return db.Entry(user!).Property<uint>("xmin").CurrentValue;
     }
 }
-

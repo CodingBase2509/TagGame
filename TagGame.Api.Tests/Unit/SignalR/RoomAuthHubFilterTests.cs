@@ -1,4 +1,4 @@
-using System.Runtime.Serialization;
+using System.Reflection;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
@@ -173,21 +173,9 @@ public sealed class RoomAuthHubFilterTests
     private static HubInvocationContext CreateInvocation(Hub hub, string methodName, object[] args, ClaimsPrincipal user)
     {
         var caller = new TestHubCallerContext(user);
-
-        var hic = (HubInvocationContext)FormatterServices.GetUninitializedObject(typeof(HubInvocationContext));
-        TrySetBackingField(hic, "Context", caller);
-        TrySetBackingField(hic, "Hub", hub);
-        // HubMethodName may be computed; not required for our checks
-        TrySetBackingField(hic, "HubMethodArguments", args);
-        return hic;
-    }
-
-    private static void TrySetBackingField(object obj, string propertyName, object? value)
-    {
-        var field = obj.GetType()
-                        .GetField($"<{propertyName}>k__BackingField", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-        if (field is not null)
-            field.SetValue(obj, value);
+        var serviceProvider = Mock.Of<IServiceProvider>();
+        var method = hub.GetType().GetMethod(methodName) ?? throw new InvalidOperationException($"Method '{methodName}' not found on hub '{hub.GetType().Name}'.");
+        return new HubInvocationContext(caller, serviceProvider, hub, method, args);
     }
 
     private sealed class TestHubCallerContext(ClaimsPrincipal user, string? userIdentifier = null) : HubCallerContext

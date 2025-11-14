@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
         x:Class="TagGame.Client.Ui.Components.Toasts.Toast"
         InputTransparent="True"
-        Style="{StaticResource ToastBorder}"
         Margin="0">
 
     <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12" Padding="8,6">

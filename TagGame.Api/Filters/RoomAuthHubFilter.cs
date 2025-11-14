@@ -121,9 +121,7 @@ public class RoomAuthHubFilter(
         try
         {
             var methodName = context.HubMethodName;
-            candidates = hubType.GetMethods(BindingFlags.Public | BindingFlags.Instance)
-                .Where(m => m.Name == methodName)
-                .ToList();
+            candidates = [.. hubType.GetMethods(BindingFlags.Public | BindingFlags.Instance).Where(m => m.Name == methodName)];
         }
         catch
         {

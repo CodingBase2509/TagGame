@@ -8,10 +8,11 @@ public partial class StartPage : PageBase
 
     public StartPage(ToastPresenter presenter, IToastPublisher toast) : base(presenter)
     {
-        this._toast = toast;
+        _toast = toast;
         InitializeComponent();
     }
 
-    private void Button_OnClicked(object? sender, EventArgs e) => _toast.Info("Test 1234 Test 1234 Test 1234", false);
+    private void Button_OnClicked(object? sender, EventArgs e) =>
+        _toast.Info("Test 1234 Test 1234 Test 1234", false);
 }
 

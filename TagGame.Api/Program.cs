@@ -35,5 +35,3 @@ app.MapHub<LobbyHub>("/hubs/lobby");
 app.MapHub<GameHub>("/hubs/game");
 
 app.Run();
-
-public partial class Program {}

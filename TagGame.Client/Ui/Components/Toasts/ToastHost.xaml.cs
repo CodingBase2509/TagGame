@@ -116,9 +116,8 @@ public partial class ToastHost : ContentView, IDisposable
 
         // Animate old out quickly
         await Task.WhenAll(
-            old.TranslateTo(0, -24, 120, Easing.CubicIn),
-            old.FadeTo(0, 100, Easing.CubicIn)
-        );
+            old.TranslateToAsync(0, -24, 120, Easing.CubicIn),
+            old.FadeToAsync(0, 100, Easing.CubicIn));
         if (ToastContainer.Children.Contains(old))
             ToastContainer.Children.Remove(old);
 
@@ -126,9 +125,8 @@ public partial class ToastHost : ContentView, IDisposable
         AddToastToContainer(fresh);
 
         await Task.WhenAll(
-            fresh.FadeTo(1, 140, Easing.CubicOut),
-            fresh.TranslateTo(0, 0, 160, Easing.CubicOut)
-        );
+            fresh.FadeToAsync(1, 140, Easing.CubicOut),
+            fresh.TranslateToAsync(0, 0, 160, Easing.CubicOut));
         await RunToastAsync(fresh, req.DurationMs, CancellationToken.None);
     }
 
@@ -177,7 +175,7 @@ public partial class ToastHost : ContentView, IDisposable
             await _gate.WaitAsync(linked.Token);
             try
             {
-                pendingCount = _pending.Count -1;
+                pendingCount = _pending.Count - 1;
             }
             finally
             {

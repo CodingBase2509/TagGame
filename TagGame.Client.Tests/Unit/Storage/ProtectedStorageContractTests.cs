@@ -4,14 +4,14 @@ namespace TagGame.Client.Tests.Unit.Storage;
 
 public class ProtectedStorageContractTests
 {
-    private static IProtectedStorage Create() => new InMemoryProtectedStorage();
+    private static InMemoryProtectedStorage Create() => new();
 
     [Fact]
     public async Task Write_then_Read_returns_same_bytes()
     {
         var sut = Create();
         var name = "sample";
-        var bytes = new ReadOnlyMemory<byte>(new byte[] { 1, 2, 3, 4, 5 });
+        ReadOnlyMemory<byte> bytes = new byte[] { 1, 2, 3, 4, 5 };
 
         await sut.WriteAsync(name, bytes);
         var read = await sut.ReadAsync(name);
@@ -32,7 +32,7 @@ public class ProtectedStorageContractTests
     public async Task Delete_removes_entry()
     {
         var sut = Create();
-        await sut.WriteAsync("x", new byte[] { 9, 9, 9 });
+        await sut.WriteAsync("x", "\t\t\t"u8.ToArray());
         await sut.DeleteAsync("x");
         var read = await sut.ReadAsync("x");
         read.HasValue.Should().BeFalse();
@@ -81,4 +81,3 @@ public class ProtectedStorageContractTests
         }
     }
 }
-

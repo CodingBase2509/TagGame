@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<views:PageBase xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+<PageBase xmlns="http://schemas.microsoft.com/dotnet/maui/global"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:views="clr-namespace:TagGame.Client.Ui.Views"
              x:Class="TagGame.Client.Ui.Views.Lobby.QrCodeModal">
-    <ContentPage.Content>
 
-    </ContentPage.Content>
-</views:PageBase>
+</PageBase>

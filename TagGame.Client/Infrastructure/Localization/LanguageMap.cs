@@ -8,11 +8,15 @@ namespace TagGame.Client.Infrastructure.Localization;
 /// </summary>
 public static class LanguageMap
 {
+    private static readonly CultureInfo English = CultureInfo.GetCultureInfo("en");
+    private static readonly CultureInfo German = CultureInfo.GetCultureInfo("de");
+
     public static CultureInfo ToCulture(Language language) => language switch
     {
-        Language.German => new CultureInfo("de"),
-        Language.English => new CultureInfo("en"),
-        Language.System => IsSupportedLanguage(CultureInfo.CurrentCulture) ? CultureInfo.CurrentCulture : new CultureInfo("en"),
+        Language.German => German,
+        Language.English => English,
+        Language.System => IsSupportedLanguage(CultureInfo.CurrentCulture) ? CultureInfo.CurrentCulture : English,
+        _ => English
     };
 
     private static bool IsSupportedLanguage(CultureInfo culture)
@@ -25,4 +29,3 @@ public static class LanguageMap
         };
     }
 }
-

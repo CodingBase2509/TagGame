@@ -1,4 +1,5 @@
 using Carter;
+using Carter.OpenApi;
 using Microsoft.AspNetCore.Mvc;
 using TagGame.Api.Core.Abstractions.Auth;
 using TagGame.Api.Core.Common.Exceptions;
@@ -18,7 +19,7 @@ public sealed class AuthModule : EndpointBase, ICarterModule
             .Accepts<InitialRequestDto>(MediaTypeNames.Application.Json)
             .Produces<InitialResponseDto>(StatusCodes.Status200OK, MediaTypeNames.Application.Json)
             .ProducesProblem(StatusCodes.Status400BadRequest, MediaTypeNames.Application.Json)
-            .WithOpenApi();
+            .IncludeInOpenApi();
 
         auth.MapPost("/login", HandleLoginAsync)
             .WithName("Auth_Login")
@@ -26,7 +27,7 @@ public sealed class AuthModule : EndpointBase, ICarterModule
             .Produces<LoginResponseDto>(StatusCodes.Status200OK, MediaTypeNames.Application.Json)
             .ProducesProblem(StatusCodes.Status400BadRequest, MediaTypeNames.Application.Json)
             .ProducesProblem(StatusCodes.Status404NotFound, MediaTypeNames.Application.Json)
-            .WithOpenApi();
+            .IncludeInOpenApi();
 
         auth.MapPost("/refresh", HandleRefreshAsync)
             .WithName("Auth_Refresh")
@@ -34,7 +35,7 @@ public sealed class AuthModule : EndpointBase, ICarterModule
             .Produces<RefreshResponseDto>(StatusCodes.Status200OK, MediaTypeNames.Application.Json)
             .ProducesProblem(StatusCodes.Status400BadRequest, MediaTypeNames.Application.Json)
             .ProducesProblem(StatusCodes.Status401Unauthorized, MediaTypeNames.Application.Json)
-            .WithOpenApi();
+            .IncludeInOpenApi();
 
         auth.MapPost("/logout", HandleLogoutAsync)
             .WithName("Auth_Logout")
@@ -42,7 +43,7 @@ public sealed class AuthModule : EndpointBase, ICarterModule
             .Produces<LogoutResponseDto>(StatusCodes.Status200OK, MediaTypeNames.Application.Json)
             .ProducesProblem(StatusCodes.Status400BadRequest, MediaTypeNames.Application.Json)
             .ProducesProblem(StatusCodes.Status401Unauthorized, MediaTypeNames.Application.Json)
-            .WithOpenApi();
+            .IncludeInOpenApi();
     }
 
     private static async Task<IResult> HandleInitialAsync(
@@ -133,7 +134,7 @@ public sealed class AuthModule : EndpointBase, ICarterModule
             var tokens = await tokenService.RefreshTokenAsync(request.RefreshToken, ct);
             return Ok(new RefreshResponseDto { Tokens = tokens });
         }
-        catch (RefreshTokenReuseException ex)
+        catch (RefreshTokenReuseException)
         {
             return Unauthorized("Refresh token reuse detected.", code: "refresh_reuse");
         }
