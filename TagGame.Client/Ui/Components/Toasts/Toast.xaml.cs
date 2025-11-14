@@ -13,14 +13,17 @@ public partial class Toast : Border
     public Toast()
     {
         InitializeComponent();
+        BindingContext = this;
     }
 
     public void Apply()
     {
         var styleName = $"{ToastStylePrefix}{Type}";
-        var style = Resources[styleName] as Style;
-        Style = style;
-        TextLabel.Text = Text ?? string.Empty;
+        if (Application.Current!.Resources.TryGetValue(styleName, out var style))
+        {
+            Style = style as Style;
+        }
+        TextLabel.Text = Text;
         Icon.Source = Type switch
         {
             ToastType.Success => "check.svg",

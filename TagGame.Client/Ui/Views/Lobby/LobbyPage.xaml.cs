@@ -8,7 +8,7 @@ namespace TagGame.Client.Ui.Views.Lobby;
 
 public partial class LobbyPage : PageBase
 {
-    public LobbyPage(ToastPresenter presenter) : base(presenter)
+    public LobbyPage()
     {
         InitializeComponent();
     }

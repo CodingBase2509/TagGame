@@ -8,7 +8,7 @@ namespace TagGame.Client.Ui.Views.Settings;
 
 public partial class ProfilePage : PageBase
 {
-    public ProfilePage(ToastPresenter presenter) : base(presenter)
+    public ProfilePage()
     {
         InitializeComponent();
     }

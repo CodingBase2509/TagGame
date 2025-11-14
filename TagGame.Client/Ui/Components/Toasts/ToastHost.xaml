@@ -1,25 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+<Grid xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="TagGame.Client.Ui.Components.Toasts.ToastHost"
-             IsVisible="False"
              InputTransparent="True">
 
-    <Grid BackgroundColor="Transparent" InputTransparent="True" x:Name="ToastContainer">
-        <Border x:Name="Badge"
-                Stroke="Transparent"
-                Padding="4,0"
-                HorizontalOptions="End"
-                VerticalOptions="Start"
-                Margin="0,20,16,0"
-                IsVisible="False"
-                ZIndex="1"
-                StrokeShape="RoundRectangle">
-            <Label x:Name="BadgeLabel"
-                   Style="{StaticResource BaseLabel}"
-                   FontSize="12"
-                   FontAttributes="Bold"/>
-        </Border>
-    </Grid>
+    <Border x:Name="Badge"
+            Stroke="{StaticResource ShadowBrush}"
+            Background="{AppThemeBinding
+                Light={StaticResource TextSecondaryDark},
+                Dark={StaticResource TextSecondaryLight}}"
+            Margin="2, 10"
+            HorizontalOptions="End"
+            VerticalOptions="Start"
+            WidthRequest="20"
+            HeightRequest="20"
+            IsVisible="False"
+            Padding="0"
+            ZIndex="100"
+    >
 
-</ContentView>
+        <Label x:Name="BadgeLabel"
+               Style="{StaticResource BaseLabel}"
+               FontSize="12"
+               FontAttributes="Bold"
+               HorizontalOptions="Center"
+               VerticalOptions="Center"
+        />
+    </Border>
+
+</Grid>

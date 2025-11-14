@@ -6,7 +6,7 @@ public partial class StartPage : PageBase
 {
     private readonly IToastPublisher _toast;
 
-    public StartPage(ToastPresenter presenter, IToastPublisher toast) : base(presenter)
+    public StartPage(IToastPublisher toast)
     {
         _toast = toast;
         InitializeComponent();
@@ -14,5 +14,8 @@ public partial class StartPage : PageBase
 
     private void Button_OnClicked(object? sender, EventArgs e) =>
         _toast.Info("Test 1234 Test 1234 Test 1234", false);
+
+    private void Button_OnClicked2(object? sender, EventArgs e) =>
+        _toast.Error("Test 1234 Test 1234 Test 1234", false);
 }
 

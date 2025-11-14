@@ -1,16 +1,14 @@
+using Microsoft.Maui.Controls.Shapes;
 using TagGame.Client.Core.Localization;
 using TagGame.Client.Core.Notifications;
-using TagGame.Client.Ui.Services;
 
 namespace TagGame.Client.Ui.Components.Toasts;
 
-public partial class ToastHost : ContentView, IDisposable
+public partial class ToastHost : Grid
 {
-    private Toast? _currentView;
-    private readonly Queue<ToastRequest> _pending = new();
-    private CancellationTokenSource? _currentCts;
     private readonly ILocalizer _loc;
-    private readonly SemaphoreSlim _gate = new(1, 1);
+    private readonly List<ToastEntry> _entries = [];
+    private ToastEntry? _activeTop;
 
     public ToastHost(ILocalizer localizer)
     {
@@ -18,178 +16,116 @@ public partial class ToastHost : ContentView, IDisposable
         InitializeComponent();
     }
 
-    public async Task ShowAsync(ToastRequest req, CancellationToken ct = default)
+    public Task ShowAsync(ToastRequest req) =>
+        UiUtils.OnMainThreadAsync(() => ShowInternalAsync(req));
+
+    private Task ShowInternalAsync(ToastRequest req)
     {
-        // Priority: High/Critical preempts current immediately
-        if (ToastHostService.IsPriority(req) && _currentView is not null)
-        {
-            await _gate.WaitAsync(ct);
-            try
-            {
-                await (_currentCts?.CancelAsync() ?? Task.CompletedTask);
-            }
-            finally
-            {
-                _gate.Release();
-            }
-            _ = MainThread.InvokeOnMainThreadAsync(async () => await ReplaceCurrentAsync(req));
-            return;
-        }
+        var view = CreateToastView(req);
+        var entry = new ToastEntry(req, view);
 
-        // If a toast is currently shown (or animating), queue and show count badge
-        if (_currentView is not null)
-        {
-            int count;
-            await _gate.WaitAsync(ct);
-            try
-            {
-                _pending.Enqueue(req);
-                count = _pending.Count;
-            }
-            finally
-            {
-                _gate.Release();
-            }
-            _ = MainThread.InvokeOnMainThreadAsync(() => UpdateBadge(count));
-            return;
-        }
-
-        // No current toast → show now and then drain queue
-        _ = MainThread.InvokeOnMainThreadAsync(async () =>
-        {
-            await ShowNowAsync(req, ct);
-            while (true)
-            {
-                ToastRequest next;
-                await _gate.WaitAsync(ct);
-                try
-                {
-                    if (_pending.Count == 0)
-                        break;
-
-                    next = _pending.Dequeue();
-                }
-                finally
-                {
-                    _gate.Release();
-                }
-
-                await ShowNowAsync(next, ct);
-                int pendingCount;
-
-                await _gate.WaitAsync(ct);
-                try
-                {
-                    pendingCount = _pending.Count - 1;
-                }
-                finally
-                {
-                    _gate.Release();
-                }
-                UpdateBadge(pendingCount);
-            }
-        });
+        InsertEntry(entry);
+        return entry.Completion;
     }
 
-    public void Dispose()
-    {
-        GC.SuppressFinalize(this);
-        _gate.Dispose();
-    }
-
-    private async Task ShowNowAsync(ToastRequest req, CancellationToken externalCt)
-    {
-        var toast = BuildToast(req);
-        AddToastToContainer(toast);
-        await ToastHostService.AnimateInAsync(toast);
-        await RunToastAsync(toast, req.DurationMs, externalCt);
-    }
-
-    private async Task ReplaceCurrentAsync(ToastRequest req)
-    {
-        var old = _currentView;
-        if (old is null)
-        {
-            await ShowNowAsync(req, CancellationToken.None);
-            return;
-        }
-
-        // Animate old out quickly
-        await Task.WhenAll(
-            old.TranslateToAsync(0, -24, 120, Easing.CubicIn),
-            old.FadeToAsync(0, 100, Easing.CubicIn));
-        if (ToastContainer.Children.Contains(old))
-            ToastContainer.Children.Remove(old);
-
-        var fresh = BuildToast(req);
-        AddToastToContainer(fresh);
-
-        await Task.WhenAll(
-            fresh.FadeToAsync(1, 140, Easing.CubicOut),
-            fresh.TranslateToAsync(0, 0, 160, Easing.CubicOut));
-        await RunToastAsync(fresh, req.DurationMs, CancellationToken.None);
-    }
-
-    private Toast BuildToast(ToastRequest req)
+    private Toast CreateToastView(ToastRequest req)
     {
         var toast = new Toast
         {
             Text = ToastHostService.ResolveText(req, _loc),
-            Type = req.Type,
-            Opacity = 0,
-            TranslationY = -24
+            Type = req.Type
         };
+
         toast.Apply();
         ToastHostService.PrepareToast(toast);
         return toast;
     }
 
-    private void AddToastToContainer(Toast toast)
+    private void InsertEntry(ToastEntry entry)
     {
-        ToastContainer.Children.Add(toast);
-        IsVisible = true;
+        var isPriority = ToastHostService.IsPriority(entry.ToastRequest);
+        var insertIndex = isPriority ? 0 : _entries.Count;
+
+        _entries.Insert(insertIndex, entry);
+        Children.Add(entry.ToastView);
+        UpdateStackVisuals();
+        _ = RunEntryLifecycleAsync(entry);
     }
 
-    private async Task RunToastAsync(Toast toast, int durationMs, CancellationToken externalCt)
+    private void UpdateStackVisuals()
     {
-        _currentView = toast;
-        using var linked = CancellationTokenSource.CreateLinkedTokenSource(externalCt);
-        await _gate.WaitAsync(linked.Token);
-        try { _currentCts = linked; }
-        finally { _gate.Release(); }
+        for (var i = 0; i < _entries.Count; i++)
+        {
+            var toast = _entries[i].ToastView;
+            toast.Margin = i != 0 ? new Thickness(0, 5, 0, 0) : 0;
+
+            toast.ZIndex = _entries.Count - i;
+        }
+
+        Badge.IsVisible = _entries.Count > 1;
+        if (Badge.IsVisible)
+            BadgeLabel.Text = ToastHostService.FormatBadgeCount(_entries.Count - 1);
+    }
+
+    private async Task RunEntryLifecycleAsync(ToastEntry entry)
+    {
+        await ToastHostService.AnimateInAsync(entry.ToastView);
+        EnsureTopTimer();
+
+        await entry.Completion;
+
+        await ToastHostService.AnimateOutAsync(entry.ToastView);
+        RemoveEntry(entry);
+    }
+
+    private void RemoveEntry(ToastEntry entry)
+    {
+        if (!_entries.Remove(entry))
+            return;
+
+        Children.Remove(entry.ToastView);
+        entry.Dispose();
+
+        if (ReferenceEquals(_activeTop, entry))
+            _activeTop = null;
+
+        UpdateStackVisuals();
+        EnsureTopTimer();
+    }
+
+    private void EnsureTopTimer()
+    {
+        var next = _entries.FirstOrDefault();
+        if (ReferenceEquals(next, _activeTop))
+            return;
+
+        _activeTop?.PauseTimer();
+        _activeTop = next;
+
+        if (_activeTop is null)
+            return;
+
+        _ = RunTopTimerAsync(_activeTop);
+    }
+
+    private async Task RunTopTimerAsync(ToastEntry entry)
+    {
+        var token = entry.StartTimer();
+        if (token == CancellationToken.None)
+        {
+            entry.Complete();
+            return;
+        }
 
         try
         {
-            await ToastHostService.WaitDurationAsync(Dispatcher, durationMs, linked.Token);
+            await ToastHostService.WaitDurationAsync(Dispatcher, entry.RemainingMs, token);
         }
-        catch (OperationCanceledException) { }
-
-        if (ReferenceEquals(_currentView, toast))
+        catch (TaskCanceledException)
         {
-            await ToastHostService.AnimateOutAsync(toast);
-            if (ToastContainer.Children.Contains(toast))
-                ToastContainer.Children.Remove(toast);
-
-            _currentView = null;
-            int pendingCount;
-            await _gate.WaitAsync(linked.Token);
-            try
-            {
-                pendingCount = _pending.Count - 1;
-            }
-            finally
-            {
-                _gate.Release();
-            }
-            IsVisible = _currentView is not null || pendingCount > 0;
-            UpdateBadge(pendingCount);
+            return;
         }
-    }
 
-    private void UpdateBadge(int count)
-    {
-        Badge.IsVisible = count > 0;
-        if (count > 0)
-            BadgeLabel.Text = ToastHostService.FormatBadgeCount(count);
+        entry.Complete();
     }
 }

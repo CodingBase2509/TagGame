@@ -8,7 +8,7 @@ namespace TagGame.Client.Ui.Views.Lobby;
 
 public partial class GeofenceSelectionPage : PageBase
 {
-    public GeofenceSelectionPage(ToastPresenter presenter) : base(presenter)
+    public GeofenceSelectionPage()
     {
         InitializeComponent();
     }

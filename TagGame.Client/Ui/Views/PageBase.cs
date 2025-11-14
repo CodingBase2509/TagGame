@@ -1,6 +1,3 @@
-using Microsoft.Maui;
-using TagGame.Client.Infrastructure.Notifications;
-
 namespace TagGame.Client.Ui.Views;
 
 /// <summary>
@@ -12,12 +9,13 @@ public class PageBase : ContentPage
 {
     private readonly ToastPresenter _toastPresenter;
 
-    protected PageBase(ToastPresenter toastPresenter)
+    protected PageBase()
     {
+        SafeAreaEdges = SafeAreaEdges.All;
         Shell.SetNavBarIsVisible(this, false);
         Shell.SetTabBarIsVisible(this, false);
 
-        _toastPresenter = toastPresenter;
+        _toastPresenter = GetRequiredService<ToastPresenter>();
         ControlTemplate = new ControlTemplate(CreateTemplate);
     }
 
@@ -39,4 +37,10 @@ public class PageBase : ContentPage
 
         return root;
     }
+
+    protected internal static TService? GetService<TService>() =>
+        Application.Current!.Handler!.MauiContext!.Services.GetService<TService>();
+
+    protected internal static TService GetRequiredService<TService>() where TService : notnull =>
+        Application.Current!.Handler!.MauiContext!.Services.GetRequiredService<TService>();
 }

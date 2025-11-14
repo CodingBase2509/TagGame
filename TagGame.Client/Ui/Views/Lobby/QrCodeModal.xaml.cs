@@ -8,7 +8,7 @@ namespace TagGame.Client.Ui.Views.Lobby;
 
 public partial class QrCodeModal : PageBase
 {
-    public QrCodeModal(ToastPresenter presenter) : base(presenter)
+    public QrCodeModal()
     {
         InitializeComponent();
     }

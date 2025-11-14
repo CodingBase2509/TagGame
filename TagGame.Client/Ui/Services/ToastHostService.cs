@@ -17,24 +17,22 @@ public static class ToastHostService
     {
         toast.HorizontalOptions = LayoutOptions.Center;
         toast.VerticalOptions = LayoutOptions.Start;
-        toast.Margin = new Thickness(12, 28, 12, 0);
         toast.Opacity = 0;
-        toast.TranslationY = -24;
     }
 
     public static Task AnimateInAsync(View view)
     {
         return Task.WhenAll(
-            view.FadeToAsync(1, 160, Easing.CubicOut),
-            view.TranslateToAsync(0, 0, 180, Easing.CubicOut)
+            view.FadeToAsync(1, 90, Easing.CubicOut),
+            view.TranslateToAsync(0, 10, 350, Easing.CubicOut)
         );
     }
 
     public static Task AnimateOutAsync(View view)
     {
         return Task.WhenAll(
-            view.TranslateToAsync(0, -24, 140, Easing.CubicIn),
-            view.FadeToAsync(0, 120, Easing.CubicIn)
+            view.TranslateToAsync(0, -20, 200, Easing.CubicIn),
+            view.FadeToAsync(0, 250, Easing.CubicIn)
         );
     }
 

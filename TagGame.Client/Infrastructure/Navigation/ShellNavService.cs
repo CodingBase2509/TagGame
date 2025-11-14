@@ -10,13 +10,13 @@ public class ShellNavService : INavigationService
     {
         EnsureShell(ct);
         var qp = ToQueryParameters(parameters);
-        await InvokeOnMainThreadAsync(() => _shell.GoToAsync(route, qp));
+        await UiUtils.OnMainThreadAsync(() => _shell.GoToAsync(route, qp));
     }
 
     public Task GoBackAsync(CancellationToken ct = default)
     {
         EnsureShell(ct);
-        return InvokeOnMainThreadAsync(() => _shell.GoToAsync(".."));
+        return UiUtils.OnMainThreadAsync(() => _shell.GoToAsync(".."));
     }
 
     public async Task OpenModalAsync(string route, IReadOnlyDictionary<string, object?>? parameters = null, CancellationToken ct = default)
@@ -24,13 +24,13 @@ public class ShellNavService : INavigationService
         EnsureShell(ct);
         var qp = ToQueryParameters(parameters);
         qp["useModalNavigation"] = true;
-        await InvokeOnMainThreadAsync(() => _shell.GoToAsync(route, qp));
+        await UiUtils.OnMainThreadAsync(() => _shell.GoToAsync(route, qp));
     }
 
     public Task CloseModalAsync(CancellationToken ct = default)
     {
         EnsureShell(ct);
-        return InvokeOnMainThreadAsync(() => _shell.GoToAsync(".."));
+        return UiUtils.OnMainThreadAsync(() => _shell.GoToAsync(".."));
     }
 
     private static ShellNavigationQueryParameters ToQueryParameters(IReadOnlyDictionary<string, object?>? map)
@@ -57,7 +57,4 @@ public class ShellNavService : INavigationService
 
         ct.ThrowIfCancellationRequested();
     }
-
-    private static Task InvokeOnMainThreadAsync(Func<Task> func) =>
-        MainThread.IsMainThread ? func() : MainThread.InvokeOnMainThreadAsync(func);
 }

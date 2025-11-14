@@ -23,7 +23,7 @@ public static class IToastPublisherExtensions
         string text,
         bool isLocalized = true,
         int durationMs = 3000,
-        ToastPriority priority = ToastPriority.Normal) =>
+        ToastPriority priority = ToastPriority.High) =>
         publisher.PublishAsync(new ToastRequest(ToastType.Warning, text, durationMs, isLocalized, priority));
 
     public static Task Error(
@@ -31,6 +31,6 @@ public static class IToastPublisherExtensions
         string text,
         bool isLocalized = true,
         int durationMs = 3000,
-        ToastPriority priority = ToastPriority.Normal) =>
+        ToastPriority priority = ToastPriority.Critical) =>
         publisher.PublishAsync(new ToastRequest(ToastType.Error, text, durationMs, isLocalized, priority));
 }

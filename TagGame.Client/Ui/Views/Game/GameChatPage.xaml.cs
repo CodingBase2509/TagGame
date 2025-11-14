@@ -8,7 +8,7 @@ namespace TagGame.Client.Ui.Views.Game;
 
 public partial class GameChatPage : PageBase
 {
-    public GameChatPage(ToastPresenter presenter) : base(presenter)
+    public GameChatPage()
     {
         InitializeComponent();
     }

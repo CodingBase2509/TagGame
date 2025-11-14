@@ -61,8 +61,8 @@
         </Setter>
     </Style>
 
-    <Style x:Key="ToastBase" TargetType="Border">
-        <Setter Property="Padding" Value="16"/>
+    <Style x:Key="ToastBase" TargetType="Border" ApplyToDerivedTypes="True">
+        <Setter Property="Padding" Value="6"/>
         <Setter Property="StrokeShape" Value="RoundRectangle 14" />
         <Setter Property="Shadow">
             <Setter.Value>
@@ -71,19 +71,23 @@
         </Setter>
     </Style>
 
-    <Style x:Key="ToastSuccess" TargetType="Border" BasedOn="{StaticResource ToastBase}">
+    <Style x:Key="ToastSuccess" TargetType="Border" BasedOn="{StaticResource ToastBase}"
+           ApplyToDerivedTypes="True">
         <Setter Property="Background" Value="{StaticResource SuccessDark}"/>
     </Style>
 
-    <Style x:Key="ToastError" TargetType="Border" BasedOn="{StaticResource ToastBase}">
+    <Style x:Key="ToastError" TargetType="Border" BasedOn="{StaticResource ToastBase}"
+           ApplyToDerivedTypes="True">
         <Setter Property="Background" Value="{StaticResource ErrorDark}"/>
     </Style>
 
-    <Style x:Key="ToastWarning" TargetType="Border" BasedOn="{StaticResource ToastBase}">
+    <Style x:Key="ToastWarning" TargetType="Border" BasedOn="{StaticResource ToastBase}"
+           ApplyToDerivedTypes="True">
         <Setter Property="Background" Value="{StaticResource WarningDark}"/>
     </Style>
 
-    <Style x:Key="ToastInfo" TargetType="Border" BasedOn="{StaticResource ToastBase}">
+    <Style x:Key="ToastInfo" TargetType="Border" BasedOn="{StaticResource ToastBase}"
+           ApplyToDerivedTypes="True">
         <Setter Property="Background" Value="{StaticResource InfoDark}"/>
     </Style>
 
