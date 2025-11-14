@@ -13,45 +13,52 @@ public sealed class RoomPermissionHandler(IGamesUoW gamesUoW) : AuthorizationHan
     {
         switch (context.Resource)
         {
-            // HTTP path
             case HttpContext http:
-            {
-                if (!AuthUtils.TryGetUserId(http, out var userId))
-                    return;
-                if (!AuthUtils.TryGetRoomId(http, out var roomId))
-                    return;
-
-                var membership = AuthUtils.TryGetMembershipFromItems(http) ??
-                                 await AuthUtils.LoadMembershipAsync(gamesUoW, userId, roomId, http.RequestAborted);
-                if (membership is null || membership.IsBanned)
-                    return;
-
-                if (membership.PermissionsMask.Includes(requirement.Permission))
-                    context.Succeed(requirement);
-                return;
-            }
-            // Hub path
-            case HubInvocationContext hub:
-            {
-                if (!TryGetUserId(hub.Context.User, out var userId))
-                    return;
-                if (!TryGetRoomId(hub, out var roomId))
-                    return;
-
-                var membership = TryGetMembershipFromItems(hub.Context) ??
-                                 await AuthUtils.LoadMembershipAsync(gamesUoW, userId, roomId, hub.Context.ConnectionAborted);
-                if (membership is null || membership.IsBanned)
-                    return;
-
-                if (membership.PermissionsMask.Includes(requirement.Permission))
-                    context.Succeed(requirement);
+                await HandleHttpAsync(http, context, requirement);
                 break;
-            }
+            case HubInvocationContext hub:
+                await HandleHubAsync(hub, context, requirement);
+                break;
+            default:
+                return;
         }
     }
 
-    private static bool TryGetUserId(ClaimsPrincipal user, out Guid userId)
+    private async Task HandleHttpAsync(HttpContext http, AuthorizationHandlerContext context, RoomPermissionRequirement requirement)
     {
+        if (!AuthUtils.TryGetUserId(http, out var userId))
+            return;
+        if (!AuthUtils.TryGetRoomId(http, out var roomId))
+            return;
+
+        var membership = AuthUtils.TryGetMembershipFromItems(http)
+                         ?? await AuthUtils.LoadMembershipAsync(gamesUoW, userId, roomId, http.RequestAborted);
+        if (membership is null || membership.IsBanned)
+            return;
+
+        if (membership.PermissionsMask.Includes(requirement.Permission))
+            context.Succeed(requirement);
+    }
+
+    private async Task HandleHubAsync(HubInvocationContext hub, AuthorizationHandlerContext context, RoomPermissionRequirement requirement)
+    {
+        if (!TryGetUserId(hub.Context.User!, out var userId))
+            return;
+        if (!TryGetRoomId(hub, out var roomId))
+            return;
+
+        var membership = TryGetMembershipFromItems(hub.Context)
+                         ?? await AuthUtils.LoadMembershipAsync(gamesUoW, userId, roomId, hub.Context.ConnectionAborted);
+        if (membership is null || membership.IsBanned)
+            return;
+
+        if (membership.PermissionsMask.Includes(requirement.Permission))
+            context.Succeed(requirement);
+    }
+
+    private static bool TryGetUserId(ClaimsPrincipal? user, out Guid userId)
+    {
+        ArgumentNullException.ThrowIfNull(user);
         var sub = user.FindFirstValue("sub") ?? user.FindFirstValue(ClaimTypes.NameIdentifier);
         return Guid.TryParse(sub, out userId);
     }
@@ -66,13 +73,35 @@ public sealed class RoomPermissionHandler(IGamesUoW gamesUoW) : AuthorizationHan
 
         foreach (var arg in ctx.HubMethodArguments)
         {
-            if (arg is Guid gid) { roomId = gid; return true; }
-            if (arg is string s && Guid.TryParse(s, out var gs)) { roomId = gs; return true; }
-            if (arg is null) continue;
-            var prop = arg.GetType().GetProperty("RoomId", BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+            switch (arg)
+            {
+                case Guid gid:
+                    roomId = gid;
+                    return true;
+                case string s when Guid.TryParse(s, out var parsed):
+                    roomId = parsed;
+                    return true;
+                case null:
+                    continue;
+                default:
+                    break;
+            }
+
+            var prop = arg.GetType().GetProperty(
+                "RoomId",
+                BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
             var val = prop?.GetValue(arg);
-            if (val is Guid g2) { roomId = g2; return true; }
-            if (val is string s2 && Guid.TryParse(s2, out var gs2)) { roomId = gs2; return true; }
+            switch (val)
+            {
+                case Guid guid:
+                    roomId = guid;
+                    return true;
+                case string s2 when Guid.TryParse(s2, out var parsedFromString):
+                    roomId = parsedFromString;
+                    return true;
+                default:
+                    break;
+            }
         }
         roomId = default;
         return false;

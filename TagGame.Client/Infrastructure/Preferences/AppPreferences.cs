@@ -1,15 +1,15 @@
 using TagGame.Client.Core.Options;
-using TagGame.Client.Core.Services.Abstractions;
+using TagGame.Client.Core.Services;
 
 namespace TagGame.Client.Infrastructure.Preferences;
 
-public class AppPreferences(IPreferences preferences) : IAppPreferences
+public class AppPreferences(IPreferences preferences) : IAppPreferences, IDisposable
 {
     private readonly SemaphoreSlim _lock = new(1, 1);
 
     public AppPreferencesSnapshot Snapshot { get; private set; } = new(
         preferences.Get(PreferenceKeys.Theme, ThemeMode.System),
-        preferences.Get(PreferenceKeys.Language, Language.English),
+        preferences.Get(PreferenceKeys.Language, Language.System),
         preferences.Get(PreferenceKeys.NotificationsEnabled, false),
         preferences.Get(PreferenceKeys.DeviceId, Guid.Empty),
         preferences.Get(PreferenceKeys.UserId, Guid.Empty)
@@ -80,5 +80,11 @@ public class AppPreferences(IPreferences preferences) : IAppPreferences
 
         _lock.Release();
         PreferencesChanged?.Invoke(this, Snapshot);
+    }
+
+    public void Dispose()
+    {
+        GC.SuppressFinalize(this);
+        _lock.Dispose();
     }
 }

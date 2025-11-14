@@ -5,8 +5,10 @@ namespace TagGame.Client.Core.Options;
 /// </summary>
 public enum Language
 {
+    /// <summary>System Lang.</summary>
+    System = 0,
     /// <summary>English (en).</summary>
-    English = 0,
+    English = 1,
     /// <summary>German (de).</summary>
-    German = 1,
+    German = 2,
 }

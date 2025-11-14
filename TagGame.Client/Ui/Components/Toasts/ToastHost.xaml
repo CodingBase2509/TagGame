@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Grid xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TagGame.Client.Ui.Components.Toasts.ToastHost"
+             InputTransparent="True">
+
+    <Border x:Name="Badge"
+            Stroke="{StaticResource ShadowBrush}"
+            Background="{AppThemeBinding
+                Light={StaticResource TextSecondaryDark},
+                Dark={StaticResource TextSecondaryLight}}"
+            Margin="2, 10"
+            HorizontalOptions="End"
+            VerticalOptions="Start"
+            WidthRequest="20"
+            HeightRequest="20"
+            IsVisible="False"
+            Padding="0"
+            ZIndex="100"
+    >
+
+        <Label x:Name="BadgeLabel"
+               Style="{StaticResource BaseLabel}"
+               FontSize="12"
+               FontAttributes="Bold"
+               HorizontalOptions="Center"
+               VerticalOptions="Center"
+        />
+    </Border>
+
+</Grid>

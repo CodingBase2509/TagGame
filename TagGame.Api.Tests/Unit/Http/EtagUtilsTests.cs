@@ -4,6 +4,7 @@ namespace TagGame.Api.Tests.Unit.Http;
 
 public class EtagUtilsTests
 {
+    private static readonly uint[] MixedStrongTokens = [101u, 202u];
     [Theory]
     [InlineData(0u)]
     [InlineData(1u)]
@@ -46,7 +47,7 @@ public class EtagUtilsTests
         var combined = $"{h1}, {h2}";
         EtagUtils.TryParseIfMatch(combined, out var tokens2, out var wc2).Should().BeTrue();
         wc2.Should().BeFalse();
-        tokens2.Should().BeEquivalentTo(new[] { t1, t2 });
+        tokens2.Should().BeEquivalentTo([t1, t2]);
     }
 
     [Fact]
@@ -111,7 +112,7 @@ public class EtagUtilsTests
 
         EtagUtils.TryParseIfMatch(header, out var tokens, out var wildcard).Should().BeTrue();
         wildcard.Should().BeTrue();
-        tokens.Should().BeEquivalentTo(new[] { 101u, 202u });
+        tokens.Should().BeEquivalentTo(MixedStrongTokens);
     }
 
     [Fact]

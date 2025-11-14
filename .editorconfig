@@ -39,6 +39,7 @@ dotnet_diagnostic.IDE0060.severity = suggestion # remove unused parameters (keep
 dotnet_diagnostic.CA1822.severity = suggestion  # mark members as static when possible
 dotnet_diagnostic.CA1848.severity = silent  # use LogMessage Attribute instead of Logger.LogError
 dotnet_diagnostic.IDE0011.severity = silent # add curly braces
+dotnet_diagnostic.IDE0046.severity = silent # convert if statement to ternary operator
 
 # Suppress analyzer warnings in EF migrations (Core)
 [TagGame.Api.Core/Persistence/Migrations/**/*.cs]

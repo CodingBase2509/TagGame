@@ -1,4 +1,4 @@
-using TagGame.Client.Core.Services.Abstractions;
+using TagGame.Client.Core.Services;
 using Connection = Microsoft.Maui.Networking.Connectivity;
 
 namespace TagGame.Client.Infrastructure.Connectivity;

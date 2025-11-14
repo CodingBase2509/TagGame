@@ -1,6 +1,12 @@
-using TagGame.Client.Core.Services.Abstractions;
+using TagGame.Client.Core.Localization;
+using TagGame.Client.Core.Navigation;
+using TagGame.Client.Core.Notifications;
+using TagGame.Client.Core.Services;
 using TagGame.Client.Core.Storage;
 using TagGame.Client.Infrastructure.Connectivity;
+using TagGame.Client.Infrastructure.Navigation;
+using TagGame.Client.Infrastructure.Localization;
+using TagGame.Client.Infrastructure.Notifications;
 using TagGame.Client.Infrastructure.Preferences;
 using TagGame.Client.Infrastructure.Storage;
 
@@ -16,11 +22,14 @@ public static class DependencyInjection
     /// </summary>
     public static IServiceCollection AddInfrastructure(this IServiceCollection services)
     {
-        services.AddMauiDefaults();
+        services.AddMauiDefaults()
+            .AddStorages()
+            .AddLocalization()
+            .AddToasts();
 
         services.AddSingleton<INetworkConnectivity, NetworkConnectivity>();
         services.AddSingleton<IAppPreferences, AppPreferences>();
-        services.AddSingleton<ITokenStorage, TokenStorage>();
+        services.AddSingleton<INavigationService, ShellNavService>();
 
         return services;
     }
@@ -28,7 +37,35 @@ public static class DependencyInjection
     private static IServiceCollection AddMauiDefaults(this IServiceCollection services)
     {
         services.AddSingleton(Microsoft.Maui.Storage.Preferences.Default);
-        services.AddSingleton(Microsoft.Maui.Storage.SecureStorage.Default);
+        services.AddSingleton(SecureStorage.Default);
+
+        return services;
+    }
+
+    private static IServiceCollection AddStorages(this IServiceCollection services)
+    {
+        services.AddSingleton<ITokenStorage, TokenStorage>();
+        services.AddSingleton<IProtectedStorage, ProtectedStorage>();
+        services.AddSingleton(typeof(IDataStore<>), typeof(DataStore<>));
+
+        return services;
+    }
+
+    private static IServiceCollection AddLocalization(this IServiceCollection services)
+    {
+        services.AddSingleton<ILocalizationCatalog, ResxCatalog>();
+        services.AddSingleton<ILocalizer, Localizer>();
+        services.AddSingleton<LocalizationInitializer>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddToasts(this IServiceCollection services)
+    {
+        services.AddSingleton<ToastPublisher>();
+        services.AddSingleton<IToastSender>(sp => sp.GetRequiredService<ToastPublisher>());
+        services.AddSingleton<IToastPublisher>(sp => sp.GetRequiredService<ToastPublisher>());
+        services.AddSingleton<ToastPresenter>();
 
         return services;
     }

@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?xaml-comp compile="true" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <Style x:Key="Card" TargetType="Border">
+        <Setter Property="Background" Value="{StaticResource SurfaceBrush}"/>
+        <Setter Property="Stroke" Value="{StaticResource BorderBrush}"/>
+        <Setter Property="StrokeThickness" Value="1"/>
+        <Setter Property="Padding" Value="14"/>
+        <Setter Property="Shadow">
+            <Setter.Value>
+                <Shadow Brush="{StaticResource ShadowBrush}" Opacity="0.3" Radius="10" Offset="0,4"/>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="StrokeShape" Value="RoundRectangle 14" />
+    </Style>
+
+    <Style x:Key="ElevatedCard" TargetType="Border" BasedOn="{StaticResource Card}">
+        <Setter Property="Shadow">
+            <Setter.Value>
+                <Shadow Brush="{StaticResource ShadowBrush}" Opacity="0.45" Radius="18" Offset="0,6"/>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="FabButton" TargetType="Button">
+        <Setter Property="HeightRequest" Value="60"/>
+        <Setter Property="WidthRequest" Value="60"/>
+        <Setter Property="CornerRadius" Value="30"/>
+        <Setter Property="BackgroundColor" Value="{StaticResource PrimaryDark}"/>
+        <Setter Property="TextColor" Value="White"/>
+        <Setter Property="FontFamily" Value="ManropeSemiBold"/>
+        <Setter Property="Shadow">
+            <Setter.Value>
+                <Shadow Brush="{StaticResource GlowCyan}" Radius="20" Opacity="0.7"/>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="GhostButton" TargetType="Button">
+        <Setter Property="BackgroundColor" Value="#00000000"/>
+        <Setter Property="TextColor" Value="{StaticResource TextPrimaryBrush}"/>
+        <Setter Property="BorderColor" Value="{StaticResource BorderBrush}"/>
+        <Setter Property="BorderWidth" Value="1"/>
+        <Setter Property="CornerRadius" Value="12"/>
+        <Setter Property="Padding" Value="10,6"/>
+    </Style>
+
+    <Style x:Key="IconCircleButton" TargetType="Button">
+        <Setter Property="HeightRequest" Value="48"/>
+        <Setter Property="WidthRequest" Value="48"/>
+        <Setter Property="CornerRadius" Value="24"/>
+        <Setter Property="FontSize" Value="18"/>
+        <Setter Property="BackgroundColor" Value="{StaticResource SurfaceDark}"/>
+        <Setter Property="TextColor" Value="{StaticResource TextPrimaryBrush}"/>
+        <Setter Property="Shadow">
+            <Setter.Value>
+                <Shadow Opacity="0.4" Radius="12" Offset="0,4" Brush="{StaticResource ShadowBrush}"/>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="ToastBase" TargetType="Border" ApplyToDerivedTypes="True">
+        <Setter Property="Padding" Value="6"/>
+        <Setter Property="StrokeShape" Value="RoundRectangle 14" />
+        <Setter Property="Shadow">
+            <Setter.Value>
+                <Shadow Brush="{StaticResource ShadowBrush}" Radius="12" Opacity="0.35" Offset="0,4"/>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="ToastSuccess" TargetType="Border" BasedOn="{StaticResource ToastBase}"
+           ApplyToDerivedTypes="True">
+        <Setter Property="Background" Value="{StaticResource SuccessDark}"/>
+    </Style>
+
+    <Style x:Key="ToastError" TargetType="Border" BasedOn="{StaticResource ToastBase}"
+           ApplyToDerivedTypes="True">
+        <Setter Property="Background" Value="{StaticResource ErrorDark}"/>
+    </Style>
+
+    <Style x:Key="ToastWarning" TargetType="Border" BasedOn="{StaticResource ToastBase}"
+           ApplyToDerivedTypes="True">
+        <Setter Property="Background" Value="{StaticResource WarningDark}"/>
+    </Style>
+
+    <Style x:Key="ToastInfo" TargetType="Border" BasedOn="{StaticResource ToastBase}"
+           ApplyToDerivedTypes="True">
+        <Setter Property="Background" Value="{StaticResource InfoDark}"/>
+    </Style>
+
+    <Style x:Key="ChatBubbleLeft" TargetType="Border">
+        <Setter Property="Background" Value="{StaticResource SurfaceBrush}"/>
+        <Setter Property="Stroke" Value="{StaticResource BorderBrush}"/>
+        <Setter Property="StrokeThickness" Value="1"/>
+        <Setter Property="Padding" Value="12"/>
+        <Setter Property="Margin" Value="0,4,40,4"/>
+        <Setter Property="StrokeShape"  Value="RoundRectangle 14"/>
+    </Style>
+
+    <Style x:Key="ChatBubbleRight" TargetType="Border">
+        <Setter Property="Background" Value="{StaticResource PrimaryDark}"/>
+        <Setter Property="Padding" Value="12"/>
+        <Setter Property="Margin" Value="40,4,0,4"/>
+        <Setter Property="StrokeShape" Value="RoundRectangle 14" />
+    </Style>
+
+    <Style x:Key="BaseLabel" TargetType="Label">
+        <Setter Property="FontFamily" Value="ManropeRegular" />
+        <Setter Property="TextColor" Value="{AppThemeBinding
+                                    Light={StaticResource TextPrimaryLight},
+                                    Dark={StaticResource TextPrimaryDark}}" />
+    </Style>
+
+    <Style TargetType="Label" BasedOn="{StaticResource BaseLabel}" />
+
+    <Style x:Key="PlayerNameLabel" TargetType="Label">
+        <Setter Property="FontFamily" Value="ManropeSemiBold"/>
+        <Setter Property="FontSize" Value="16"/>
+    </Style>
+
+    <Style x:Key="PlayerRoleLabel" TargetType="Label">
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="FontFamily" Value="ManropeMedium"/>
+        <Setter Property="TextColor" Value="{StaticResource TextSecondaryBrush}"/>
+    </Style>
+
+    <Style x:Key="PlayerFoundLabel" TargetType="Label">
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="TextColor" Value="{StaticResource ErrorDark}"/>
+    </Style>
+
+    <Style x:Key="PlayerActiveLabel" TargetType="Label">
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="TextColor" Value="{StaticResource SuccessDark}"/>
+    </Style>
+
+    <Style x:Key="ModalOverlay" TargetType="Border">
+        <Setter Property="Background" Value="{StaticResource OverlayBrush80}"/>
+    </Style>
+
+    <Style x:Key="PopupCard" TargetType="Border">
+        <Setter Property="Background" Value="{StaticResource SurfaceBrush}"/>
+        <Setter Property="Padding" Value="16"/>
+        <Setter Property="Shadow">
+            <Setter.Value>
+                <Shadow Brush="{StaticResource ShadowBrush}" Opacity="0.5" Radius="14"/>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Stroke" Value="Transparent"/>
+        <Setter Property="StrokeShape"  Value="RoundRectangle 14" />
+    </Style>
+
+</ResourceDictionary>
+

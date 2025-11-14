@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using TagGame.Client.Core.Http;
 using TagGame.Client.Core.Options;
-using TagGame.Client.Core.Services.Abstractions;
+using TagGame.Client.Core.Services;
 
 namespace TagGame.Client.Core.Extensions;
 

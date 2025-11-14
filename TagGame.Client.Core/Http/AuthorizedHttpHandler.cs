@@ -1,7 +1,7 @@
 using System.Net;
 using System.Net.Http.Headers;
 using Microsoft.Extensions.Logging;
-using TagGame.Client.Core.Services.Abstractions;
+using TagGame.Client.Core.Services;
 
 namespace TagGame.Client.Core.Http;
 
