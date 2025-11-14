@@ -1,100 +1,58 @@
-# Client UI Foundation Guidelines
+# Client UI Foundation (Stand V2)
 
-> Ergänzt die Vorgaben aus [AGENTS.md](../AGENTS.md) für alle Arbeiten am MAUI‑Client (Assets, Theme, Navigation, Lokalisierung, Toasts).
+> Ergänzt [AGENTS.md](../AGENTS.md) für alle Arbeiten am MAUI-Client.
 
-## Relevante Ordner
-```text
+## Ordnerüberblick
+```
 TagGame.Client/
-├── App.xaml                # Ressourcendictionaries + AppThemeBinding
-├── AppShell.xaml(.cs)      # Shell, Startpunkt
+├── App.xaml / App.xaml.cs          # Ressourcen-Merge + Shell Bootstrap
+├── AppShell.xaml(.cs)              # Routen-Registrierung, keine Logik
+├── Infrastructure/
+│   ├── Localization/               # Resx-Katalog + Initializer
+│   └── Notifications/              # ToastPublisher, ToastPresenter
 ├── Resources/
-│   ├── Fonts/
-│   ├── Images/             # SVG Assets
+│   ├── Fonts/, Images/, Localization/
 │   └── Styles/
-│       ├── CustomColors.xaml
+│       ├── Colors.xaml
+│       ├── Styles.xaml
 │       └── CustomStyles.xaml
 ├── Ui/
-│   ├── Components/
-│   │   └── Toasts/
-│   ├── Services/
-│   └── Views/              # Pages erben von PageBase
-└── Infrastructure/
-    └── Notifications/      # ToastPresenter, Publisher
-
-TagGame.Client.Core/
-├── Localization/
-├── Navigation/
-└── Notifications/          # ToastRequest, IToastPublisher
+│   ├── Components/Toasts/
+│   ├── Extensions/LocExtension.cs
+│   ├── Services/ToastHostService.cs
+│   └── Views/ (Start, Lobby, Game, Settings, PageBase)
+└── MauiProgram.cs                  # DI Setup (Client + Client.Core)
 ```
+`TagGame.Client.Core/` enthält ViewModels, Services, Navigation, Notifications, Localization-Interfaces, usw.
 
-## Assets & Theme
-- Quelle: `Resources/Images/*.svg`, Farben/Styles in `Resources/Styles` (Details siehe [docs/20-UI-Ressourcen-Styles-und-Icons.md](20-UI-Ressourcen-Styles-und-Icons.md)).
-- Styles werden in `App.xaml` gemerged; neue Farben stets in `CustomColors.xaml` anlegen und in `CustomStyles.xaml` verwenden.
-- Typisches Theme-Binding (Light/Dark):
-  ```xaml
-  <ContentPage
-      BackgroundColor="{AppThemeBinding Light={StaticResource ColorSurfaceLight}, Dark={StaticResource ColorSurfaceDark}}" />
-  ```
-- Assets benennen `snake_case`. Beispiel-Referenz:
-  ```xaml
-  <Image Source="toast_success.svg" WidthRequest="18" />
-  ```
+## Navigation
+- Routen-Konstanten: `TagGame.Client.Core/Navigation/Routes.cs`.
+- Registrierung: `AppShell.RegisterRoutes()` ruft `Routing.RegisterRoute(Routes.X, typeof(Page))` für alle Pages auf. Neue Views dort hinzufügen.
+- Pages erben von `PageBase` (`Ui/Views/PageBase.cs`). Dadurch hängen ToastHost + Shared Overlays automatisch an jeder Seite. Im XAML einfach `<base:PageBase ...>` als Root verwenden.
+- ViewModels sollten über ein `INavigationService` arbeiten (Interface in `Client.Core/Navigation`). Direkte Shell-Aufrufe im UI-Code vermeiden.
 
-## Shell, Navigation & PageBase
-- Routen liegen in `TagGame.Client.Core/Navigation/Routes.cs` und werden in `AppShell.RegisterRoutes()` gebunden:
-  ```csharp
-  Routing.RegisterRoute(Routes.GamePlayers, typeof(GamePlayerListPage));
-  ```
-- Neue Pages registrieren und zusätzlich `ShellContent` oder `Routing.RegisterRoute` ergänzen.
-- Alle Views leiten von `Ui/Views/PageBase` ab. PageBase legt global den `ToastHost` sowie einen Loader über das jeweilige ContentPage-Layout:
-  ```xaml
-  <base:PageBase ...>
-      <StackLayout>
-          <!-- Inhalt -->
-      </StackLayout>
-  </base:PageBase>
-  ```
-- Navigation aus ViewModels über `INavigationService` (ShellNavService) – kein direkter Shell-Zugriff in UI-Code.
+## Ressourcen & Theme
+- Farben/Brushes in `Resources/Styles/Colors.xaml`; globale Control-Styles in `Styles.xaml`; projektspezifische Komponenten in `CustomStyles.xaml`.
+- Beim Hinzufügen neuer UI-Bausteine bevorzugt `CustomStyles.xaml` nutzen (z. B. weitere Buttons, Badges, Chips).
+- Fonts sind in `MauiProgram.AddMauiApp()` registriert (`ManropeRegular`, `ManropeSemiBold`, ...). Nutze die Aliasse in Styles/Views statt Font-Dateinamen.
 
-## Localization Workflow
-- Schnittstelle `ILocalizer` (Client.Core) stellt `GetString`, `GetFormat`, `SetCultureAsync` bereit (Details in [docs/14-Lokalisierung.md](14-Lokalisierung.md)).
-- Ressourcen liegen unter `TagGame.Client.Core/Localization/Resources/*.resx` (per MSBuild eingebunden).
-- Standard-Pattern in ViewModels/Views:
-```csharp
-public sealed partial class LobbyViewModel
-{
-    private readonly ILocalizer _loc;
+## Lokalisierung
+- Schnittstelle `ILocalizer` & `ILocalizationCatalog` liegen im Client.Core (`Localization/`).
+- Resx-Dateien: `Resources/Localization/App.resx`, `App.de.resx` (weitere Sprachen hier ergänzen).
+- Markup-Extension `{loc:Loc Key=..., Args='...'}` unter `Ui/Extensions/LocExtension.cs`. Sie reagiert automatisch auf Kulturwechsel.
+- `LocalizationInitializer` (Infrastructure) liest `IAppPreferences` und ruft `ILocalizer.SetCultureAsync`. Bitte beim App-Start aufrufen (`MauiProgram`/`App`).
 
-    public LobbyViewModel(ILocalizer loc) => _loc = loc;
+## Toasts & Benachrichtigungen
+- Core-Interface: `TagGame.Client.Core/Notifications/IToastPublisher` + `ToastRequest`.
+- UI-Layer: `Infrastructure/Notifications/ToastPublisher.cs` (bridged), `ToastPresenter`, `ToastHost`, `ToastHostService`.
+- Styles & Layouts unter `Resources/Styles/CustomStyles.xaml` und `Ui/Components/Toasts/*.xaml`.
+- Toaster erscheinen automatisch, weil `PageBase` den globalen Host injiziert.
+- Für neue Toast-Typen zuerst `ToastRequest` erweitern, dann Presenter/Host/Styles anfassen.
 
-    public string Title => _loc.GetString("lobby.title");
-}
-```
-- In XAML kommt die `LocExtension` (`TagGame.Client.Ui.Extensions`) zum Einsatz:
-  ```xaml
-  <ContentPage xmlns:ui="clr-namespace:TagGame.Client.Ui.Extensions">
-      <Label Text="{ui:Loc Key=lobby.title}" />
-      <Label Text="{ui:Loc Key=lobby.playerCount, Args='3'}" />
-  </ContentPage>
-  ```
-- Kulturwechsel erfolgt via `ILocalizer.SetCultureAsync`, das `CultureChanged` triggert; UI-Komponenten registrieren sich darauf (z.B. `ToastHost`).
-
-## Toast Notifications
-- Architektur:
-  - `IToastPublisher` (Client.Core) → `ToastPublisher` (Client Infrastructure) → `ToastPresenter` → `ToastHost` (UI).
-  - Requests liegen als `ToastRequest` (Type, Message, DurationMs, Priority).
-- Nutzung aus ViewModels/Services:
-  ```csharp
-  await _toasts.PublishSuccessAsync("lobby.joined", durationMs: 4000);
-  ```
-- `ToastHost` stapelt alle eingehenden Toasts übereinander. Der oberste Eintrag läuft, alle darunter pausieren ihren Timer. High/Critical‑Toasts springen sofort nach oben.
-- Screenshots: ![Toast Stack](assets/ToastMessages.png "Toast stack in der MAUI App")
-- Styling: Für jeden `ToastType` existiert ein Style (`ToastInfoStyle`, `ToastSuccessStyle`, ...). Sie werden bei Erstellung des `Toast` gesetzt, Icons liegen in `Resources/Images`.
-
-## PR Checklist (Client UI)
-- [ ] Richtige Ordnerstruktur verwendet (`TagGame.Client` vs. `Client.Core`), siehe [AGENTS.md](../AGENTS.md).
-- [ ] Neue Assets in `Resources/Images` abgelegt und in `CustomStyles.xaml` referenziert.
-- [ ] Shell-Routen und `Routes.cs` konsistent aktualisiert.
-- [ ] Lokalisierungs-Keys ergänzt (resx + `ILocalizer` Nutzung) und Deutsch/Englisch gepflegt.
-- [ ] Neue/aktualisierte Toasts respektieren Stack/Priority-Mechanik (`ToastRequest.Priority`).
-- [ ] Screenshot/GIF im PR angehängt, wenn UI sichtbar verändert wurde.
+## PR-Checkliste (UI)
+- [ ] Richtigen Layer gewählt (ViewModel in Client.Core, UI-Kram in Client).
+- [ ] Neue Ressourcen in `Colors.xaml`/`CustomStyles.xaml` hinterlegt, keine Inline-Hexwerte.
+- [ ] Routes aktualisiert und Page in `AppShell.RegisterRoutes()` registriert.
+- [ ] Lokalisierungs-Keys (`Resources/Localization`) + Doku (`docs/14-Lokalisierung.md`) gepflegt.
+- [ ] Toast-Verhalten bei Fehlern/Erfolgen abgestimmt (`IToastPublisher`).
+- [ ] Screenshots/GIFs an PR angehängt, wenn visuelle Änderungen sichtbar sind.

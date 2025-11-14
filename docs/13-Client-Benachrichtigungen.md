@@ -1,58 +1,42 @@
-# Client-Benachrichtigungen (Toast/Snackbar) – Architekturleitfaden
+# Client-Benachrichtigungen (Stand V2)
 
-Ziel: Entkopplte, robuste und testbare Benachrichtigungen im Client, ohne harte Abhängigkeit auf konkrete Views oder Page-Layouts.
+Die Toast-Infrastruktur ist vollständig implementiert. Dieser Leitfaden fasst zusammen, wie sie funktioniert und wie neue Features sie nutzen sollten.
 
-## Ziele
-- Geringe Kopplung: ViewModels kennen nur ein Publisher-Interface, keine UI-Details.
-- Stabil über Navigation: Ein zentraler Host, keine dynamische Re-Anheftung pro Seite.
-- Konsistente UX: Queue/Policy, Prioritäten, Theme/A11y, optionale Aktion (Snackbar).
-- Sehr gut testbar: Core-Logik ohne UI, Presenter/UI separat.
+## Architektur
+```
+ViewModel/Service --(IToastPublisher)--> ToastPublisher (Client) --(event)--> ToastPresenter --(ToastHost)--> UI
+```
+- **Publisher API** (`TagGame.Client.Core/Notifications/IToastPublisher.cs`)
+  - Asynchrones `PublishAsync(ToastRequest request)`. Helper-Extensions für Info/Success/Error (`IToastPublisher.Extensions.cs`).
+  - `ToastRequest` (`ToastRequest.cs`) enthält `ToastType`, `Message`, `DurationMs`, `IsLocalized`, `ToastPriority`.
+- **UI Bridge** (`TagGame.Client/Infrastructure/Notifications/ToastPublisher.cs`)
+  - Implementiert sowohl `IToastPublisher` (DI in Client.Core) als auch `IToastSender` (Event für Presenter).
+- **Presenter + Host**
+  - `ToastPresenter` (`Client/Infrastructure/Notifications/ToastPresenter.cs`) hält genau einen `ToastHost`.
+  - `ToastHost` (`Client/Ui/Components/Toasts/ToastHost.xaml(.cs)`) ist das Overlay mit Queue-/Badge-Logik.
+  - `ToastHostService` (`Client/Ui/Services/ToastHostService.cs`) enthält Textauflösung via `ILocalizer`, Animationshilfen und Timer (`WaitDurationAsync`).
+- **PageBase** (`Client/Ui/Views/PageBase.cs`) injiziert `ToastPresenter` und fügt den globalen Host jeder Page hinzu, inkl. Safe-Area & Overlay.
 
-## Probleme im Status quo (beobachtet)
-- Service initialisiert mit konkreter `ToastView` und Cast im `AppShell` → enge Kopplung.
-- Overlay hängt an `PageBase` → alle Seiten müssen `PageBase` nutzen.
-- Keine Anzeige-Policy: parallele/überschreibende Toastrufe, keine Deduplizierung.
-- Lokalisierung gemischt (im View), unklare Übergabe (Key vs. Plain-Text).
+## Verhalten
+- FIFO-Queue (`ToastHost`) mit Priorisierung: `ToastPriority.High/Critical` springen nach oben; Badge zeigt Anzahl wartender Toasters.
+- Ein Toast läuft aktiv durch (AnimateIn → Wait → AnimateOut). Nachfolgende Einträge pausieren, bis sie oben sind.
+- Lokalisation: `ToastRequest.IsLocalized=true` bedeutet, dass `Message` ein Ressourcen-Key ist (`ILocalizer.GetString`). Für rohe Texte `IsLocalized=false` setzen.
+- Styling: `Resources/Styles/CustomStyles.xaml` definiert `ToastInfo/Success/Error/Warning` Styles; Icons liegen unter `Resources/Images/toast_*.svg`.
 
-## Zielarchitektur
-- Publisher/Presenter-Trennung
-  - Client.Core: `IToastPublisher` publiziert reine `ToastRequest`-Modelle.
-  - Client (UI): `ToastPresenter` subscribed auf den Publisher und steuert Anzeige/Animationen.
-- Shell‑Level Host
-  - Ein `ToastHost` (einziger Overlay‑View) liegt im `AppShell`-Root/Window.
-  - Bleibt über Navigation bestehen; kein dynamisches Re-Anheften.
-- Klare API/Optionen
-  - `ToastRequest`: `Type` (Info/Success/Error), `Text` oder `ResourceKey + Args`, `DurationMs`, `Priority` (Error > Success > Info), `Position` (Top/Bottom), optionale `ActionText` + `Action` (Snackbar).
-- Anzeige‑Policy
-  - FIFO‑Queue, ein Toast zur Zeit; optional Deduplizierung (Zeitfenster) und Preemption durch höhere Priorität.
-- Threading
-  - Publisher ist threadsafe; Presenter marshalt auf den UI‑Thread.
-- Lokalisierung
-  - Variante A: ViewModels liefern finalen Text (Lokalisierung im VM/Core).
-  - Variante B: `ResourceKey + Args` im Request, Auflösung im Presenter (einheitlich wählen!).
-- Styling & A11y
-  - Farben/Abstände/CornerRadius via Theme (Resources), DynamicResource/AppThemeBinding.
-  - `AutomationProperties.Name`/`SemanticScreenReader.Announce(...)`; ausreichende Anzeigedauer.
+## Verwendung in ViewModels/Services
+```csharp
+await _toasts.PublishSuccessAsync("lobby.joined", durationMs: 4000);
+await _toasts.PublishErrorAsync("network.offline", isLocalized: true);
+```
+- Keine UI-spezifischen Klassen aus ViewModels ansprechen. `ToastRequest` reicht vollständig.
+- Für Handlungsaktionen (Undo etc.) könnte `ToastRequest` erweitert werden (ActionText/Handler). Aktuell nicht nötig – bitte bei Bedarf zuerst Interface erweitern.
 
-## Schnittstellen (Skizze, keine Implementierung)
-- Client.Core
-  - `interface IToastPublisher { void Publish(ToastRequest request); }`
-  - `record ToastRequest(ToastType Type, string? Text = null, string? ResourceKey = null, object[]? Args = null, int DurationMs = 3000, ToastPriority Priority = ToastPriority.Normal, ToastPosition Position = ToastPosition.Bottom, string? ActionText = null, Action? Action = null);`
-- Client (UI)
-  - `ToastPresenter` (Queue/Policy/Threading) + `ToastHost` (XAML/Animations) unter `AppShell`.
+## Tests
+- ViewModels testen gegen `IToastPublisher` mit einem Fake/Spy (siehe `TagGame.Client.Tests/Unit/Notifications` sobald vorhanden).
+- Presenter/Host werden derzeit nicht unit-getestet. UI-Smoke-Tests oder visueller Check (StartPage Buttons) reichen.
 
-## Teststrategie
-- ViewModels testen gegen `IToastPublisher` (Fake/Spy) → publishte Requests verifizieren.
-- Presenter separat via UI‑/Visual‑Tests (Animations/Timing minimal mocken).
+## Offene Verbesserungen
+- Deduplizierung innerhalb eines Zeitfensters
+- Persistenz über Navigationswechsel? (Der Host hängt an PageBase, bleibt also stabil. Für Shell-Modals muss ggf. `ToastHost` repositioniert werden.)
 
-## Migration (theoretisch)
-1) Neues Paket/Ordner in `Client.Core`: `Ui/Notifications` mit `IToastPublisher`, `ToastRequest`, `ToastType`, `ToastPriority`.
-2) UI: `ToastPresenter` + `ToastHost` im `AppShell` platzieren; Presenter subscribed auf Publisher.
-3) ViewModels: `IToastService` durch `IToastPublisher` ersetzen; Convenience‑Helper (Error/Success) beibehalten, intern `Publish(...)`.
-4) Lokalisierung: Einheitlich entscheiden (Text vs. Key) und in allen Call Sites konsistent nutzen.
-5) Entfernen/Kapseln: `Initialize(ToastView)`, `PageBase`‑Kopplung und Casts in `AppShell`.
-
-## Alternativen
-- CommunityToolkit `Toast`/`Snackbar` nutzen (schneller Start, weniger Flex, plattformnahes Look&Feel).
-- „NotificationService“ als generischer Layer (Toast + Snackbar + ModalSheet) mit gemeinsamer Queue/Priorität.
-
+Bei Änderungen am Toast-System immer beide Schichten (Client.Core + Client) im Blick behalten und `PageBase`-Integration prüfen.

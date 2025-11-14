@@ -1,138 +1,56 @@
-# UI‑Lokalisierung – Architekturleitfaden
+# Lokalisierung (Stand V2)
 
-Ziel: Einheitliche, robuste und testbare Lokalisierung (i18n) für die MAUI‑UI — unabhängig von konkreten Implementierungen.
+Die Laufzeit-Lokalisierung ist bereits verdrahtet. Dieses Dokument erklärt die Komponenten und wie neue Texte/Sprachen ergänzt werden.
 
-## Ziele
-- Einheitliche Übersetzungen in XAML und Code.
-- Laufzeit‑Sprachwechsel ohne App‑Neustart (Live‑Updates).
-- Korrekte Pluralisierung/Gender/Formatierung je Kultur.
-- Gute Testbarkeit und reibungsloser Übersetzungs‑Workflow.
+## Komponenten
+- `ILocalizer` (`TagGame.Client.Core/Localization/ILocalizer.cs`) – API mit `GetString`, `GetFormat`, `SetCultureAsync`, `CultureChanged`.
+- `Localizer` (`TagGame.Client.Core/Localization/Localizer.cs`) – nutzt `SmartFormat` mit `PluralLocalizationFormatter`, `ChooseFormatter`, `ConditionalFormatter`, `ListFormatter`, `TimeFormatter`.
+- `ILocalizationCatalog` (`Client.Core/Localization/ILocalizationCatalog.cs`) + `ResxCatalog` (`TagGame.Client/Infrastructure/Localization/ResxCatalog.cs`) – liest eingebettete `.resx` Dateien.
+- Ressourcen: `TagGame.Client/Resources/Localization/App.resx` + `App.de.resx` (weitere Sprachen analog). Designer-Dateien werden automatisch generiert.
+- `LocalizationInitializer` (`Client/Infrastructure/Localization/LocalizationInitializer.cs`) – setzt Kultur anhand `IAppPreferences` und reagiert auf Änderungen (Event `PreferencesChanged`).
+- `LocExtension` (`TagGame.Client/Ui/Extensions/LocExtension.cs`) – XAML-Markup `{loc Key=..., Args='...'}` mit Live-Updates.
 
-## Ressourcen‑Struktur
-- Pro Feature/Screen eigene Ressourcen:
-  - `Resources/Localization/App.resx` (global)
-  - `Resources/Localization/StartPage.resx`, `LobbyPage.resx`, …
-- Key‑Konvention: `bereich.unterbereich.sinn` (kontextreich; z. B. `lobby.players.count`).
-- Neutrale Fallback‑Sprache (z. B. `en`) via `NeutralResourcesLanguage`.
-- Kommentare in Resx als Translator‑Hinweise (Kontext, Variablenbedeutung).
+## Verwendung
+### In ViewModels/Services
+```csharp
+public sealed class LobbyViewModel
+{
+    private readonly ILocalizer _loc;
+    public LobbyViewModel(ILocalizer loc) => _loc = loc;
 
-## Zugriff in XAML und Code
-- XAML: Markup‑Extension mit Dynamic‑Binding, z. B. `{loc Key=greeting, Page=StartPage}` → reagiert auf Sprachwechsel.
-- Code: `ILocalizer`
-  - Indexer: `localizer["key"]`
-  - Formatierung: `localizer.Format("key", args)`
-  - Ereignis: `CultureChanged` (für Live‑Update‑Mechanismen)
-- Keine String‑Konkatenation; stattdessen formatierbare Keys.
+    public string Title => _loc.GetString("lobby.title");
+    public string PlayersLabel(int count) => _loc.GetFormat("lobby.players.count", count);
+}
+```
 
-## Kultur & Laufzeit‑Wechsel
-- Quelle: System‑Sprache als Default; App‑Override in Settings (persistiert).
-- Setze `CultureInfo.CurrentUICulture` und `CultureInfo.CurrentCulture`.
-- `LocalizationManager` verwaltet aktuelle Kultur und publiziert `CultureChanged`.
-- UI aktualisiert sich über DynamicResource/INPC in der Markup‑Extension.
+### In XAML
+```xaml
+<ContentPage xmlns:loc="clr-namespace:TagGame.Client.Ui.Extensions">
+  <Label Text="{loc:Loc Key=lobby.title}" />
+  <Label Text="{loc:Loc Key=lobby.players.count, Args='5'}" />
+</ContentPage>
+```
+- `Args` string wird per `|` getrennt (`"male|John"`). Parser versucht `int/long/decimal/double/bool`, sonst `string`.
+- `LocExtension` subscribt auf `ILocalizer.CultureChanged` und aktualisiert Bindings automatisch.
 
-## Pluralisierung, Gender, Kontext
-- Plural: ICU‑ähnliche Regeln oder Library (z. B. SmartFormat) hinter `ILocalizer`.
-- Gender/Anrede: eigene Keys oder Platzhalter mit Regeln; klare Translator‑Hinweise.
-- Kontextvarianten: Suffixe (`.title`, `.button`, `.hint`) statt Mehrzwecktexte.
+## Kulturwechsel
+1. `LocalizationInitializer.InitializeAsync()` beim App-Start aufrufen (siehe `MauiProgram.cs`).
+2. `IAppPreferences` hält `Language` + `PreferencesChanged` (`TagGame.Client.Core/Services/IAppPreferences`).
+3. Auf `CultureChanged` können UI-Komponenten reagieren (ToastHost tut das bereits).
 
-## Assets, RTL, Accessibility
-- Keine Texte in Bildern; sprachneutrale Icons.
-- RTL‑Support: `FlowDirection` kulturabhängig; spiegeln von Layout/Icons, wenn nötig.
-- A11y: `AutomationProperties`/`SemanticScreenReader` ebenfalls lokalisiert.
-- Lange/kurze Texte: Wrapping/Auto‑Fit; Layouts nicht hart begrenzen.
+## Konventionen
+- Schlüssel bleiben sprachneutral & beschreibend: `area.section.label` (z. B. `lobby.players.count`).
+- Pluralisierung via SmartFormat `plural:` Pattern. Beispiel `App.resx`:
+  - `lobby.players.count = {0:plural:zero|no players|one|{0} player|other|{0} players}`
+  - `App.de.resx = {0:plural:one|{0} Spieler|other|{0} Spieler}`
+- Hinweise für Übersetzer (Kommentare in .resx) hinzufügen, wenn Kontext nicht offensichtlich ist.
 
-## Fehler & Server‑Integration
-- Server liefert stabile Fehlercodes; Client mappt Code → Ressourcenschlüssel.
-- Lokalisierte Fehlermeldungen im UI; Rohtexte nur als Fallback/Log.
+## Tests & Hygiene
+- Unit-Tests für `Localizer` (`TagGame.Client.Tests/Unit/Localization` sobald vorhanden) sollen sicherstellen: fehlender Key → `[key]`, Plural/Choose funktionieren, `CultureChanged` feuert.
+- Pseudo-Lokalisierung (z. B. `fr-zz`) kann durch einen zusätzlichen `.resx` Eintrag simuliert werden; in der Dev-App einfach `preferences.SetLanguage(Language.Pseudo)` aufrufen.
+- Beim Hinzufügen neuer Keys sowohl `App.resx` als auch `App.de.resx` (oder andere Sprachen) anpassen und `docs/21-Client-UI-Foundation.md` aktualisieren, falls UI-Textbausteine betroffen sind.
 
-## Build & Packaging
-- Satelliten‑Assemblies pro Sprache (Android/iOS wählen automatisch).
-- Trimming‑freundlich: zentrale Resource‑Typen; `NeutralResourcesLanguage` setzen.
-- Optional: Export/Import XLIFF für externe Übersetzungstools.
-
-## Teststrategie
-- Pseudo‑Lokalisierung im Dev (Textverlängerung, diakritische Zeichen) für Layout‑Checks.
-- Unit‑Checks: Keys vorhanden, keine Duplikate, Pluralfälle (0/1/N) korrekt.
-- UI‑Smoke‑Tests in mindestens zwei Sprachen (kurz/lang, z. B. en/de).
-- Lint in CI: fehlende/unbenutzte Keys detektieren.
-
-## API‑Skizze (theoretisch)
-- `interface ILocalizer { string this[string key] { get; } string Format(string key, params object[] args); event EventHandler CultureChanged; }`
-- Markup‑Extension: `{Loc Key=..., Args={Binding ...}}` mit Live‑Update.
-
-## Einführung (schrittweise)
-1) Keys pro Screen inventarisieren und in Resx migrieren.
-2) Markup‑Extension einführen; XAML schrittweise umstellen.
-3) Codezugriffe auf `ILocalizer` migrieren; Formatierung statt String‑Konkatenation.
-4) Pluralisierung/Gender zunächst für häufige Flows (Spieleranzahl, Timer, Fehler) aktivieren.
-5) Pseudo‑Loc prüfen, Layoutfixes; weitere Sprachen ausrollen.
-
-## Implementierung (Stand V2)
-
-Komponenten und Pfade:
-- Interface (Core): `TagGame.Client.Core/Localization/ILocalizer.cs`
-  - `GetString(key)` und `GetFormat(key, params object[] args)`
-  - `SetCultureAsync(CultureInfo)` + `CultureChanged` für Live‑Updates
-- Katalog (Client): `TagGame.Client/Infrastructure/Localization/ResxCatalog.cs`
-  - Liest `.resx` über `ResourceManager` (z. B. `App.resx`, `App.de.resx`)
-- Localizer (Client): `TagGame.Client/Infrastructure/Localization/Localizer.cs`
-  - Nutzt SmartFormat (`SmartFormat`, `SmartFormat.Extensions`) für Plural/Choose/Conditional
-- Markup‑Extension (Client): `TagGame.Client/Ui/Extensions/LocExtension.cs`
-  - XAML: `{loc Key=...}` bzw. `{loc Key=..., Args='arg1|arg2|...'}`
-  - `Args` ist ein einzelner String; wird mit `|` getrennt und typisiert (Zahl/Bool → automatisch erkannt)
-- Initializer (Client):
-  - `TagGame.Client/Infrastructure/Localization/LanguageMap.cs` (Enum → CultureInfo)
-  - `TagGame.Client/Infrastructure/Localization/LocalizationInitializer.cs` (setzt Kultur beim Start und bei `IAppPreferences.PreferencesChanged`)
-- DI (Client): `TagGame.Client/Infrastructure/DependencyInjection.cs`
-  - Registriert `ILocalizationCatalog` und `ILocalizer`
-
-Ressourcen & Build:
-- Resx‑Dateien: `TagGame.Client/Resources/Localization/App.resx`, `App.de.resx`
-- CSProj enthält die `EmbeddedResource`‑Einträge und Designer‑Generierung (`ResXFileCodeGenerator`).
-
-## SmartFormat – Muster
-
-- Plural (empfohlen):
-  - en: `lobby.players.count = "{0:plural:zero|no players|one|{0} player|other|{0} players}"`
-  - de: `lobby.players.count = "{0:plural:one|{0} Spieler|other|{0} Spieler}"`
-  - Aufruf im Code: `localizer.GetFormat("lobby.players.count", count)`
-  - XAML mit Markup: `<Label Text="{loc Key=lobby.players.count, Args='3'}" />`
-
-- Auswahl (Choose):
-  - en: `profile.greeting = "{0:choose(male|female|other):Welcome, Mr {1}|Welcome, Ms {1}|Welcome, {1}}"`
-  - XAML: `<Label Text="{loc Key=profile.greeting, Args='male|John'}" />`
-
-Hinweise:
-- Platzhalter sind 0‑basiert (`{0}`, `{1}`, ...). Bei Plural ist `{0}` typischerweise die Anzahl.
-- Literal‑Klammern in Texten werden doppelt geschrieben (`{{` bzw. `}}`).
-
-## XAML‑Nutzung (LocExtension)
-
-Namespace deklarieren (oben im XAML):
-`xmlns:loc="clr-namespace:TagGame.Client.Ui.Extensions"`
-
-Beispiele:
-- Statisch: `<Label Text="{loc Key=app.title}" />`
-- Plural Zahl: `<Label Text="{loc Key=lobby.players.count, Args='5'}" />`
-- Mehrere Argumente: `<Label Text="{loc Key=profile.greeting, Args='male|John'}" />`
-
-Args‑Parsing:
-- `Args` ist ein einzelner String; Trennzeichen ist immer `|`.
-- Tokens werden zu `int/long/decimal/double/bool` geparst, sonst `string`.
-
-## Laufzeit‑Sprachwechsel
-
-- Präferenzen: `IAppPreferences` hält `Language` und publiziert `PreferencesChanged`.
-- Initialisierung: `LocalizationInitializer.InitializeAsync()` beim App‑Start aufrufen; setzt die Kultur und reagiert auf künftige Änderungen.
-- Manuell (z. B. Settings‑Seite): `await IAppPreferences.ChangeLanguageAsync(Language.German)` reicht — der Initializer synchronisiert die Kultur und UI aktualisiert sich über `CultureChanged`.
-
-## Tests – Leitlinien
-
-- Localizer:
-  - Fallback: unbekannter Key → `"[key]"`
-  - `GetFormat` mit Plural/Choose liefert sprachspezifische Varianten
-  - `SetCultureAsync` feuert `CultureChanged`
-- Markup‑Extension:
-  - Args‑Parsing ("3" → Zahl; "male|John" → zwei Tokens)
-  - Für UI‑Tests reicht ein kleiner Smoke‑Test in zwei Sprachen (en/de)
-
+## Offene Aufgaben
+- Weitere Sprachen hinzufügen (mindestens Englisch/Deutsch finalisieren, Pseudo-Loc optional).
+- Lint auf fehlende/ungenutzte Keys in CI (z. B. via `ResXManager` oder eigener Analyzer).
+- Einheitliche Fehlermappings (Server `code` → Ressourcen-Key) zentralisieren, sobald mehr ProblemDetails aus der API genutzt werden.

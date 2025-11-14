@@ -1,59 +1,55 @@
-# UI‑Ressourcen: Styles, Farben und Icons
-
-Kurzleitfaden für die Pflege und Nutzung von UI‑Ressourcen im MAUI‑Client.
+# UI-Ressourcen: Farben, Styles & Icons
 
 ## Struktur
-- Styles/Colors: `TagGame.Client/Resources/Styles`
-  - App‑Merge: `TagGame.Client/App.xaml:7`
-  - Aktiv genutzt: `CustomColors.xaml`, `CustomStyles.xaml`
-  - Template‑Baseline (nicht mehr aktiv gemerged): `Colors.xaml`, `Styles.xaml`
-- Icons (UI): `TagGame.Client/Resources/Images/*.svg`
-- App‑Icon: `TagGame.Client/Resources/AppIcon/appicon.svg` (+ Android rund: `appicon_round.svg`)
-- Splash: `TagGame.Client/Resources/Splash/splash_round.svg`
-- Fonts: `TagGame.Client/Resources/Fonts` (via `Manrope*`‑Aliasse registriert)
+```
+TagGame.Client/
+├── App.xaml                      # merged dictionaries
+└── Resources/
+    ├── Styles/
+    │   ├── Colors.xaml           # Farbpalette + Brushes
+    │   ├── Styles.xaml           # Baseline Styles für MAUI-Controls
+    │   └── CustomStyles.xaml     # Projekt-spezifische Komponenten (Cards, Toasts, Buttons)
+    ├── Images/*.svg              # UI-Icons
+    ├── Fonts/                    # Manrope-Varianten
+    └── Localization/             # App.resx etc. (siehe docs/14)
+```
 
-## Styles & Farben
-- Merged in `App.xaml` als Resource Dictionaries:
-  - `TagGame.Client/App.xaml:7`: `Resources/Styles/CustomColors.xaml`
-  - `TagGame.Client/App.xaml:8`: `Resources/Styles/CustomStyles.xaml`
-- Theme‑Binding: Light/Dark wird per `AppThemeBinding` gewählt. Beispiel für Hintergründe:
-  ```xaml
-  <ContentPage BackgroundColor="{AppThemeBinding Light={StaticResource ColorBackgroundLight}, Dark={StaticResource ColorBackgroundDark}}" />
-  ```
-- Häufige Styles (Auszug, siehe Datei für Details):
-  - Labels: `BaseLabel`, `TitleLabel`, `SubtitleLabel`
-  - Buttons: `PrimaryButton`, `SecondaryButton`, `DangerButton`, `FabButton`
-  - Container: `CardBorder`, `ToastBorder`, `PopupCard`, `OverlayPanel`
-  - Eingaben: implizite Styles für `Entry`, `Editor`, `Slider`, `Switch`, `ProgressBar`
-- Neue Farben anlegen:
-  1) In `CustomColors.xaml` je eine Light/Dark‑`Color` definieren (ggf. zusätzlich passende `SolidColorBrush` Schlüssel).
-  2) In `CustomStyles.xaml` per `StaticResource` und `AppThemeBinding` verwenden.
-- Fonts: In `Builder.Ressources.cs` als Aliasse registriert (z. B. `ManropeRegular`, `ManropeSemiBold`). Beispiel:
-  ```xaml
-  <Label Style="{StaticResource TitleLabel}" Text="Überschrift" />
-  <Button Style="{StaticResource PrimaryButton}" Text="Aktion" />
-  ```
+`App.xaml` merged aktuell `Colors.xaml`, `Styles.xaml` und `CustomStyles.xaml`. Wenn neue Dictionaries hinzukommen (z. B. Plattform-Overrides), dort ergänzen.
 
-## Icons (UI, App‑Icon, Splash)
-- UI‑Icons: SVGs unter `Resources/Images`. Nutzung in XAML:
-  ```xaml
-  <Image Source="send.svg" HeightRequest="20" />
-  ```
-  Hinweise:
-  - Benennung: kleinbuchstaben_snake_case (`send.svg`, `qr_code.svg`).
-  - SVG möglichst einfach (einfarbig/monochrom), gute Kontraste auf Light/Dark.
-- App‑Icon: In der CSPROJ referenziert
-  - `TagGame.Client/TagGame.Client.csproj:38` — Basis‑Icon (`MauiIcon appicon.svg`)
-  - `TagGame.Client/TagGame.Client.csproj:40` — Android rund (`appicon_round.svg`)
-- Splash‑Screen: `TagGame.Client/TagGame.Client.csproj:45` (`MauiSplashScreen` mit `BaseSize` und Hintergrund‑`Color`).
+## Farben & Brushes (`Resources/Styles/Colors.xaml`)
+- Enthält sämtliche Hex-Werte (Primary, Background, Text, Status, Role Accents) plus passende `SolidColorBrush`-Einträge.
+- Light/Dark erfolgt über `AppThemeBinding` direkt in den Brush-Definitionen.
+- Neue Farben bitte hier hinzufügen (inkl. Brush) und über `StaticResource` verwenden – keine Inline-Hex-Werte in Views.
 
-## Do’s & Don’ts
-- Do: Neue/angepasste Farbschlüssel in `CustomColors.xaml` pflegen – nicht mehr die Template‑Dateien ändern.
-- Do: Theme‑Handling konsequent per `AppThemeBinding` umsetzen.
-- Do: Konsistente Namen (snake_case) für Icons; SVG bevorzugen.
-- Don’t: Farbcodes inline in Views streuen; stattdessen Ressourcen nutzen.
+## Baseline Styles (`Resources/Styles/Styles.xaml`)
+- Deckt Standard-MAUI-Controls ab (Page, Button, Entry, Label, Border, ActivityIndicator, etc.).
+- Anpassungen hier wirken global. Für Feature-spezifische Varianten lieber `CustomStyles.xaml` nutzen, damit Template-Updates einfacher bleiben.
+
+## Custom Styles (`Resources/Styles/CustomStyles.xaml`)
+- Enthält Komponenten wie `Card`, `ElevatedCard`, `FabButton`, `Toast*`, `PopupCard`, Chat-Bubbles und Label-Varianten.
+- Nutzt die Brushes aus `Colors.xaml`. Wenn neue UI-Bausteine nötig sind (z. B. Badge, Pill), bitte in dieser Datei ergänzen.
+- Beispielverwendung:
+```xaml
+<Border Style="{StaticResource Card}">
+  <StackLayout>
+    <Label Style="{StaticResource PlayerNameLabel}" Text="Alex" />
+    <Label Style="{StaticResource PlayerRoleLabel}" Text="Hider" />
+  </StackLayout>
+</Border>
+```
+
+## Icons & Assets
+- UI-Icons liegen unter `Resources/Images` (snake_case, SVG). Einbindung via `<Image Source="qr_code.svg" />`.
+- App-Icon & Splash sind im `.csproj` referenziert (`MauiIcon`, `MauiSplashScreen`). Bei Änderungen SVG ersetzen und ggf. Größen anpassen.
+- Fonts werden in `MauiProgram.cs` registriert (Manrope Regular/SemiBold/etc.). Styles greifen über Aliasse wie `ManropeRegular`.
+
+## Do's & Don'ts
+- ✅ Farben immer aus `Colors.xaml`/Brushes beziehen.
+- ✅ Neues Styling → `CustomStyles.xaml` oder ein eigenes Dictionary anlegen, nicht in Views duplizieren.
+- ✅ Bei Dark/Light-abhängigen Werten konsequent `AppThemeBinding` verwenden.
+- ❌ Keine Hex-Werte oder Fonts direkt in XAML-Views definieren.
+- ❌ Template-Dateien löschen – `Styles.xaml` liefert weiterhin sinnvolle Defaults, auch wenn CustomStyles existieren.
 
 ## Tests/Checks
-- Schneller visueller Check: Light/Dark auf Gerät/Emulator umschalten, Buttons/Labels/Cards gegen Hintergründe prüfen.
-- Android/iOS‑Build: `dotnet build TagGame.Client/TagGame.Client.csproj -f net9.0-android` (bzw. `net9.0-ios`).
-
+- Schneller UI-Check: Light/Dark im Emulator wechseln und Toasts/Karten/Buttons prüfen.
+- Build (Android/iOS) sicherstellen, nachdem neue Assets eingefügt wurden (`dotnet build TagGame.Client/TagGame.Client.csproj -f net9.0-android`).
