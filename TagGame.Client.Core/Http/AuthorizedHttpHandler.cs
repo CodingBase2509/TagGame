@@ -34,12 +34,12 @@ public sealed class AuthorizedHttpHandler(
             if (string.IsNullOrEmpty(token))
             {
                 var deviceId = preferences.Snapshot.DeviceId;
-                if (deviceId == Guid.Empty)
+                if (deviceId == string.Empty)
                 {
-                    deviceId = Guid.NewGuid();
+                    deviceId = $"{Guid.NewGuid()}_{preferences.DeviceName}";
                     await preferences.SetDeviceId(deviceId, cancellationToken);
                 }
-                var loggedIn = await authService.LoginAsync(deviceId.ToString("N"), cancellationToken);
+                var loggedIn = await authService.LoginAsync(deviceId, cancellationToken);
                 if (loggedIn)
                     token = await authService.GetValidAccessTokenAsync(cancellationToken);
             }

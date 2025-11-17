@@ -9,6 +9,12 @@ public class IntegrationTestBase : IAsyncLifetime
 
     protected void UseDbTestContainer()
     {
+        if (!DockerRequirement.IsAvailable)
+        {
+            _dbContainer = null;
+            return;
+        }
+
         var dbGuid = Guid.NewGuid();
         _dbContainer = new PostgreSqlBuilder()
             .WithName("TestDb" + dbGuid)

@@ -16,7 +16,7 @@ public interface IAuthService
 
     Task<bool> LoginAsync(string deviceId, CancellationToken ct = default);
 
-    Task<bool> InitialAsync(string deviceId, CancellationToken ct = default);
+    Task<bool> InitialAsync(string deviceId, string displayName, string avatarColor, CancellationToken ct = default);
 
     Task UpgradeToFullAccountAsync(string email, CancellationToken ct = default);
 }

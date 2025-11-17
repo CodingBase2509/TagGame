@@ -10,6 +10,8 @@ public sealed class AuthCrudTests(ITestOutputHelper testOutputHelper) : Integrat
 
     public override async Task InitializeAsync()
     {
+        if (!DockerRequirement.IsAvailable)
+            return;
         UseDbTestContainer();
         await base.InitializeAsync();
         var cs = await CreateDatabaseAsync("authcrud");
@@ -22,7 +24,7 @@ public sealed class AuthCrudTests(ITestOutputHelper testOutputHelper) : Integrat
         await ctx.Database.MigrateAsync();
     }
 
-    [Fact]
+    [DockerFact]
     public async Task Migrations_Apply_And_BasicCrud_Works()
     {
         await using var ctx = new DesignTimeAuthFactory().CreateDbContext([]);
@@ -107,7 +109,7 @@ public sealed class AuthCrudTests(ITestOutputHelper testOutputHelper) : Integrat
             .Which.RevokedAt.Should().BeNull();
     }
 
-    [Fact]
+    [DockerFact]
     public async Task Deleting_User_Cascades_To_RefreshTokens()
     {
         await using var ctx = new DesignTimeAuthFactory().CreateDbContext([]);

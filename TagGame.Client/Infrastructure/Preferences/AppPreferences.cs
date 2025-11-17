@@ -11,9 +11,11 @@ public class AppPreferences(IPreferences preferences) : IAppPreferences, IDispos
         preferences.Get(PreferenceKeys.Theme, ThemeMode.System),
         preferences.Get(PreferenceKeys.Language, Language.System),
         preferences.Get(PreferenceKeys.NotificationsEnabled, false),
-        preferences.Get(PreferenceKeys.DeviceId, Guid.Empty),
+        preferences.Get(PreferenceKeys.DeviceId, string.Empty),
         preferences.Get(PreferenceKeys.UserId, Guid.Empty)
     );
+
+    public string DeviceName => DeviceInfo.Name;
 
     public event EventHandler<AppPreferencesSnapshot>? PreferencesChanged;
 
@@ -56,7 +58,7 @@ public class AppPreferences(IPreferences preferences) : IAppPreferences, IDispos
         PreferencesChanged?.Invoke(this, Snapshot);
     }
 
-    public async Task SetDeviceId(Guid id, CancellationToken ct = default)
+    public async Task SetDeviceId(string id, CancellationToken ct = default)
     {
         if (Snapshot.DeviceId == id)
             return;

@@ -152,7 +152,7 @@ public class AuthServiceTests
     [Fact]
     public async Task InitialAsync_stores_tokens_and_returns_true()
     {
-        var (sut, api, store, _, _) = Create();
+        var (sut, api, store, prefs, _) = Create();
         var resp = new InitialResponseDto
         {
             UserId = Guid.NewGuid(),
@@ -165,12 +165,15 @@ public class AuthServiceTests
             }
         };
         api.Setup(a => a.PostAsync<InitialRequestDto, InitialResponseDto>("/v1/auth/initial",
-            It.Is<InitialRequestDto>(r => r.DeviceId == "dev"), It.IsAny<CancellationToken>())).ReturnsAsync(resp);
+            It.Is<InitialRequestDto>(r => r.DeviceId == "dev" && r.DisplayName == "Alex" && r.AvatarColor == "#FFAA00"),
+            It.IsAny<CancellationToken>())).ReturnsAsync(resp);
         store.Setup(s => s.SetAsync(resp.Tokens, It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+        prefs.Setup(p => p.SetUserId(resp.UserId, It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
 
-        var ok = await sut.InitialAsync("dev");
+        var ok = await sut.InitialAsync("dev", "Alex", "#FFAA00");
         ok.Should().BeTrue();
         api.VerifyAll();
         store.VerifyAll();
+        prefs.VerifyAll();
     }
 }

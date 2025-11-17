@@ -13,6 +13,11 @@ public interface IAppPreferences
     AppPreferencesSnapshot Snapshot { get; }
 
     /// <summary>
+    /// The device name as reported by the operating system.
+    /// </summary>
+    string DeviceName { get; }
+
+    /// <summary>
     /// Changes the app theme mode and persists the value.
     /// No-op when the value is unchanged.
     /// </summary>
@@ -30,7 +35,7 @@ public interface IAppPreferences
     /// </summary>
     Task SetNotificationsEnabledAsync(bool enabled, CancellationToken ct = default);
 
-    Task SetDeviceId(Guid id, CancellationToken ct = default);
+    Task SetDeviceId(string id, CancellationToken ct = default);
 
     Task SetUserId(Guid id, CancellationToken ct = default);
 

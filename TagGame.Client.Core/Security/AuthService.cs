@@ -119,19 +119,20 @@ public class AuthService(
         }
     }
 
-    public async Task<bool> InitialAsync(string deviceId, CancellationToken ct = default)
+    public async Task<bool> InitialAsync(string deviceId, string displayName, string avatarColor, CancellationToken ct = default)
     {
         if (string.IsNullOrWhiteSpace(deviceId))
             throw new ArgumentException("DeviceId required", nameof(deviceId));
 
         try
         {
-            var data = new InitialRequestDto { DeviceId = deviceId };
+            var data = new InitialRequestDto { DeviceId = deviceId, DisplayName = displayName, AvatarColor = avatarColor };
             var resp = await api.PostAsync<InitialRequestDto, InitialResponseDto>("/v1/auth/initial", data, ct);
             if (resp is null)
                 return false;
 
             await SetTokensAsync(resp.Tokens, ct);
+            await preferences.SetUserId(resp.UserId, ct);
             return true;
         }
         catch (Exception ex)

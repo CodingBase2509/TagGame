@@ -10,5 +10,5 @@ public record class AppPreferencesSnapshot(
     ThemeMode ThemeMode,
     Language Language,
     bool NotificationsEnabled,
-    Guid DeviceId,
+    string DeviceId,
     Guid UserId);
