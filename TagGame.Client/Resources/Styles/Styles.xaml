@@ -112,8 +112,6 @@
         <Setter Property="HorizontalOptions" Value="Center"/>
     </Style>
 
-
-
     <!-- Entry / Editor             -->
     <Style TargetType="Entry">
         <Setter Property="FontFamily" Value="ManropeRegular"/>

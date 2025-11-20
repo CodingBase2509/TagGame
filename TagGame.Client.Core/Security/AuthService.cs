@@ -94,6 +94,7 @@ public class AuthService(
         {
             logger.LogInformation(ex, "Logout request failed; tokens cleared locally");
             await tokenStorage.ClearAsync(ct);
+            throw;
         }
     }
 
@@ -115,7 +116,7 @@ public class AuthService(
         catch (Exception ex)
         {
             logger.LogError(ex, "Failed to login.");
-            return false;
+            throw;
         }
     }
 
@@ -138,7 +139,7 @@ public class AuthService(
         catch (Exception ex)
         {
             logger.LogError(ex, "Failed to initial-register user.");
-            return false;
+            throw;
         }
     }
 

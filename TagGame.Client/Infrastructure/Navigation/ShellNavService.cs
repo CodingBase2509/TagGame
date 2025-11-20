@@ -1,8 +1,6 @@
-using TagGame.Client.Core.Navigation;
-
 namespace TagGame.Client.Infrastructure.Navigation;
 
-public class ShellNavService : INavigationService
+public class ShellNavService(IUiDispatcher ui) : INavigationService
 {
     private readonly Shell _shell = Shell.Current;
 
@@ -10,27 +8,35 @@ public class ShellNavService : INavigationService
     {
         EnsureShell(ct);
         var qp = ToQueryParameters(parameters);
-        await UiUtils.OnMainThreadAsync(() => _shell.GoToAsync(route, qp));
+        await ui.OnMainThreadAsync(() => _shell.GoToAsync(route, qp));
     }
 
     public Task GoBackAsync(CancellationToken ct = default)
     {
         EnsureShell(ct);
-        return UiUtils.OnMainThreadAsync(() => _shell.GoToAsync(".."));
+        return ui.OnMainThreadAsync(() => _shell.GoToAsync(".."));
     }
 
     public async Task OpenModalAsync(string route, IReadOnlyDictionary<string, object?>? parameters = null, CancellationToken ct = default)
     {
         EnsureShell(ct);
-        var qp = ToQueryParameters(parameters);
-        qp["useModalNavigation"] = true;
-        await UiUtils.OnMainThreadAsync(() => _shell.GoToAsync(route, qp));
+        if (_shell.CurrentPage is not IPageWithModal page)
+            return;
+
+        await ui.OnMainThreadAsync(async () =>
+        {
+            var modal = (IModal)Routing.GetOrCreateContent(route, SpUtils.Services);
+            await page.OpenModalViewAsync(modal);
+        });
     }
 
-    public Task CloseModalAsync(CancellationToken ct = default)
+    public async Task CloseModalAsync(CancellationToken ct = default)
     {
         EnsureShell(ct);
-        return UiUtils.OnMainThreadAsync(() => _shell.GoToAsync(".."));
+        if (_shell.CurrentPage is not IPageWithModal page)
+            return;
+
+        await ui.OnMainThreadAsync(page.CloseModalViewAsync);
     }
 
     private static ShellNavigationQueryParameters ToQueryParameters(IReadOnlyDictionary<string, object?>? map)

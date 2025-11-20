@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TagGame.Client.Ui.Views.Lobby;
 
-public partial class QrCodeModal : PageBase
+public partial class QrCodeModal : ModalBase
 {
     public QrCodeModal()
     {

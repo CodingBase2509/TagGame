@@ -1,4 +1,4 @@
-[assembly: XmlnsDefinition("http://schemas.microsoft.com/dotnet/maui/global", "TagGame.Client.Ui.Views")]
+[assembly: XmlnsDefinition("http://schemas.microsoft.com/dotnet/maui/global", "TagGame.Client.Ui.Views.Base")]
 [assembly: XmlnsDefinition("http://schemas.microsoft.com/dotnet/maui/global", "TagGame.Client.Ui.Views.Start")]
 [assembly: XmlnsDefinition("http://schemas.microsoft.com/dotnet/maui/global", "TagGame.Client.Ui.Views.Lobby")]
 [assembly: XmlnsDefinition("http://schemas.microsoft.com/dotnet/maui/global", "TagGame.Client.Ui.Views.Game")]

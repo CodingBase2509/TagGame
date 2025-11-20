@@ -1,6 +1,7 @@
 using Microsoft.Maui.Controls.Shapes;
 using TagGame.Client.Core.Localization;
 using TagGame.Client.Core.Notifications;
+using TagGame.Client.Core.Services;
 
 namespace TagGame.Client.Ui.Components.Toasts;
 
@@ -16,8 +17,8 @@ public partial class ToastHost : Grid
         InitializeComponent();
     }
 
-    public Task ShowAsync(ToastRequest req) =>
-        UiUtils.OnMainThreadAsync(() => ShowInternalAsync(req));
+    public Task ShowAsync(ToastRequest req, IUiDispatcher ui) =>
+        ui.OnMainThreadAsync(() => ShowInternalAsync(req));
 
     private Task ShowInternalAsync(ToastRequest req)
     {

@@ -8,97 +8,117 @@ public sealed class LocExtension : IMarkupExtension<BindingBase>
 {
     public string Key { get; set; } = string.Empty;
 
-    // Optional: static argument
     public string? Args { get; set; }
 
     public BindingBase ProvideValue(IServiceProvider serviceProvider)
     {
-        var pvt = serviceProvider.GetService(typeof(IProvideValueTarget)) as IProvideValueTarget;
-        var targetObject = pvt?.TargetObject as BindableObject;
-        var src = new LocalizedValue(Key, Args, targetObject);
-        return new Binding(nameof(LocalizedValue.Value), source: src, mode: BindingMode.OneWay);
+        var localizer = ResolveLocalizer(serviceProvider);
+        var valueSource = new LocalizedValue(Key, ParseArgs(Args), localizer);
+        return new Binding(nameof(LocalizedValue.Value), source: valueSource, mode: BindingMode.OneWay);
     }
 
     object IMarkupExtension.ProvideValue(IServiceProvider serviceProvider) => ProvideValue(serviceProvider);
+
+    private static ILocalizer? ResolveLocalizer(IServiceProvider serviceProvider)
+    {
+        if (serviceProvider.GetService(typeof(ILocalizer)) is ILocalizer direct)
+            return direct;
+
+        if (serviceProvider.GetService(typeof(IProvideValueTarget)) is IProvideValueTarget pvt &&
+            pvt.TargetObject is Element element)
+        {
+            return element.Handler?.MauiContext?.Services.GetService<ILocalizer>();
+        }
+
+        return Application.Current?.Handler?.MauiContext?.Services.GetService<ILocalizer>();
+    }
+
+    private static object[] ParseArgs(string? raw)
+    {
+        if (string.IsNullOrWhiteSpace(raw))
+            return [];
+
+        var tokens = raw.Split('|', StringSplitOptions.TrimEntries);
+        var values = new List<object>(tokens.Length);
+        foreach (var token in tokens)
+        {
+            if (int.TryParse(token, NumberStyles.Integer, CultureInfo.InvariantCulture, out var i))
+            {
+                values.Add(i);
+                continue;
+            }
+
+            if (long.TryParse(token, NumberStyles.Integer, CultureInfo.InvariantCulture, out var l))
+            {
+                values.Add(l);
+                continue;
+            }
+
+            if (decimal.TryParse(token, NumberStyles.Number, CultureInfo.InvariantCulture, out var m))
+            {
+                values.Add(m);
+                continue;
+            }
+
+            if (double.TryParse(token,
+                    NumberStyles.Float | NumberStyles.AllowThousands,
+                    CultureInfo.InvariantCulture,
+                    out var d))
+            {
+                values.Add(d);
+                continue;
+            }
+
+            if (bool.TryParse(token, out var b))
+            {
+                values.Add(b);
+                continue;
+            }
+
+            values.Add(token);
+        }
+
+        return [.. values];
+    }
 }
 
-internal sealed class LocalizedValue(string key, string? args, BindableObject? target) : BindableObject, IDisposable
+internal sealed class LocalizedValue : BindableObject, IDisposable
 {
-    private ILocalizer? _loc;
-    private bool _subscribed;
+    private readonly object[] _args;
+    private readonly ILocalizer? _localizer;
+
+    public LocalizedValue(string key, object[] args, ILocalizer? localizer)
+    {
+        Value = key;
+        _args = args;
+        _localizer = localizer;
+
+        if (_localizer is not null)
+            _localizer.CultureChanged += OnCultureChanged;
+    }
 
     public string Value
     {
         get
         {
-            var loc = ResolveLocalizer();
-            if (loc is null)
-                return $"[{key}]";
+            if (string.IsNullOrWhiteSpace(field))
+                return string.Empty;
 
-            var args1 = ParseArgs(args);
-            return args1.Length > 0
-                ? loc.GetFormat(key, args1)
-                : loc.GetString(key);
+            if (_localizer is null)
+                return $"[{field}]";
+
+            return _args.Length > 0
+                ? _localizer.GetFormat(field, _args)
+                : _localizer.GetString(field);
         }
     }
 
     public void Dispose()
     {
-        if (_loc is null)
+        if (_localizer is null)
             return;
 
-        _loc.CultureChanged -= OnCultureChanged;
-    }
-
-    private ILocalizer? ResolveLocalizer()
-    {
-        if (_loc is not null)
-            return _loc;
-
-        var element = target as Element ?? Application.Current;
-        var sp = element?.Handler?.MauiContext?.Services;
-        if (sp is null)
-            return null;
-
-        _loc = sp.GetService<ILocalizer>();
-        if (_loc is null || _subscribed)
-            return _loc;
-
-        _loc.CultureChanged += OnCultureChanged;
-        _subscribed = true;
-        return _loc;
-    }
-
-    private static object[] ParseArgs(string? s)
-    {
-        if (string.IsNullOrWhiteSpace(s))
-            return [];
-
-        var tokens = s.Split('|', StringSplitOptions.None | StringSplitOptions.TrimEntries);
-        var list = new List<object>(tokens.Length);
-        list.AddRange(tokens.Select(ConvertToken));
-        return [.. list];
-    }
-
-    private static object ConvertToken(string token)
-    {
-        // Reihenfolge: int, long, decimal, double, bool → sonst string
-        if (int.TryParse(token, NumberStyles.Integer, CultureInfo.InvariantCulture, out var i))
-            return i;
-
-        if (long.TryParse(token, NumberStyles.Integer, CultureInfo.InvariantCulture, out var l))
-            return l;
-
-        if (decimal.TryParse(token, NumberStyles.Number, CultureInfo.InvariantCulture, out var m))
-            return m;
-
-        if (double.TryParse(token, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.InvariantCulture,
-                out var d))
-            return d;
-
-        if (bool.TryParse(token, out var b))
-            return b;
-        return token;
+        _localizer.CultureChanged -= OnCultureChanged;
     }
 
     private void OnCultureChanged(object? sender, EventArgs e) => OnPropertyChanged(nameof(Value));

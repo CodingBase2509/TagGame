@@ -1,12 +1,9 @@
 using TagGame.Client.Core.Localization;
-using TagGame.Client.Core.Navigation;
 using TagGame.Client.Core.Notifications;
-using TagGame.Client.Core.Services;
 using TagGame.Client.Core.Storage;
 using TagGame.Client.Infrastructure.Connectivity;
 using TagGame.Client.Infrastructure.Navigation;
 using TagGame.Client.Infrastructure.Localization;
-using TagGame.Client.Infrastructure.Notifications;
 using TagGame.Client.Infrastructure.Preferences;
 using TagGame.Client.Infrastructure.Storage;
 
@@ -36,8 +33,8 @@ public static class DependencyInjection
 
     private static IServiceCollection AddMauiDefaults(this IServiceCollection services)
     {
-        services.AddSingleton(Microsoft.Maui.Storage.Preferences.Default);
-        services.AddSingleton(SecureStorage.Default);
+        services.AddSingleton<ISecureStorage>(_ => SecureStorage.Default);
+        services.AddSingleton<IPreferences>(_ => Microsoft.Maui.Storage.Preferences.Default);
 
         return services;
     }

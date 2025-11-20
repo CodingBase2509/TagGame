@@ -16,6 +16,7 @@
         <PackageReference Include="Microsoft.Extensions.Http"/>
         <PackageReference Include="Microsoft.Extensions.Http.Resilience"/>
         <PackageReference Include="Microsoft.AspNetCore.SignalR.Client"/>
+        <PackageReference Include="Microsoft.Maui.Graphics" />
         <PackageReference Include="SmartFormat"/>
         <PackageReference Include="SmartFormat.Extensions.Time"/>
     </ItemGroup>
