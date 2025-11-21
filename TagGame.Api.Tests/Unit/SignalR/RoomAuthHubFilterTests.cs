@@ -29,7 +29,7 @@ public sealed class RoomAuthHubFilterTests
 
         // assert
         await act.Should().ThrowAsync<HubException>()
-            .WithMessage("auth.invalid_token");
+            .WithMessage("Errors.Auth.InvalidToken");
     }
 
     [Fact]
@@ -46,7 +46,7 @@ public sealed class RoomAuthHubFilterTests
 
         // assert
         await act.Should().ThrowAsync<HubException>()
-            .WithMessage("auth.room_id_missing");
+            .WithMessage("Errors.Auth.RoomIdMissing");
     }
 
     [Fact]
@@ -68,7 +68,7 @@ public sealed class RoomAuthHubFilterTests
 
         // assert
         await act.Should().ThrowAsync<HubException>()
-            .WithMessage("auth.not_member");
+            .WithMessage("Errors.Auth.NotMember");
     }
 
     [Fact]
@@ -90,7 +90,7 @@ public sealed class RoomAuthHubFilterTests
 
         // assert
         await act.Should().ThrowAsync<HubException>()
-            .WithMessage("auth.banned");
+            .WithMessage("Errors.Auth.Banned");
     }
 
     [Fact]
@@ -112,7 +112,7 @@ public sealed class RoomAuthHubFilterTests
 
         // assert
         await act.Should().ThrowAsync<HubException>()
-            .WithMessage("auth.missing_permission");
+            .WithMessage("Errors.Auth.MissingPermission");
     }
 
     [Fact]

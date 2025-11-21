@@ -6,7 +6,7 @@
 
     <ShellContent Route="start"
                   Title="Start"
-                  ContentTemplate="{DataTemplate StartPage}"
+                  ContentTemplate="{DataTemplate Start}"
     />
 
 </Shell>

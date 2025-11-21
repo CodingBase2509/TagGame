@@ -1,65 +1,41 @@
-# SignalR Design (Lobby & In-Game)
+# SignalR Design (Stand V2)
 
-Wir nutzen getrennte, stark typisierte Hubs: `LobbyHub : Hub<ILobbyClient>` und `GameHub : Hub<IGameClient>` (Separation of Concerns). Gruppen laufen weiterhin pro Room.
+Die Infrastruktur für Lobby- und Game-Hubs ist angelegt, die eigentliche Spiellogik folgt noch. Dieses Dokument beschreibt den aktuellen Code und listet klar, was noch fehlt.
 
-## Verbindung & Gruppen
-- URLs: `/hubs/lobby` (Lobby), `/hubs/game` (In‑Game)
-- Auth: Bearer JWT verpflichtend
-- Group pro RoomId: `room:{roomId}`
-- Reconnect: exponential backoff, clientseitig Statuscache, serverseitig Snapshot bei Rejoin
- - Autorisierung: Connection‑Level `[Authorize]` prüft Token; ressourcenbasierte Checks pro Methode via `[Authorize(Policy=...)]` und `IHubFilter` (siehe 15-Autorisierung-und-Permissions.md)
+## Hubs & Verträge
+- `LobbyHub : Hub<ILobbyClient>` (`TagGame.Api/Hubs/LobbyHub.cs`) und `GameHub : Hub<IGameClient>` (`TagGame.Api/Hubs/GameHub.cs`).
+- Die Client-Schnittstellen leben unter `TagGame.Shared/Contracts`. Sie enthalten momentan nur Marker-Methoden und werden erweitert, sobald echte Events vorliegen.
+- Endpunkte werden in `Program.cs` über `MapHub<LobbyHub>("/hubs/lobby")` etc. registriert.
 
-Hinweis Typisierung
-- Server → Client ist über `Hub<ILobbyClient>`/`Hub<IGameClient>` typisiert; Client → Server nutzt die Hub‑Methoden (Wrapper optional im Client).
+## Autorisierung & Membership
+- `[Authorize]` am Hub erzwingt gültige JWTs.
+- Ressourcenbasierte Policies (`RoomPermission:*`, `RoomMember`) hängen direkt an den Hub-Methoden.
+- `RoomAuthHubFilter` (`TagGame.Api/Filters/RoomAuthHubFilter.cs`) läuft vor jeder Invocation:
+  1. extrahiert `roomId` aus Args oder DTOs,
+  2. lädt die `RoomMembership` via `IGamesUoW`,
+  3. legt sie unter `Context.Items["Membership"]` ab,
+  4. kombiniert die `[Authorize]`-Attribute zu einer Policy und ruft `IAuthorizationService`.
+- Fehlende Mitgliedschaft → `HubException("auth.not_member")`, Bans → `HubException("auth.banned")`, fehlende Rechte → `HubException("auth.missing_permission")`.
 
-### Rundenchat (In-Game)
-- Subgruppen pro Runde und Rolle für Chat:
-  - Basis: `room:{roomId}:round:{roundId}`
-  - Rollen: `...:hider`, `...:seeker`
-- Senden (Client → Server): `SendChatMessage({ roomId, roundId, audience, content, clientTs, idempotencyKey })`
-- Empfangen (Server → Client): `ChatMessagePosted(ChatMessageDto)`
-- Snapshot: `GetRecentMessages(roomId, roundId, take)` (optional, serverseitig nach Sichtbarkeit gefiltert)
-- Regeln: Nur während aktiver Runde; Audience‑Routing serverseitig (kein Client‑Filter). Details: 17-GameChat.md
+## Aktuelle Methoden (Stub)
+| Hub | Server-Methode | Policy | Status |
+| --- | --- | --- | --- |
+| LobbyHub | `JoinRoom(Guid roomId)` | `RoomMember` | `NotImplementedException` – Logik für Gruppenbeitritt und Snapshot fehlt. |
+| LobbyHub | `LeaveRoom(Guid roomId)` | `RoomMember` | siehe oben. |
+| LobbyHub | `UpdatePlayer(Guid roomId, Guid playerId)` | `RoomPermission:ManageRoles` | Pending. |
+| LobbyHub | `UpdateSettings(Guid roomId)` | `RoomPermission:EditSettings` | Pending. |
+| LobbyHub | `StartGame(Guid roomId)` | `RoomPermission:StartGame` | Pending. |
+| GameHub | `UpdateLocation(Guid roomId)` | `RoomMember` | Pending; hier werden später Rate-Limits & Geofence greifen. |
+| GameHub | `TagPlayer(Guid roomId)` | `RoomPermission:Tag` | Pending (idempotente Tag-Kommandos). |
+| GameHub | `SendChatMessage(Guid roomId)` | `RoomMember` | Placeholder für den Rundenchat (siehe `docs/17-GameChat.md`). |
 
-## Client → Server (Beispiele)
-- `JoinRoom(roomId, displayName)`
-- `SetReady(roomId, isReady)`
-- `UpdateSettings(roomId, settings)` — Owner
-- `StartGame(roomId)` — Owner
-- `UpdateLocation(roomId, { lat, lng, acc, ts })` (rate-limited)
-- `TagPlayer(roomId, taggedPlayerId, clientTs, idempotencyKey)`
-- `LeaveRoom(roomId)`
- - `SendChatMessage(...)` (siehe oben)
+## Gruppen- und Routing-Konzept (Backlog)
+- Geplante Gruppen-IDs: `room:{roomId}` für Lobby-Updates, `room:{roomId}:round:{roundId}` plus Rollen-Suffix für In-Game-Routing.
+- Join/Leave-Logik sowie Snapshot-Broadcasts müssen in `LobbyHub`/`GameHub` implementiert werden, sobald Room-Services in `TagGame.Api.Core` existieren.
+- Ratenbegrenzungen (`UpdateLocation`, Tagging) sollen serverseitig via dedizierte Services erfolgen und werfen `RateLimitExceededException` → `429`/`HubException("rate_limited")`.
 
-## Server → Client (Beispiele)
-- `LobbyState(state)` — Vollständiger Snapshot (Owner, Players, Ready-Status)
-- `PlayerJoined(player)` / `PlayerLeft(playerId)`
-- `SettingsUpdated(settings)`
-- `GameStarted(match)` + `RoleAssigned(playerId, role)`
-- `TimerTick(phase, remainingSec)`
-- `LocationUpdate(playerId, location)` — nur wenn erlaubt/aggregiert
-- `PlayerTagged(taggerId, taggedId, roundState)`
-- `RoundEnded(summary)` / `MatchEnded(result)`
- - `ChatMessagePosted(message)` (siehe oben)
-
-## Nachrichtenformate (Schema-Auszug)
-```json
-// LobbyState
-{
-  "roomId": "...",
-  "ownerId": "...",
-  "players": [ {"id":"p1","name":"Alex","ready":true} ],
-  "settings": {"hideTimeSec":60,"huntTimeSec":300,"tagRadiusM":2.5},
-  "state": "Lobby|Countdown|Hide|Hunt|End"
-}
-```
-
-## Server-Authorität & Integrität
-- Alle kritischen Regeln serverseitig prüfen (Geofence, TagRadius, Spielphase)
-- Idempotency-Key für Aktionen, um Doppelverarbeitung zu vermeiden
-- Rate-Limits: z. B. `UpdateLocation` ≤ 2/s/Client; Backpressure bei Überlast
- - Gruppenbeitritt nur für gültige Room‑Members; bei Ban/RoleChange ggf. proaktives Entfernen/Disconnect
-
-## Skalierung
-- Redis Backplane für Gruppen-Broadcasts über mehrere Knoten
-- Presence in Redis oder DB, Heartbeats zur Bereinigung verwaister Verbindungen
+## ToDos
+1. Feature-Services in `TagGame.Api.Core/Features/Rooms|Games` (JoinRoom, Ready/State, Countdown/Timer, Location/Tag-Verarbeitung).
+2. Gruppenverwaltung und Snapshot-Versand im `LobbyHub`/`GameHub` inklusive Error-/Reconnect-Pfade.
+3. Client-Kontrakte (`ILobbyClient`, `IGameClient`) mit echten Events befüllen und im MAUI-Client konsumieren.
+4. Tests: Hub-Filter (bereits vorhanden) + echte Integrationstests, sobald Logik steht.

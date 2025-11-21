@@ -10,16 +10,20 @@ public class ResxCatalog : ILocalizationCatalog
     private readonly ResourceManager[] _managers =
     [
         CreateManager("App"),
+        CreateManager("Errors"),
+        CreateManager("UserInit"),
+        CreateManager("Start")
     ];
 
     public bool TryGet(string key, CultureInfo info, out string? value)
     {
-        foreach (var rm in _managers)
-        {
-            value = rm.GetString(key, info);
-            if (!string.IsNullOrEmpty(value))
-                return true;
-        }
+        var managerName = key.Split('.')[0];
+        var manager = _managers.FirstOrDefault(rm => rm.BaseName == GetPath(managerName));
+        value = manager?.GetString(key, info);
+
+        if (!string.IsNullOrEmpty(value))
+            return true;
+
         value = null;
         return false;
     }

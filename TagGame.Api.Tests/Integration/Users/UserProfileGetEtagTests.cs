@@ -13,6 +13,8 @@ public sealed class UserProfileGetEtagTests : IntegrationTestBase, IDisposable
 
     public override async Task InitializeAsync()
     {
+        if (!DockerRequirement.IsAvailable)
+            return;
         UseDbTestContainer();
         await base.InitializeAsync();
         if (_dbContainer is not null)
@@ -45,7 +47,7 @@ public sealed class UserProfileGetEtagTests : IntegrationTestBase, IDisposable
         GC.SuppressFinalize(this);
     }
 
-    [Fact]
+    [DockerFact]
     public async Task Get_Own_Profile_Returns_200_With_Etag()
     {
         var (client, userId, _) = await CreateAuthedClientAsync();
@@ -64,7 +66,7 @@ public sealed class UserProfileGetEtagTests : IntegrationTestBase, IDisposable
         parsed.Should().Be(cc);
     }
 
-    [Fact]
+    [DockerFact]
     public async Task Get_With_IfNoneMatch_NotModified_304()
     {
         var (client, userId, _) = await CreateAuthedClientAsync();
@@ -86,7 +88,7 @@ public sealed class UserProfileGetEtagTests : IntegrationTestBase, IDisposable
         parsed.Should().Be(cc);
     }
 
-    [Fact]
+    [DockerFact]
     public async Task Get_With_Invalid_IfNoneMatch_Returns_400()
     {
         var (client, _, _) = await CreateAuthedClientAsync();

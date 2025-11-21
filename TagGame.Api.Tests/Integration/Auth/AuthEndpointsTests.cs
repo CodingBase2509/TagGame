@@ -11,6 +11,8 @@ public sealed class AuthEndpointsTests : IntegrationTestBase
 
     public override async Task InitializeAsync()
     {
+        if (!DockerRequirement.IsAvailable)
+            return;
         UseDbTestContainer();
         await base.InitializeAsync();
         if (_dbContainer is not null)
@@ -36,7 +38,7 @@ public sealed class AuthEndpointsTests : IntegrationTestBase
         await base.DisposeAsync();
     }
 
-    [Fact]
+    [DockerFact]
     public async Task Initial_NewDevice_Creates_And_Returns_Tokens()
     {
         // Arrange
@@ -54,7 +56,7 @@ public sealed class AuthEndpointsTests : IntegrationTestBase
         body.Tokens.RefreshToken.Should().NotBeNullOrWhiteSpace();
     }
 
-    [Fact]
+    [DockerFact]
     public async Task Initial_ExistingDevice_Returns_Conflict()
     {
         // Arrange
@@ -71,7 +73,7 @@ public sealed class AuthEndpointsTests : IntegrationTestBase
         second.StatusCode.Should().Be(HttpStatusCode.Conflict);
     }
 
-    [Fact]
+    [DockerFact]
     public async Task Login_UnknownDevice_Returns_NotFound()
     {
         // Arrange
@@ -84,7 +86,7 @@ public sealed class AuthEndpointsTests : IntegrationTestBase
         resp.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
-    [Fact]
+    [DockerFact]
     public async Task Login_KnownDevice_Returns_Tokens()
     {
         // Arrange
@@ -104,7 +106,7 @@ public sealed class AuthEndpointsTests : IntegrationTestBase
         body.Tokens.AccessToken.Should().NotBeNullOrWhiteSpace();
     }
 
-    [Fact]
+    [DockerFact]
     public async Task Refresh_Rotates_Tokens()
     {
         // Arrange
@@ -124,7 +126,7 @@ public sealed class AuthEndpointsTests : IntegrationTestBase
         pair!.Tokens.RefreshToken.Should().NotBe(initBody.Tokens.RefreshToken);
     }
 
-    [Fact]
+    [DockerFact]
     public async Task Refresh_Reuse_Returns_Unauthorized()
     {
         // Arrange
@@ -145,7 +147,7 @@ public sealed class AuthEndpointsTests : IntegrationTestBase
         refreshReuse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
-    [Fact]
+    [DockerFact]
     public async Task Logout_Is_Idempotent()
     {
         // Arrange

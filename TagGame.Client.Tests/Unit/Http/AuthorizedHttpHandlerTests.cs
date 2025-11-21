@@ -3,7 +3,8 @@ using System.Net.Http.Headers;
 using Microsoft.Extensions.Logging;
 using TagGame.Client.Core.Http;
 using TagGame.Client.Core.Options;
-using TagGame.Client.Core.Services;
+using TagGame.Client.Core.Storage;
+using TagGame.Shared.DTOs.Auth;
 
 namespace TagGame.Client.Tests.Unit.Http;
 
@@ -12,11 +13,18 @@ public class AuthorizedHttpHandlerTests
     [Fact]
     public async Task Attaches_bearer_when_token_available()
     {
-        var auth = new Mock<IAuthService>();
-        auth.Setup(a => a.GetValidAccessTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync("tok");
-        var prefs = new FakePrefs();
         using var inner = new StubHandler(req => new HttpResponseMessage(HttpStatusCode.OK));
-        using var sut = new AuthorizedHttpHandler(auth.Object, prefs, Mock.Of<ILogger<AuthorizedHttpHandler>>())
+        var storage = new Mock<ITokenStorage>();
+        storage.Setup(s => s.GetAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new TokenPairDto
+            {
+                AccessToken = "tok",
+                AccessExpiresAt = DateTimeOffset.UtcNow.AddMinutes(5),
+                RefreshToken = "refresh",
+                RefreshExpiresAt = DateTimeOffset.UtcNow.AddHours(1)
+            });
+
+        using var sut = new AuthorizedHttpHandler(storage.Object, Mock.Of<ILogger<AuthorizedHttpHandler>>())
         { InnerHandler = inner };
 
         using var invoker = new HttpMessageInvoker(sut);
@@ -27,63 +35,58 @@ public class AuthorizedHttpHandlerTests
     }
 
     [Fact]
-    public async Task Pre_refresh_then_attach_token_when_initially_missing()
+    public async Task Swallows_storage_errors_without_header()
     {
-        var auth = new Mock<IAuthService>();
-        var calls = 0;
-        auth.Setup(a => a.GetValidAccessTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(() =>
-        {
-            calls++;
-            return calls == 1 ? null : "tok2";
-        });
-        auth.Setup(a => a.RefreshAsync(It.IsAny<CancellationToken>())).ReturnsAsync(true);
-        var prefs = new FakePrefs();
+        var storage = new Mock<ITokenStorage>();
+        storage.SetupSequence(s => s.GetAsync(It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new InvalidOperationException("boom"))
+            .ReturnsAsync(new TokenPairDto
+            {
+                AccessToken = "tok2",
+                AccessExpiresAt = DateTimeOffset.UtcNow.AddMinutes(5),
+                RefreshToken = "refresh2",
+                RefreshExpiresAt = DateTimeOffset.UtcNow.AddHours(1)
+            });
 
         using var inner = new StubHandler(req => new HttpResponseMessage(HttpStatusCode.OK));
-        using var sut = new AuthorizedHttpHandler(auth.Object, prefs, Mock.Of<ILogger<AuthorizedHttpHandler>>())
+        using var sut = new AuthorizedHttpHandler(storage.Object, Mock.Of<ILogger<AuthorizedHttpHandler>>())
         { InnerHandler = inner };
         using var invoker = new HttpMessageInvoker(sut);
 
         var resp = await invoker.SendAsync(new HttpRequestMessage(HttpMethod.Get, "http://localhost/x"), default);
-        inner.LastRequest!.Headers.Authorization!.Parameter.Should().Be("tok2");
+        inner.LastRequest!.Headers.Authorization.Should().BeNull();
     }
 
     [Fact]
-    public async Task On_401_refresh_and_retry_idempotent()
+    public async Task No_token_no_header()
     {
-        var auth = new Mock<IAuthService>();
-        auth.SetupSequence(a => a.GetValidAccessTokenAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync("tok1").ReturnsAsync("tokNew");
-        auth.Setup(a => a.RefreshAsync(It.IsAny<CancellationToken>())).ReturnsAsync(true);
-        var prefs = new FakePrefs();
+        var storage = new Mock<ITokenStorage>();
+        storage.Setup(s => s.GetAsync(It.IsAny<CancellationToken>())).ReturnsAsync((TokenPairDto?)null);
 
-        var first = true;
-        using var inner = new StubHandler(req =>
-        {
-            if (first) { first = false; return new HttpResponseMessage(HttpStatusCode.Unauthorized); }
-            return new HttpResponseMessage(HttpStatusCode.OK);
-        });
-        using var sut = new AuthorizedHttpHandler(auth.Object, prefs, Mock.Of<ILogger<AuthorizedHttpHandler>>())
+        using var inner = new StubHandler(req => new HttpResponseMessage(HttpStatusCode.OK));
+        using var sut = new AuthorizedHttpHandler(storage.Object, Mock.Of<ILogger<AuthorizedHttpHandler>>())
         { InnerHandler = inner };
         using var invoker = new HttpMessageInvoker(sut);
 
         var resp = await invoker.SendAsync(new HttpRequestMessage(HttpMethod.Get, "http://localhost/protected"), default);
         resp.StatusCode.Should().Be(HttpStatusCode.OK);
+        inner.LastRequest!.Headers.Authorization.Should().BeNull();
     }
 
     [Fact]
-    public async Task Auth_paths_are_passed_through()
+    public async Task Does_not_throw_when_storage_throws()
     {
-        var auth = new Mock<IAuthService>(MockBehavior.Strict);
-        var prefs = new FakePrefs();
+        var storage = new Mock<ITokenStorage>();
+        storage.Setup(s => s.GetAsync(It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new InvalidOperationException("storage down"));
+
         using var inner = new StubHandler(_ => new HttpResponseMessage(HttpStatusCode.OK));
-        using var sut = new AuthorizedHttpHandler(auth.Object, prefs, Mock.Of<ILogger<AuthorizedHttpHandler>>())
+        using var sut = new AuthorizedHttpHandler(storage.Object, Mock.Of<ILogger<AuthorizedHttpHandler>>())
         { InnerHandler = inner };
         using var invoker = new HttpMessageInvoker(sut);
 
         var resp = await invoker.SendAsync(new HttpRequestMessage(HttpMethod.Post, "http://localhost/v1/auth/login"), default);
         resp.StatusCode.Should().Be(HttpStatusCode.OK);
-        auth.VerifyNoOtherCalls();
     }
 
     private sealed class StubHandler(Func<HttpRequestMessage, HttpResponseMessage> responder) : HttpMessageHandler
@@ -96,18 +99,4 @@ public class AuthorizedHttpHandlerTests
         }
     }
 
-    private sealed class FakePrefs : IAppPreferences
-    {
-        public AppPreferencesSnapshot Snapshot { get; private set; } = new(ThemeMode.System, Language.English, false, Guid.NewGuid(), Guid.Empty);
-        public event EventHandler<AppPreferencesSnapshot>? PreferencesChanged
-        {
-            add { }
-            remove { }
-        }
-        public Task ChangeLanguageAsync(Language newLanguage, CancellationToken ct = default) => Task.CompletedTask;
-        public Task ChangeThemeAsync(ThemeMode newTheme, CancellationToken ct = default) => Task.CompletedTask;
-        public Task SetDeviceId(Guid id, CancellationToken ct = default) { Snapshot = Snapshot with { DeviceId = id }; return Task.CompletedTask; }
-        public Task SetNotificationsEnabledAsync(bool enabled, CancellationToken ct = default) => Task.CompletedTask;
-        public Task SetUserId(Guid id, CancellationToken ct = default) { Snapshot = Snapshot with { UserId = id }; return Task.CompletedTask; }
-    }
 }

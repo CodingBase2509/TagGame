@@ -74,12 +74,7 @@ dotnet build TagGame.Client/TagGame.Client.csproj -f net9.0-android -c Debug
 - Emulator‑Hinweise:
   - Android: Host‑Loopback ist `http://10.0.2.2:<port>`
   - iOS Simulator: `http://127.0.0.1:<port>` (oder `http://localhost:<port>`)
-
-### Client‑Networking & JSON
-- Typed Client: `IApiClient` in Client.Core kapselt JSON‑GET/POST/PATCH/DELETE
-- Resilience: Retry + Total‑Timeout über `NetworkResilienceOptions` (#80)
-- Fehler: `application/problem+json` wird zu `ApiProblemException` gemappt (inkl. traceId, Validation‑Errors)
-- JSON Defaults: Gemeinsame Optionen (camelCase, Enums als Strings, Null‑Omit, TimeSpan‑Converter) auf Server und Client (#91/#93)
+- Alle Details zu HTTP/SignalR‑Resilienz, JSON‑Konventionen und Appsettings stehen gebündelt in `docs/18-Client-Networking-und-Konfiguration.md`.
 
 ## Tests
 ```bash

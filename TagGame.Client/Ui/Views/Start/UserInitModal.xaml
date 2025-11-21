@@ -1,6 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PageBase xmlns="http://schemas.microsoft.com/dotnet/maui/global"
+<ModalBase xmlns="http://schemas.microsoft.com/dotnet/maui/global"
           xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-          x:Class="TagGame.Client.Ui.Views.Start.UserInitModal">
+          xmlns:vm="clr-namespace:TagGame.Client.Core.Ui.ViewModels.Start;assembly=TagGame.Client.Core"
+          xmlns:collections="clr-namespace:TagGame.Client.Ui.Collections"
+          x:Class="TagGame.Client.Ui.Views.Start.UserInitModal"
+          x:DataType="vm:UserInitViewModel"
+          CanClose="False">
 
-</PageBase>
+    <ModalBase.Resources>
+        <collections:ColorCollection x:Key="AvatarColors">
+            <Color>#00E1C6</Color>
+            <Color>#0EA5E9</Color>
+            <Color>#1F6FEB</Color>
+            <Color>#7C3AED</Color>
+            <Color>#C026D3</Color>
+            <Color>#F43F5E</Color>
+            <Color>#F97316</Color>
+            <Color>#EAB308</Color>
+            <Color>#22C55E</Color>
+            <Color>#86EFAC</Color>
+        </collections:ColorCollection>
+    </ModalBase.Resources>
+
+    <ModalBase.CardContent>
+        <Grid RowDefinitions="Auto, Auto, Auto, Auto"
+              RowSpacing="20">
+
+            <Label Grid.Row="0"
+                   Text="{Loc UserInit.Title}"
+                   Style="{StaticResource Headline}"
+                   HorizontalOptions="Start" />
+
+            <!-- DisplayName -->
+            <VerticalStackLayout Grid.Row="1" Spacing="5">
+                <Label Text="{Loc UserInit.DisplayName}"/>
+                <Entry Text="{Binding DisplayName}"
+                       Placeholder="{Loc UserInit.DisplayName}"/>
+            </VerticalStackLayout>
+
+            <!-- Avatar Color -->
+            <VerticalStackLayout Grid.Row="2" Spacing="5">
+                <Label Text="{Loc UserInit.AvatarColor}"/>
+                <CollectionView x:Name="ColorList"
+                                ItemsSource="{StaticResource AvatarColors}"
+                                SelectionMode="Single"
+                                ItemSizingStrategy="MeasureAllItems"
+                                SelectionChangedCommand="{Binding SelectAvatarColorCommand}"
+                                SelectionChangedCommandParameter="{Binding Path=SelectedItem, Source={x:Reference ColorList}}">
+                    <CollectionView.ItemsLayout>
+                        <GridItemsLayout Orientation="Vertical" Span="5" />
+                    </CollectionView.ItemsLayout>
+
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="{Binding .}"
+                                    StrokeShape="RoundRectangle 50"
+                                    Stroke="{StaticResource BorderBrush}"
+                                    Margin="6"
+                                    WidthRequest="48"
+                                    HeightRequest="48"/>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+
+            <Button Grid.Row="4"
+                    Text="{Loc UserInit.CreateAccount}"
+                    IsEnabled="{Binding IsValid}"
+                    Command="{Binding InitializeUserCommand}" />
+        </Grid>
+    </ModalBase.CardContent>
+
+</ModalBase>

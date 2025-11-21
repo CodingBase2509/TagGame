@@ -1,10 +1,9 @@
 using System.Net;
 using System.Net.Http.Headers;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 using TagGame.Client.Core.Http;
+using TagGame.Client.Core.Http.Configuration;
 using TagGame.Client.Core.Options;
-using TagGame.Client.Core.Services;
 
 namespace TagGame.Client.Core.Extensions;
 
@@ -40,20 +39,15 @@ public static class ServiceCollectionHttpExtensions
             .AddHttpMessageHandler<ProblemDetailsHandler>()
             .AddHttpMessageHandler<AuthorizedHttpHandler>();
 
-        services.ConfigureResilienceHandler(httpBuilder);
+        var networkOptions = configuration.GetSection("Networking").Get<NetworkResilienceOptions>() ?? new NetworkResilienceOptions();
+        ConfigureResilienceHandler(httpBuilder, networkOptions.Http);
 
         return services;
     }
 
-    /// <summary>
-    /// Applies the custom resilience configuration to the given HttpClient builder using registered options/services.
-    /// </summary>
-    private static void ConfigureResilienceHandler(this IServiceCollection services, IHttpClientBuilder builder)
+    private static void ConfigureResilienceHandler(IHttpClientBuilder builder, NetworkResilienceOptions.HttpOptions httpOptions)
     {
-        var provider = services.BuildServiceProvider();
-        var configurator = provider.GetRequiredService<IHttpResilienceConfigurator>();
-        var options = provider.GetRequiredService<IOptions<NetworkResilienceOptions>>();
-
-        configurator.Configure(builder, options.Value.Http);
+        var configurator = new HttpResilienceConfigurator();
+        configurator.Configure(builder, httpOptions);
     }
 }

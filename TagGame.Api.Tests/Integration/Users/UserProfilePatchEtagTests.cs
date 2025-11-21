@@ -16,6 +16,8 @@ public sealed class UserProfilePatchEtagTests : IntegrationTestBase, IDisposable
 
     public override async Task InitializeAsync()
     {
+        if (!DockerRequirement.IsAvailable)
+            return;
         UseDbTestContainer();
         await base.InitializeAsync();
         if (_dbContainer is not null)
@@ -48,7 +50,7 @@ public sealed class UserProfilePatchEtagTests : IntegrationTestBase, IDisposable
         GC.SuppressFinalize(this);
     }
 
-    [Fact]
+    [DockerFact]
     public async Task Patch_With_IfMatch_Succeeds_And_Returns_New_Etag()
     {
         var (client, userId, _) = await CreateAuthedClientAsync();
@@ -64,7 +66,7 @@ public sealed class UserProfilePatchEtagTests : IntegrationTestBase, IDisposable
         newToken.Should().NotBe(ccToken);
     }
 
-    [Fact]
+    [DockerFact]
     public async Task Patch_Without_IfMatch_Returns_428()
     {
         var (client, _, _) = await CreateAuthedClientAsync();
@@ -73,7 +75,7 @@ public sealed class UserProfilePatchEtagTests : IntegrationTestBase, IDisposable
         resp.StatusCode.Should().Be((HttpStatusCode)428);
     }
 
-    [Fact]
+    [DockerFact]
     public async Task Patch_With_Old_Etag_Returns_412_And_Current_Etag()
     {
         var (client, userId, _) = await CreateAuthedClientAsync();
@@ -94,7 +96,7 @@ public sealed class UserProfilePatchEtagTests : IntegrationTestBase, IDisposable
         current.Should().Be(dbToken);
     }
 
-    [Fact]
+    [DockerFact]
     public async Task Patch_With_Wildcard_IfMatch_Succeeds()
     {
         var (client, _, _) = await CreateAuthedClientAsync();
@@ -102,7 +104,7 @@ public sealed class UserProfilePatchEtagTests : IntegrationTestBase, IDisposable
         resp.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 
-    [Fact]
+    [DockerFact]
     public async Task Patch_Email_Uniqueness_Conflict_Returns_409()
     {
         // user A

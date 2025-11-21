@@ -1,58 +1,68 @@
-# Diagramme (Abläufe & Struktur)
+# Diagramme (Stand V2)
 
-## Architektur (Übersicht)
+## Architektur-Übersicht
 ```mermaid
 graph LR
-  A[MAUI App] -->|REST| B[ASP.NET Core API]
-  A -->|SignalR| C[SignalR Hubs]
-  B --> D[(PostgreSQL)]
-  C -. scale .- E[(Redis Backplane)]
+  subgraph Client (MAUI)
+    VM[Client.Core Services & ViewModels]
+    UI[MAUI Views]
+    VM --> UI
+  end
+
+  subgraph API (ASP.NET Core)
+    REST[Minimal API Endpoints]
+    HUBS[SignalR Hubs]
+    CORE[TagGame.Api.Core (Services, EF)]
+    REST --> CORE --> DB[(PostgreSQL)]
+    HUBS --> CORE
+  end
+
+  VM <--> REST
+  VM <--> HUBS
 ```
 
-## Sequence: Nutzer registriert sich & erstellt einen Raum
+## Sequence: Erstregistrierung (`/v1/auth/initial`)
 ```mermaid
 sequenceDiagram
   participant App
   participant API
-  App->>API: POST /users {displayName}
-  API-->>App: 200 {userId, token}
-  App->>API: POST /rooms {settings, boundaries}
-  API-->>App: 200 {roomId, code}
+  App->>API: POST /v1/auth/initial { deviceId, displayName? }
+  API-->>API: Create User + RefreshToken
+  API-->>App: 200 { userId, tokens }
+  App-->>App: TokenStorage.Set(tokens)
 ```
 
-## Sequence: Lobby beitreten & Ready
+## Sequence: Login & Refresh-Rotation
 ```mermaid
 sequenceDiagram
   participant App
-  participant Hub as LobbyHub
-  App->>Hub: Connect (JWT)
-  App->>Hub: JoinRoom(roomId)
-  Hub-->>App: LobbyState(...)
-  App->>Hub: SetReady(true)
-  Hub-->>App: LobbyState(players.ready)
+  participant API
+  App->>API: POST /v1/auth/login { deviceId }
+  API-->>App: 200 { userId, tokens }
+  App-->>App: Store tokens
+  ... Zeit vergeht ...
+  App->>API: POST /v1/auth/refresh { refreshToken }
+  API-->>API: Validate + create new pair, revoke old token
+  API-->>App: 200 { tokens }
+  App-->>App: Replace stored tokens
+  App->>API: POST /v1/auth/refresh { reusedToken }
+  API-->>App: 401 { code: refresh_reuse }
+  App-->>App: Clear tokens
 ```
 
-## Sequence: Spielstart & Phasen
+## Sequence: Profil abrufen & aktualisieren (ETag)
 ```mermaid
 sequenceDiagram
-  participant Owner
-  participant Hub as LobbyHub
-  Owner->>Hub: StartGame(roomId)
-  Hub-->>Owner: GameStarted, RoleAssigned
-  Hub-->>Others: GameStarted, RoleAssigned
-  loop Timer
-    Hub-->>All: TimerTick(phase, remaining)
-  end
-  Note over Hub: Server prüft Regeln (Geofence, Radius)
+  participant App
+  participant API
+  App->>API: GET /v1/users/me (If-None-Match: "v1")
+  API-->>API: Load user, compute concurrency token
+  API-->>App: 200 UserProfileDto (ETag: "v2")
+  App-->>API: PATCH /v1/users/me (If-Match: "v2", body={ displayName })
+  API-->>API: Validate + save changes
+  API-->>App: 204 NoContent (ETag: "v3")
+  App->>API: PATCH ... (If-Match: "v2")
+  API-->>App: 412 Precondition Failed (ETag: "v3")
 ```
 
-## Sequence: Tag-Ereignis
-```mermaid
-sequenceDiagram
-  participant Seeker
-  participant Hub as LobbyHub
-  Seeker->>Hub: TagPlayer(taggedId, key)
-  Hub-->>Seeker: PlayerTagged(...)
-  Hub-->>Others: PlayerTagged(...)
-```
-
+Diese Diagramme bilden den aktuellen Funktionsumfang ab. Neue Slices (Rooms, SignalR, Chat) sollten eigene Sequenzen bekommen, sobald deren Implementierung startet.

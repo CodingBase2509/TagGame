@@ -50,6 +50,14 @@
   <Color x:Key="TextDisabledDark">#556070</Color>
 
   <!-- ===================== -->
+  <!-- SECONDARY DISABLED BG -->
+  <!-- ===================== -->
+
+  <!-- Disabled-Background für Secondary-Buttons -->
+  <Color x:Key="SecondaryDisabledLight">#F1F5F9</Color>
+  <Color x:Key="SecondaryDisabledDark">#1F2937</Color>
+
+  <!-- ===================== -->
   <!--     BORDER COLORS     -->
   <!-- ===================== -->
 
@@ -122,6 +130,10 @@
 
   <SolidColorBrush x:Key="TextDisabledBrush"
                    Color="{AppThemeBinding Light={StaticResource TextDisabledLight}, Dark={StaticResource TextDisabledDark}}"/>
+
+  <!-- Secondary Disabled Background -->
+  <SolidColorBrush x:Key="SecondaryDisabledBrush"
+                   Color="{AppThemeBinding Light={StaticResource SecondaryDisabledLight}, Dark={StaticResource SecondaryDisabledDark}}"/>
 
   <!-- Borders -->
   <SolidColorBrush x:Key="BorderBrush"

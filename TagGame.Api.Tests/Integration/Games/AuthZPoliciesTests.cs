@@ -24,6 +24,8 @@ public sealed class AuthZPoliciesTests : IntegrationTestBase
 
     public override async Task InitializeAsync()
     {
+        if (!DockerRequirement.IsAvailable)
+            return;
         UseDbTestContainer();
         await base.InitializeAsync();
 
@@ -67,7 +69,7 @@ public sealed class AuthZPoliciesTests : IntegrationTestBase
         await base.DisposeAsync();
     }
 
-    [Fact]
+    [DockerFact]
     public async Task Unfiltered_PermissionPolicy_Allows_When_Member_Has_Permission()
     {
         // Arrange
@@ -85,7 +87,7 @@ public sealed class AuthZPoliciesTests : IntegrationTestBase
         resp.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
-    [Fact]
+    [DockerFact]
     public async Task Unfiltered_PermissionPolicy_Denies_When_Member_Lacks_Permission()
     {
         // Arrange
@@ -103,7 +105,7 @@ public sealed class AuthZPoliciesTests : IntegrationTestBase
         resp.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 
-    [Fact]
+    [DockerFact]
     public async Task Unfiltered_RolePolicy_Allows_Owner_And_Denies_Moderator()
     {
         var roomId = Guid.NewGuid();
@@ -124,7 +126,7 @@ public sealed class AuthZPoliciesTests : IntegrationTestBase
         r2.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 
-    [Fact]
+    [DockerFact]
     public async Task Filtered_Probe_403_When_NotMember()
     {
         // Arrange (room exists, but user not a member)
@@ -144,7 +146,7 @@ public sealed class AuthZPoliciesTests : IntegrationTestBase
         problem!.Status.Should().Be((int)HttpStatusCode.Forbidden);
     }
 
-    [Fact]
+    [DockerFact]
     public async Task Filtered_Probe_403_When_Banned()
     {
         // Arrange
@@ -163,7 +165,7 @@ public sealed class AuthZPoliciesTests : IntegrationTestBase
         problem!.Status.Should().Be((int)HttpStatusCode.Forbidden);
     }
 
-    [Fact]
+    [DockerFact]
     public async Task Filtered_PermissionPolicy_Allows_When_Member_Has_Permission()
     {
         // Arrange

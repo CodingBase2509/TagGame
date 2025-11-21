@@ -50,21 +50,21 @@ public class UserModule : EndpointBase, ICarterModule
     {
         var http = httpAccessor.HttpContext;
         if (!AuthUtils.TryGetUserId(http!, out var userId))
-            return Unauthorized("Missing subject claim.", "auth.missing_sub");
+            return Unauthorized("Errors.Auth.MissingSub", "auth.missing_sub");
 
         var user = await authUoW.Users.GetByIdAsync([userId], new QueryOptions<User>
         {
             AsNoTracking = true
         }, ct);
         if (user is null)
-            return NotFound("User not found.", "user.not_found");
+            return NotFound("Errors.User.NotFound", "user.not_found");
 
         var ccToken = await authUoW.Users.GetConcurrencyToken(user, ct);
         var result = EtagUtils.CheckIfNoneMatch(ifNoneMatch, ccToken);
         switch (result)
         {
             case IfNoneMatchDecision.InvalidIfNoneMatch:
-                return BadRequest("Invalid If-None-Match.", "invalid.if_none_match");
+                return BadRequest("Errors.Http.InvalidIfNoneMatch", "invalid.if_none_match");
             case IfNoneMatchDecision.NotModified:
                 http?.Response.SetEtag(ccToken);
                 return NotModified();
@@ -98,12 +98,12 @@ public class UserModule : EndpointBase, ICarterModule
 
         // Precondition: If-Match must be present before we bother validating body
         if (string.IsNullOrWhiteSpace(ifMatch))
-            return PreconditionRequired("If-Match header required.", "missing.if-match");
+            return PreconditionRequired("Errors.Http.IfMatchRequired", "missing.if-match");
 
         await validator.ValidateAndThrowAsync(request, ct);
 
         if (!AuthUtils.TryGetUserId(http!, out var userId))
-            return Unauthorized("Missing subject claim.", "auth.missing_sub");
+            return Unauthorized("Errors.Auth.MissingSub", "auth.missing_sub");
 
         var user = await authUoW.Users.GetByIdAsync([userId], new QueryOptions<User>
         {
@@ -117,12 +117,12 @@ public class UserModule : EndpointBase, ICarterModule
         switch (result)
         {
             case IfMatchCheckResult.MissingIfMatch:
-                return PreconditionRequired("if-match", "missing.if-match");
+                return PreconditionRequired("Errors.Http.IfMatchRequired", "missing.if-match");
             case IfMatchCheckResult.InvalidIfMatch:
-                return BadRequest("if-match", "invalid.if-match");
+                return BadRequest("Errors.Http.InvalidIfMatch", "invalid.if-match");
             case IfMatchCheckResult.EtagMismatch:
                 http?.Response.SetEtag(ccToken);
-                return PreconditionFailed("if-match", "mismatch.if-match");
+                return PreconditionFailed("Errors.Http.IfMatchMismatch", "mismatch.if-match");
             case IfMatchCheckResult.Ok:
             case IfMatchCheckResult.Wildcard:
             default:
@@ -149,11 +149,11 @@ public class UserModule : EndpointBase, ICarterModule
         {
             var latest = await authUoW.Users.GetConcurrencyToken(user, ct);
             http?.Response.SetEtag(latest);
-            return PreconditionFailed("if-match", "mismatch.if-match");
+            return PreconditionFailed("Errors.Http.IfMatchMismatch", "mismatch.if-match");
         }
         catch (DbUpdateException ex) when (IsUniqueViolationOnEmail(ex))
         {
-            return Conflict("Email already in use.", "email.in_use");
+            return Conflict("Errors.User.EmailInUse", "email.in_use");
         }
     }
 

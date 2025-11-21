@@ -1,4 +1,5 @@
 ﻿using TagGame.Client.Core.Extensions;
+using TagGame.Client.Core.Services;
 using TagGame.Client.Extensions;
 using TagGame.Client.Infrastructure;
 
@@ -14,6 +15,7 @@ public static class MauiProgram
         builder.Configuration.AddAppSettingsFile();
         builder.Services.AddInfrastructure();
         builder.Services.AddPages();
+        builder.Services.AddViewModels();
 
         builder.Services.AddCoreServices(builder.Configuration);
         builder.Services.AddJsonOptionsProvider();
@@ -30,6 +32,8 @@ public static class MauiProgram
 #if DEBUG
         builder.Logging.AddDebug();
 #endif
-        return builder.Build();
+        var app = builder.Build();
+        SpUtils.Set(app.Services);
+        return app;
     }
 }

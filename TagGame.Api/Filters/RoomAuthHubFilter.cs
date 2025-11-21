@@ -21,7 +21,7 @@ public class RoomAuthHubFilter(
         // 1) Identity present?
         var user = invocationContext.Context.User;
         if (user?.Identity?.IsAuthenticated != true)
-            throw new HubException("auth.invalid_token");
+            throw new HubException("Errors.Auth.InvalidToken");
 
         // 2) Extract roomId (first Guid argument or DTO with RoomId property)
         var roomId = GetRoomId(invocationContext);
@@ -57,16 +57,16 @@ public class RoomAuthHubFilter(
         catch { methodName = "<unknown>"; }
         logger.LogDebug("Hub auth failed for {Hub}.{Method} with policy {Policy}",
             invocationContext.Hub.GetType().Name, methodName, string.Join(',', authorizeData.Select(a => a.Policy)));
-        throw new HubException("auth.missing_permission");
+        throw new HubException("Errors.Auth.MissingPermission");
     }
 
     private static void EnsureValidMembership(RoomMembership? membership)
     {
         if (membership is null)
-            throw new HubException("auth.not_member");
+            throw new HubException("Errors.Auth.NotMember");
 
         if (membership.IsBanned)
-            throw new HubException("auth.banned");
+            throw new HubException("Errors.Auth.Banned");
     }
 
     private static Guid GetRoomId(HubInvocationContext context)
@@ -102,7 +102,7 @@ public class RoomAuthHubFilter(
             }
         }
 
-        throw new HubException("auth.room_id_missing");
+        throw new HubException("Errors.Auth.RoomIdMissing");
     }
 
     private static bool TryGetUserId(ClaimsPrincipal user, out Guid userId)
