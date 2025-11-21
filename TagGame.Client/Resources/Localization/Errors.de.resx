@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+</resheader>
+  <data name="Errors.Validation.ParametersEmpty" xml:space="preserve">
+    <value>Bitte alle Pflichtfelder ausfüllen.</value>
+  </data>
+  <data name="Errors.Validation.DeviceId.Required" xml:space="preserve">
+    <value>Device-ID ist erforderlich.</value>
+  </data>
+  <data name="Errors.Validation.DeviceId.NoEdgeSpaces" xml:space="preserve">
+    <value>Device-ID darf nicht mit Leerzeichen beginnen oder enden.</value>
+  </data>
+  <data name="Errors.Validation.DeviceId.MaxLength" xml:space="preserve">
+    <value>Device-ID darf höchstens 64 Zeichen haben.</value>
+  </data>
+  <data name="Errors.Validation.DeviceId.InvalidCharacters" xml:space="preserve">
+    <value>Device-ID darf nur Buchstaben, Ziffern, '_' oder '-' enthalten.</value>
+  </data>
+  <data name="Errors.Validation.DisplayName.NoEdgeSpaces" xml:space="preserve">
+    <value>Anzeigename darf nicht mit Leerzeichen beginnen oder enden.</value>
+  </data>
+  <data name="Errors.Validation.DisplayName.MinLength" xml:space="preserve">
+    <value>Anzeigename muss mindestens 2 Zeichen haben.</value>
+  </data>
+  <data name="Errors.Validation.DisplayName.MaxLength" xml:space="preserve">
+    <value>Anzeigename darf höchstens 64 Zeichen haben.</value>
+  </data>
+  <data name="Errors.Validation.DisplayName.InvalidCharacters" xml:space="preserve">
+    <value>Anzeigename enthält ungültige Zeichen.</value>
+  </data>
+  <data name="Errors.Validation.InvalidInput" xml:space="preserve">
+    <value>Eingaben ungültig. Bitte prüfe deine Angaben.</value>
+  </data>
+  <data name="Errors.Validation.AvatarColor.InvalidFormat" xml:space="preserve">
+    <value>Avatar-Farbe muss hex #RRGGBB oder #AARRGGBB sein.</value>
+  </data>
+
+  <data name="Errors.Auth.MissingSub" xml:space="preserve">
+    <value>Anmeldung erforderlich.</value>
+  </data>
+  <data name="Errors.User.NotFound" xml:space="preserve">
+    <value>Benutzer nicht gefunden.</value>
+  </data>
+  <data name="Errors.Http.InvalidIfNoneMatch" xml:space="preserve">
+    <value>Ungültiger If-None-Match-Header.</value>
+  </data>
+  <data name="Errors.Http.IfMatchRequired" xml:space="preserve">
+    <value>If-Match-Header ist erforderlich.</value>
+  </data>
+  <data name="Errors.Http.InvalidIfMatch" xml:space="preserve">
+    <value>Ungültiger If-Match-Header.</value>
+  </data>
+  <data name="Errors.Http.IfMatchMismatch" xml:space="preserve">
+    <value>If-Match stimmt nicht mit der aktuellen Version überein.</value>
+  </data>
+  <data name="Errors.User.EmailInUse" xml:space="preserve">
+    <value>E-Mail-Adresse wird bereits verwendet.</value>
+  </data>
+  <data name="Errors.User.ExistsForDevice" xml:space="preserve">
+    <value>Für dieses Gerät existiert bereits ein Benutzer.</value>
+  </data>
+  <data name="Errors.Auth.DeviceIdMissing" xml:space="preserve">
+    <value>Device-ID ist erforderlich.</value>
+  </data>
+  <data name="Errors.User.NotFoundForDevice" xml:space="preserve">
+    <value>Kein Benutzer für die angegebene Device-ID gefunden.</value>
+  </data>
+  <data name="Errors.Auth.RefreshTokenMissing" xml:space="preserve">
+    <value>Refresh-Token darf nicht leer sein.</value>
+  </data>
+  <data name="Errors.Auth.RefreshReuse" xml:space="preserve">
+    <value>Wiederverwendung des Refresh-Tokens erkannt.</value>
+  </data>
+  <data name="Errors.Auth.RefreshInvalid" xml:space="preserve">
+    <value>Ungültiges Refresh-Token.</value>
+  </data>
+  <data name="Errors.Auth.RefreshExpired" xml:space="preserve">
+    <value>Refresh-Token ist abgelaufen.</value>
+  </data>
+  <data name="Errors.Auth.RefreshRevoked" xml:space="preserve">
+    <value>Refresh-Token wurde widerrufen.</value>
+  </data>
+  <data name="Errors.Auth.InvalidToken" xml:space="preserve">
+    <value>Ungültiges oder abgelaufenes Anmeldetoken.</value>
+  </data>
+  <data name="Errors.Auth.MissingPermission" xml:space="preserve">
+    <value>Keine Berechtigung für diese Aktion.</value>
+  </data>
+  <data name="Errors.Auth.NotMember" xml:space="preserve">
+    <value>Du bist kein Mitglied dieses Raums.</value>
+  </data>
+  <data name="Errors.Auth.Banned" xml:space="preserve">
+    <value>Du wurdest aus diesem Raum verbannt.</value>
+  </data>
+  <data name="Errors.Auth.RoomIdMissing" xml:space="preserve">
+    <value>Raum-ID fehlt.</value>
+  </data>
+
+  <data name="Errors.Http.Generic" xml:space="preserve">
+    <value>Es ist ein Fehler aufgetreten. Bitte versuche es erneut.</value>
+  </data>
+  <data name="Errors.Http.Network" xml:space="preserve">
+    <value>Netzwerkfehler. Bitte Verbindung prüfen.</value>
+  </data>
+  <data name="Errors.Http.Canceled" xml:space="preserve">
+    <value>Vorgang wurde abgebrochen.</value>
+  </data>
+</root>

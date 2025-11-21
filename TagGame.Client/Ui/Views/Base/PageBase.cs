@@ -20,6 +20,7 @@ public class PageBase : ContentPage
         Shell.SetNavBarIsVisible(this, false);
         Shell.SetTabBarIsVisible(this, false);
 
+        Padding = new Thickness(16);
         _toastPresenter = GetRequiredService<ToastPresenter>();
         ControlTemplate = new ControlTemplate(CreateTemplate);
     }

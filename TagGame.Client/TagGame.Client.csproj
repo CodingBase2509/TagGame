@@ -69,6 +69,30 @@
         <Generator>ResXFileCodeGenerator</Generator>
         <LastGenOutput>App.de.Designer.cs</LastGenOutput>
       </EmbeddedResource>
+      <EmbeddedResource Update="Resources\Localization\Errors.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Errors.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Resources\Localization\Errors.de.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Errors.de.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Resources\Localization\UserInit.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>UserInit.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Resources\Localization\UserInit.de.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>UserInit.de.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Resources\Localization\Start.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Start.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Resources\Localization\Start.de.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Start.de.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
     </ItemGroup>
 
     <ItemGroup>
@@ -81,6 +105,36 @@
         <DesignTime>True</DesignTime>
         <AutoGen>True</AutoGen>
         <DependentUpon>App.de.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\Localization\Errors.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Errors.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\Localization\Errors.de.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Errors.de.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\Localization\UserInit.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>UserInit.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\Localization\UserInit.de.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>UserInit.de.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\Localization\Start.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Start.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\Localization\Start.de.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Start.de.resx</DependentUpon>
       </Compile>
     </ItemGroup>
 

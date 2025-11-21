@@ -21,26 +21,26 @@ public static partial class UserInitRules
     {
         if (string.IsNullOrWhiteSpace(raw))
         {
-            error = "DeviceId is required.";
+            error = "Errors.Validation.DeviceId.Required";
             return false;
         }
 
         var deviceId = raw.Trim();
         if (!ReferenceEquals(deviceId, raw))
         {
-            error = "DeviceId must not start or end with spaces.";
+            error = "Errors.Validation.DeviceId.NoEdgeSpaces";
             return false;
         }
 
         if (deviceId.Length > MaxDeviceIdLength)
         {
-            error = "DeviceId must be at most 64 characters.";
+            error = "Errors.Validation.DeviceId.MaxLength";
             return false;
         }
 
         if (!DeviceIdRegex().IsMatch(deviceId))
         {
-            error = "DeviceId may only contain letters, digits, '_' or '-'.";
+            error = "Errors.Validation.DeviceId.InvalidCharacters";
             return false;
         }
 
@@ -59,25 +59,25 @@ public static partial class UserInitRules
         var name = raw.Trim();
         if (!ReferenceEquals(name, raw))
         {
-            error = "Display name must not start or end with spaces.";
+            error = "Errors.Validation.DisplayName.NoEdgeSpaces";
             return false;
         }
 
         if (name.Length < MinDisplayNameLength)
         {
-            error = "Display name must be at least 2 characters.";
+            error = "Errors.Validation.DisplayName.MinLength";
             return false;
         }
 
         if (name.Length > MaxDisplayNameLength)
         {
-            error = "Display name must be at most 64 characters.";
+            error = "Errors.Validation.DisplayName.MaxLength";
             return false;
         }
 
         if (name.Any(char.IsControl))
         {
-            error = "Display name contains invalid characters.";
+            error = "Errors.Validation.DisplayName.InvalidCharacters";
             return false;
         }
 
@@ -95,7 +95,7 @@ public static partial class UserInitRules
 
         if (!HexColorRegex().IsMatch(raw))
         {
-            error = "Avatar color must be hex #RRGGBB or #AARRGGBB.";
+            error = "Errors.Validation.AvatarColor.InvalidFormat";
             return false;
         }
 

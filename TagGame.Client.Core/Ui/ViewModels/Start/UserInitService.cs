@@ -14,7 +14,7 @@ public class UserInitService(IAppPreferences preferences, IAuthService authServi
         errors = [];
         if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(avatarColor ?? string.Empty))
         {
-            errors = ["parameters.empty"];
+            errors = ["Errors.Validation.ParametersEmpty"];
             return false;
         }
 

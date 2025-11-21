@@ -66,7 +66,7 @@ public sealed class AuthModule : EndpointBase, ICarterModule
             ct);
 
         if (existing is not null)
-            return Conflict("A user for this device already exists", code: "user_exists");
+            return Conflict("Errors.User.ExistsForDevice", code: "user_exists");
 
         var now = clock.GetUtcNow();
         var user = new User()
@@ -99,7 +99,7 @@ public sealed class AuthModule : EndpointBase, ICarterModule
         CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(request.DeviceId))
-            return BadRequest("Device id is required.", code: "device_id_missing");
+            return BadRequest("Errors.Auth.DeviceIdMissing", code: "device_id_missing");
 
         var user = await authUoW.Users.FirstOrDefaultAsync(
             u => Equals(u.DeviceId, request.DeviceId),
@@ -110,7 +110,7 @@ public sealed class AuthModule : EndpointBase, ICarterModule
             ct);
 
         if (user is null)
-            return NotFound("User not found for provided device id", "user_not_found");
+            return NotFound("Errors.User.NotFoundForDevice", "user_not_found");
 
         var tokens = await tokenService.IssueTokenAsync(user, ct);
 
@@ -128,7 +128,7 @@ public sealed class AuthModule : EndpointBase, ICarterModule
         CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(request.RefreshToken))
-            return BadRequest("RefreshToken must not be empty.", code: "refresh_token_missing");
+            return BadRequest("Errors.Auth.RefreshTokenMissing", code: "refresh_token_missing");
 
         try
         {
@@ -137,22 +137,22 @@ public sealed class AuthModule : EndpointBase, ICarterModule
         }
         catch (RefreshTokenReuseException)
         {
-            return Unauthorized("Refresh token reuse detected.", code: "refresh_reuse");
+            return Unauthorized("Errors.Auth.RefreshReuse", code: "refresh_reuse");
         }
         catch (InvalidOperationException ex) when (
             ex.Message.Contains("Invalid", StringComparison.OrdinalIgnoreCase))
         {
-            return Unauthorized("Invalid refresh token.", code: "refresh_invalid");
+            return Unauthorized("Errors.Auth.RefreshInvalid", code: "refresh_invalid");
         }
         catch (InvalidOperationException ex) when (
             ex.Message.Contains("expired", StringComparison.OrdinalIgnoreCase))
         {
-            return Unauthorized("Refresh token expired.", code: "refresh_expired");
+            return Unauthorized("Errors.Auth.RefreshExpired", code: "refresh_expired");
         }
         catch (InvalidOperationException ex) when (
             ex.Message.Contains("revoked", StringComparison.OrdinalIgnoreCase))
         {
-            return Unauthorized("Refresh token revoked.", code: "refresh_revoked");
+            return Unauthorized("Errors.Auth.RefreshRevoked", code: "refresh_revoked");
         }
     }
 
@@ -162,7 +162,7 @@ public sealed class AuthModule : EndpointBase, ICarterModule
         CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(request.RefreshToken))
-            return BadRequest("RefreshToken must not be empty.", code: "refresh_token_missing");
+            return BadRequest("Errors.Auth.RefreshTokenMissing", code: "refresh_token_missing");
 
         await tokenService.RevokeTokenAsync(request.RefreshToken, ct);
 

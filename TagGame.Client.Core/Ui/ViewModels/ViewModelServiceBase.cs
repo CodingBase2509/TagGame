@@ -14,28 +14,47 @@ public abstract class ViewModelServiceBase
         }
         catch (ApiProblemException problemResponse)
         {
-            var loc = SpUtils.GetRequiredService<ILocalizer>();
             var toast = SpUtils.GetRequiredService<IToastPublisher>();
 
-            var errorMessage = loc.GetFormat("http.error",
-                problemResponse.Problem?.Title ?? "Unknown error",
-                problemResponse.Problem?.Detail ?? string.Empty);
-
-            await toast.Error(errorMessage, false);
+            // Prefer explicit detail key
+            var key = problemResponse.Problem?.Detail;
+            if (!string.IsNullOrWhiteSpace(key) && key.StartsWith("Errors.", StringComparison.Ordinal))
+            {
+                await toast.Error(key!); // localized key
+            }
+            // Next, look for validation errors and use the first key
+            else if (problemResponse.Problem?.Errors is { Count: > 0 })
+            {
+                var first = problemResponse.Problem.Errors.Values.FirstOrDefault(v => v?.Length > 0);
+                var candidate = first?.FirstOrDefault();
+                if (!string.IsNullOrWhiteSpace(candidate) && candidate!.StartsWith("Errors.", StringComparison.Ordinal))
+                {
+                    await toast.Error(candidate!);
+                }
+                else
+                {
+                    await toast.Error("Errors.Http.Generic");
+                }
+            }
+            else
+            {
+                await toast.Error("Errors.Http.Generic");
+            }
         }
-        catch (HttpRequestException httpError)
+        catch (HttpRequestException)
         {
-            var loc = SpUtils.GetRequiredService<ILocalizer>();
             var toast = SpUtils.GetRequiredService<IToastPublisher>();
-
-            var errorMessage = loc.GetFormat("http.error",
-                httpError.StatusCode.ToString() ?? "Unknown error",
-                httpError.Message);
-
-            await toast.Error(errorMessage, false);
+            await toast.Error("Errors.Http.Network");
+        }
+        catch (ArgumentException)
+        {
+            var toast = SpUtils.GetRequiredService<IToastPublisher>();
+            await toast.Error("Errors.Validation.InvalidInput");
         }
         catch (TaskCanceledException)
         {
+            var toast = SpUtils.GetRequiredService<IToastPublisher>();
+            await toast.Error("Errors.Http.Canceled");
         }
 
         return default;

@@ -33,9 +33,9 @@
 
             <!-- DisplayName -->
             <VerticalStackLayout Grid.Row="1" Spacing="5">
-                <Label Text="{Loc App.DisplayName}"/>
+                <Label Text="{Loc UserInit.DisplayName}"/>
                 <Entry Text="{Binding DisplayName}"
-                       Placeholder="{Loc App.DisplayName}"/>
+                       Placeholder="{Loc UserInit.DisplayName}"/>
             </VerticalStackLayout>
 
             <!-- Avatar Color -->
