@@ -35,11 +35,15 @@ public class PatchUserAccountValidator : AbstractValidator<PatchUserAccountDto>
                 .WithMessage("Email must be a valid email address.");
 
         // DeviceId: optional; if provided validate length and characters
-        RuleFor(x => x.DeviceId)
-            .Custom((value, context) =>
-            {
-                if (!UserInitRules.TryValidateDeviceId(value, out var error))
-                    context.AddFailure(error!);
-            });
+        // DeviceId is optional in PATCH. Validate only when provided and non-empty.
+        When(x => !string.IsNullOrWhiteSpace(x.DeviceId), () =>
+        {
+            RuleFor(x => x.DeviceId)
+                .Custom((value, context) =>
+                {
+                    if (!UserInitRules.TryValidateDeviceId(value, out var error))
+                        context.AddFailure(error!);
+                });
+        });
     }
 }
