@@ -4,4 +4,35 @@
           xmlns:vm="clr-namespace:TagGame.Client.Core.Ui.ViewModels.Start;assembly=TagGame.Client.Core"
           x:Class="TagGame.Client.Ui.Views.Start.Start"
           x:DataType="vm:StartViewModel">
+
+    <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto"
+          RowSpacing="60">
+        <ImageButton Grid.Row="0"
+                     Source="settings"
+                     WidthRequest="48"
+                     HeightRequest="48"
+                     HorizontalOptions="End"/>
+
+        <Label Grid.Row="1"
+               Style="{StaticResource Headline}"
+               Text="Tag Game"
+               Margin="0, 20, 0, 80"/>
+
+        <VerticalStackLayout Grid.Row="2"
+                             Spacing="10">
+            <Button Text="{Loc Start.CreateGame}"/>
+        </VerticalStackLayout>
+
+        <VerticalStackLayout Grid.Row="3"
+                             Spacing="10">
+            <Entry Text=""
+                   Placeholder="{Loc Start.AccessCode}"/>
+            <Button Text="{Loc Start.JoinGame}" />
+        </VerticalStackLayout>
+
+        <Button Grid.Row="4"
+                Style="{StaticResource SecondaryButton}"
+                Text="{Loc Start.JoinWithQrCode}"/>
+    </Grid>
+
 </PageWithModal>
