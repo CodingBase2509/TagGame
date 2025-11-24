@@ -1,7 +1,7 @@
 using TagGame.Client.Core.Services;
 using TagGame.Shared.Validation;
 
-namespace TagGame.Client.Core.Ui.ViewModels.Start;
+namespace TagGame.Client.Core.Ui.Services;
 
 public class UserInitService(IAppPreferences preferences, IAuthService authService)
     : ViewModelServiceBase
