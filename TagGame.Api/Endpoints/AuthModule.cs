@@ -1,7 +1,3 @@
-using Carter;
-using Carter.OpenApi;
-using FluentValidation;
-using Microsoft.AspNetCore.Mvc;
 using TagGame.Api.Core.Abstractions.Auth;
 using TagGame.Api.Core.Common.Exceptions;
 using TagGame.Shared.Domain.Auth;
