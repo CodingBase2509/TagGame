@@ -13,6 +13,7 @@ public static class ServiceCollectionViewModels
         services.AddTransient<UserInitViewModel>();
 
         services.AddTransient<StartViewModel>();
+        services.AddTransient<StartService>();
 
         return services;
     }

@@ -11,7 +11,8 @@
                      Source="settings"
                      WidthRequest="48"
                      HeightRequest="48"
-                     HorizontalOptions="End"/>
+                     HorizontalOptions="End"
+                     Command="{Binding OpenSettingsCommand}"/>
 
         <Label Grid.Row="1"
                Style="{StaticResource Headline}"
@@ -20,19 +21,30 @@
 
         <VerticalStackLayout Grid.Row="2"
                              Spacing="10">
-            <Button Text="{Loc Start.CreateGame}"/>
+
+            <Entry Text="{Binding RoomName}"
+                   Placeholder="{Loc Start.RoomName}" />
+            <Button Text="{Loc Start.CreateGame}"
+                    Command="{Binding CreateRoomCommand}"
+                    IsEnabled="{Binding CanCreateRoom}"/>
+
         </VerticalStackLayout>
 
         <VerticalStackLayout Grid.Row="3"
                              Spacing="10">
-            <Entry Text=""
+
+            <Entry Text="{Binding AccessCode}"
                    Placeholder="{Loc Start.AccessCode}"/>
-            <Button Text="{Loc Start.JoinGame}" />
+            <Button Text="{Loc Start.JoinGame}"
+                    Command="{Binding JoinRoomByCodeCommand}"
+                    IsEnabled="{Binding CanJoinRoom}"/>
+
         </VerticalStackLayout>
 
         <Button Grid.Row="4"
                 Style="{StaticResource SecondaryButton}"
-                Text="{Loc Start.JoinWithQrCode}"/>
+                Text="{Loc Start.JoinWithQrCode}"
+                Command="{Binding JoinRoomByQrCodeCommand}"/>
     </Grid>
 
 </PageWithModal>

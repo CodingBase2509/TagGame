@@ -10,7 +10,8 @@ public class RoomsModule : EndpointBase, ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        var rooms = app.MapV1().MapGroup("/rooms")
+        var rooms = app.MapV1()
+            .MapGroup("/rooms")
             .RequireAuthorization();
 
         rooms.MapPost("/", CreateRoomAsync)

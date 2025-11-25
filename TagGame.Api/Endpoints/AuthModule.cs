@@ -9,37 +9,39 @@ public sealed class AuthModule : EndpointBase, ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        var auth = app.MapV1().MapGroup("/auth");
+        var auth = app
+            .MapV1()
+            .MapGroup("/auth");
 
         auth.MapPost("/initial", HandleInitialAsync)
-            .WithName("Auth_Initial")
             .Accepts<InitialRequestDto>(MediaTypeNames.Application.Json)
             .Produces<InitialResponseDto>(StatusCodes.Status200OK, MediaTypeNames.Application.Json)
             .ProducesProblem(StatusCodes.Status400BadRequest, MediaTypeNames.Application.Json)
+            .WithName("Auth_Initial")
             .IncludeInOpenApi();
 
         auth.MapPost("/login", HandleLoginAsync)
-            .WithName("Auth_Login")
             .Accepts<LoginRequestDto>(MediaTypeNames.Application.Json)
             .Produces<LoginResponseDto>(StatusCodes.Status200OK, MediaTypeNames.Application.Json)
             .ProducesProblem(StatusCodes.Status400BadRequest, MediaTypeNames.Application.Json)
             .ProducesProblem(StatusCodes.Status404NotFound, MediaTypeNames.Application.Json)
+            .WithName("Auth_Login")
             .IncludeInOpenApi();
 
         auth.MapPost("/refresh", HandleRefreshAsync)
-            .WithName("Auth_Refresh")
             .Accepts<RefreshRequestDto>(MediaTypeNames.Application.Json)
             .Produces<RefreshResponseDto>(StatusCodes.Status200OK, MediaTypeNames.Application.Json)
             .ProducesProblem(StatusCodes.Status400BadRequest, MediaTypeNames.Application.Json)
             .ProducesProblem(StatusCodes.Status401Unauthorized, MediaTypeNames.Application.Json)
+            .WithName("Auth_Refresh")
             .IncludeInOpenApi();
 
         auth.MapPost("/logout", HandleLogoutAsync)
-            .WithName("Auth_Logout")
             .Accepts<LogoutRequestDto>(MediaTypeNames.Application.Json)
             .Produces<LogoutResponseDto>(StatusCodes.Status200OK, MediaTypeNames.Application.Json)
             .ProducesProblem(StatusCodes.Status400BadRequest, MediaTypeNames.Application.Json)
             .ProducesProblem(StatusCodes.Status401Unauthorized, MediaTypeNames.Application.Json)
+            .WithName("Auth_Logout")
             .IncludeInOpenApi();
     }
 

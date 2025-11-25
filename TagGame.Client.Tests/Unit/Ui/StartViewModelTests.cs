@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using TagGame.Client.Core.Navigation;
 using TagGame.Client.Core.Options;
 using TagGame.Client.Core.Services;
+using TagGame.Client.Core.Ui.Services;
 using TagGame.Client.Core.Ui.ViewModels.Start;
 
 namespace TagGame.Client.Tests.Unit.Ui;
@@ -21,13 +22,14 @@ public class StartViewModelTests
         prefs.SetupGet(p => p.Snapshot).Returns(snap);
 
         var nav = new Mock<INavigationService>();
+        var service = new Mock<StartService>();
 
         var services = new ServiceCollection();
         services.AddSingleton<IUiDispatcher, TestUiDispatcher>();
         services.AddSingleton<INavigationService>(nav.Object);
         SpUtils.Set(services.BuildServiceProvider());
 
-        var vm = new StartViewModel(prefs.Object);
+        var vm = new StartViewModel(prefs.Object, service.Object);
         return (vm, nav);
     }
 

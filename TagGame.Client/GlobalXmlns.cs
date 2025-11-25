@@ -5,5 +5,6 @@
 [assembly: XmlnsDefinition("http://schemas.microsoft.com/dotnet/maui/global", "TagGame.Client.Ui.Views.Settings")]
 [assembly: XmlnsDefinition("http://schemas.microsoft.com/dotnet/maui/global", "TagGame.Client.Ui.Components")]
 [assembly: XmlnsDefinition("http://schemas.microsoft.com/dotnet/maui/global", "TagGame.Client.Ui.Components.Toasts")]
+[assembly: XmlnsDefinition("http://schemas.microsoft.com/dotnet/maui/global", "TagGame.Client.Ui.Components.QrCodes")]
 [assembly: XmlnsDefinition("http://schemas.microsoft.com/dotnet/maui/global", "TagGame.Client.Ui.Extensions")]
 [assembly: Microsoft.Maui.Controls.XmlnsPrefix("http://schemas.microsoft.com/dotnet/maui/global", "tg")]

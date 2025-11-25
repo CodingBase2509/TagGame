@@ -8,7 +8,7 @@ public static partial class RoomRules
 {
     private const int MinNameLength = 2;
     private const int MaxNameLength = 64;
-    private const int MinAccessCodeLength = 4;
+    private const int MinAccessCodeLength = 8;
     private const int MaxAccessCodeLength = 8;
 
     /// <summary>

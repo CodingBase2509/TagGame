@@ -31,7 +31,6 @@ public sealed class HealthModule : CarterModule
         });
 
         app.MapGet("/ping", () => Results.Ok(new { pong = true, at = DateTimeOffset.UtcNow }))
-            .WithTags("Health")
             .IncludeInOpenApi();
     }
 }

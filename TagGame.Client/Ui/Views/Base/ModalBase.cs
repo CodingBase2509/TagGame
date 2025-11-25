@@ -91,6 +91,10 @@ public class ModalBase : ContentView, IModal
             VerticalOptions = LayoutOptions.End,
             TranslationY = 800
         };
+        if (Application.Current?.Resources
+            .TryGetValue("ElevatedCard", out var elevatedCard) ?? false)
+            _card.Style = elevatedCard as Style;
+
         container.Children.Add(_card);
 
         if (CardContent is not { } content)
