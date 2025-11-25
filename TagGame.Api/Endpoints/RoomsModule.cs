@@ -12,6 +12,7 @@ public class RoomsModule : EndpointBase, ICarterModule
     {
         var rooms = app.MapV1()
             .MapGroup("/rooms")
+            .WithTags("rooms")
             .RequireAuthorization();
 
         rooms.MapPost("/", CreateRoomAsync)

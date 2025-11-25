@@ -11,6 +11,7 @@ public sealed class AuthModule : EndpointBase, ICarterModule
     {
         var auth = app
             .MapV1()
+            .WithTags("auth")
             .MapGroup("/auth");
 
         auth.MapPost("/initial", HandleInitialAsync)

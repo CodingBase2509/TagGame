@@ -15,6 +15,7 @@ public class UserModule : EndpointBase, ICarterModule
     public void AddRoutes(IEndpointRouteBuilder app)
     {
         var users = app.MapV1()
+            .WithTags("users")
             .MapGroup("users");
 
         users.MapGet("/me", GetOwnUserAccount)
