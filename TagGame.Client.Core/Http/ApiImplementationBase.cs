@@ -11,9 +11,12 @@ public abstract class ApiImplementationBase
         var tokens = await storage.GetAsync(ct);
 
         if (tokens is null || !IsTokenValid(tokens.RefreshExpiresAt))
+        {
             await LoginAsync(ct);
+            tokens = await storage.GetAsync(ct);
+        }
 
-        if (!IsTokenValid(tokens!.AccessExpiresAt))
+        if (tokens is not null && !IsTokenValid(tokens.AccessExpiresAt))
             await RefreshAsync(ct);
     }
 

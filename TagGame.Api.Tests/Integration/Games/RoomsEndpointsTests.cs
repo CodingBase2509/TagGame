@@ -1,14 +1,8 @@
-using System.Net;
 using System.Net.Http.Headers;
-using System.Net.Http.Json;
-using Carter;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.EntityFrameworkCore;
-using TagGame.Api.Endpoints;
-using TagGame.Api.Tests.Integration;
 using TagGame.Api.Core.Features.Auth;
 using TagGame.Api.Core.Persistence.Contexts;
+using TagGame.Api.Core.Common.Security;
 using TagGame.Shared.Domain.Auth;
 using TagGame.Shared.Domain.Games;
 using TagGame.Shared.Domain.Games.Enums;
@@ -86,11 +80,16 @@ public sealed class RoomsEndpointsTests : IntegrationTestBase
         room.Should().NotBeNull();
         room!.OwnerUserId.Should().Be(userId);
         room.AccessCode.Should().MatchRegex("^[A-Za-z0-9]{8}$");
+        room.Settings.HideTimeSec.Should().Be(60);
+        room.Settings.HuntTimeSec.Should().Be(600);
+        room.Settings.TagRadiusM.Should().Be(4);
 
         var membership = await db.Memberships.FindAsync(dto.MembershipId);
         membership.Should().NotBeNull();
         membership!.UserId.Should().Be(userId);
         membership.Role.Should().Be(RoomRole.Owner);
+        membership.Type.Should().Be(PlayerType.Hider);
+        membership.PermissionsMask.Should().Be(PermissionProfiles.OwnerMask);
     }
 
     [DockerFact]
@@ -119,6 +118,7 @@ public sealed class RoomsEndpointsTests : IntegrationTestBase
         membership.Should().NotBeNull();
         membership!.UserId.Should().Be(userId);
         membership.IsBanned.Should().BeFalse();
+        membership.Type.Should().Be(PlayerType.Hider);
     }
 
     [DockerFact]
@@ -206,11 +206,41 @@ public sealed class RoomsEndpointsTests : IntegrationTestBase
     }
 
     [DockerFact]
+    public async Task CreateRoom_rejects_leading_or_trailing_spaces()
+    {
+        var userId = Guid.NewGuid();
+        var client = CreateClientWithToken(userId);
+        var resp = await client.PostAsJsonAsync("/v1/rooms", new CreateRoomRequestDto { Name = " Room" });
+
+        resp.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
+
+    [DockerFact]
     public async Task JoinRoom_returns_bad_request_for_invalid_access_code()
     {
         var userId = Guid.NewGuid();
         var client = CreateClientWithToken(userId);
         var resp = await client.PostAsJsonAsync("/v1/rooms/join", new JoinRoomRequestDto { AccessCode = " " });
+
+        resp.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
+
+    [DockerFact]
+    public async Task JoinRoom_returns_bad_request_when_code_too_short()
+    {
+        var userId = Guid.NewGuid();
+        var client = CreateClientWithToken(userId);
+        var resp = await client.PostAsJsonAsync("/v1/rooms/join", new JoinRoomRequestDto { AccessCode = "ABCDE" });
+
+        resp.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
+
+    [DockerFact]
+    public async Task JoinRoom_returns_bad_request_when_code_has_edge_spaces()
+    {
+        var userId = Guid.NewGuid();
+        var client = CreateClientWithToken(userId);
+        var resp = await client.PostAsJsonAsync("/v1/rooms/join", new JoinRoomRequestDto { AccessCode = " ABCDEFG" });
 
         resp.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
