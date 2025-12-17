@@ -10,21 +10,29 @@ namespace TagGame.Client.Infrastructure.Localization;
 /// </summary>
 public sealed class LocalizationInitializer(ILocalizer localizer, IAppPreferences preferences)
 {
-    private bool _initialized;
+    private int _initialized;
 
     public async Task InitializeAsync(CancellationToken ct = default)
     {
-        if (_initialized)
+        if (Interlocked.Exchange(ref _initialized, 1) == 1)
             return;
-        _initialized = true;
 
-        await localizer.SetCultureAsync(LanguageMap.ToCulture(preferences.Snapshot.Language));
+        await localizer.SetCultureAsync(LanguageMap.ToCulture(preferences.Snapshot.Language)).
+            ConfigureAwait(false);
 
         preferences.PreferencesChanged += OnPreferenceChanged;
         ct.Register(() => preferences.PreferencesChanged -= OnPreferenceChanged);
     }
 
-    private void OnPreferenceChanged(object? sender, AppPreferencesSnapshot snap) =>
-        localizer.SetCultureAsync(LanguageMap.ToCulture(snap.Language));
+    private async void OnPreferenceChanged(object? sender, AppPreferencesSnapshot snap)
+    {
+        try
+        {
+            await localizer.SetCultureAsync(LanguageMap.ToCulture(snap.Language)).ConfigureAwait(false);
+        }
+        catch
+        {
+            // Intentionally swallow; localization updates should not crash the app.
+        }
+    }
 }
-

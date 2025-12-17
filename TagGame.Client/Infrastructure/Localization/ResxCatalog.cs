@@ -12,7 +12,8 @@ public class ResxCatalog : ILocalizationCatalog
         CreateManager("App"),
         CreateManager("Errors"),
         CreateManager("UserInit"),
-        CreateManager("Start")
+        CreateManager("Start"),
+        CreateManager("AppSettings"),
     ];
 
     public bool TryGet(string key, CultureInfo info, out string? value)

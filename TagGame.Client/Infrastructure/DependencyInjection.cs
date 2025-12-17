@@ -7,6 +7,7 @@ using TagGame.Client.Infrastructure.Localization;
 using TagGame.Client.Infrastructure.Preferences;
 using TagGame.Client.Infrastructure.QrCodes;
 using TagGame.Client.Infrastructure.Storage;
+using TagGame.Client.Infrastructure.Themes;
 
 namespace TagGame.Client.Infrastructure;
 
@@ -21,6 +22,7 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services)
     {
         services.AddMauiDefaults()
+            .AddInitService()
             .AddStorages()
             .AddLocalization()
             .AddToasts();
@@ -54,7 +56,6 @@ public static class DependencyInjection
     {
         services.AddSingleton<ILocalizationCatalog, ResxCatalog>();
         services.AddSingleton<ILocalizer, Localizer>();
-        services.AddSingleton<LocalizationInitializer>();
 
         return services;
     }
@@ -65,6 +66,15 @@ public static class DependencyInjection
         services.AddSingleton<IToastSender>(sp => sp.GetRequiredService<ToastPublisher>());
         services.AddSingleton<IToastPublisher>(sp => sp.GetRequiredService<ToastPublisher>());
         services.AddSingleton<ToastPresenter>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddInitService(this IServiceCollection services)
+    {
+        services.AddSingleton<LocalizationInitializer>();
+        services.AddSingleton<ThemeInitializer>();
+        services.AddSingleton<Init>();
 
         return services;
     }

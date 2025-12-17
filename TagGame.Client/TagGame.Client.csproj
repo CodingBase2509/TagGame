@@ -102,6 +102,14 @@
         <Generator>ResXFileCodeGenerator</Generator>
         <LastGenOutput>Start.de.Designer.cs</LastGenOutput>
       </EmbeddedResource>
+      <EmbeddedResource Update="Resources\Localization\AppSettings.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>AppSettings.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Resources\Localization\AppSettings.de.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>AppSettings.de.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
     </ItemGroup>
 
     <ItemGroup>
@@ -144,6 +152,16 @@
         <DesignTime>True</DesignTime>
         <AutoGen>True</AutoGen>
         <DependentUpon>Start.de.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\Localization\AppSettings.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>AppSettings.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\Localization\AppSettings.de.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>AppSettings.de.resx</DependentUpon>
       </Compile>
     </ItemGroup>
 
