@@ -99,6 +99,61 @@ public class RoomService(IGamesUoW uow, TimeProvider clock) : IRoomsService
         throw new InvalidOperationException("Failed to generate unique access code without collisions.");
     }
 
+    public async Task<(RoomSettings, uint)?> GetSettingsWithTokenAsync(Guid roomId, CancellationToken cancellationToken = default)
+    {
+        if (roomId == Guid.Empty)
+            throw new ArgumentException("Room id is required.", nameof(roomId));
+
+        var room = await uow.Rooms.GetByIdAsync([roomId], ct: cancellationToken);
+        if (room is null)
+            return null;
+
+        var token = await uow.Rooms.GetConcurrencyToken(room, cancellationToken);
+
+        return (room.Settings, token);
+    }
+
+    public async Task<RoomSettings?> UpdateSettingsAsync(
+        Guid roomId,
+        int? hideTimeSec,
+        int? huntTimeSec,
+        double? tagRadiusM,
+        CancellationToken cancellationToken = default)
+    {
+        if (roomId == Guid.Empty)
+            throw new ArgumentException("Room id is required.", nameof(roomId));
+
+        var room = await uow.Rooms.GetByIdAsync([roomId], ct: cancellationToken);
+        if (room is null)
+            return null;
+
+        if (room.State != GameState.Lobby)
+            throw new DomainRuleViolationException(
+                "Errors.Rooms.Settings.EditOnlyInLobby",
+                errors: new Dictionary<string, string[]> { [""] = ["Errors.Rooms.Settings.EditOnlyInLobby"] });
+
+        if (hideTimeSec is not null)
+            room.Settings.HideTimeSec = hideTimeSec.Value;
+        if (huntTimeSec is not null)
+            room.Settings.HuntTimeSec = huntTimeSec.Value;
+        if (tagRadiusM is not null)
+            room.Settings.TagRadiusM = tagRadiusM.Value;
+
+        return room.Settings;
+    }
+
+    public async Task<uint?> GetRoomConcurrencyTokenAsync(Guid roomId, CancellationToken cancellationToken = default)
+    {
+        if (roomId == Guid.Empty)
+            throw new ArgumentException("Room id is required.", nameof(roomId));
+
+        var room = await uow.Rooms.GetByIdAsync([roomId], ct: cancellationToken);
+        if (room is null)
+            return null;
+
+        return await uow.Rooms.GetConcurrencyToken(room, cancellationToken);
+    }
+
     public async Task SaveChangesAsync(CancellationToken cancellationToken = default) =>
         await uow.SaveChangesAsync(cancellationToken);
 

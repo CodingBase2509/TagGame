@@ -51,6 +51,30 @@
   <data name="Errors.Validation.AvatarColor.InvalidFormat" xml:space="preserve">
     <value>Avatar-Farbe muss hex #RRGGBB oder #AARRGGBB sein.</value>
   </data>
+  <data name="Errors.Validation.Rooms.Settings.Patch.Required" xml:space="preserve">
+    <value>Bitte mindestens eine Einstellung zum Aktualisieren angeben.</value>
+  </data>
+  <data name="Errors.Validation.Rooms.Settings.HideTimeSec.Min" xml:space="preserve">
+    <value>Versteckzeit muss mindestens 5 Sekunden betragen.</value>
+  </data>
+  <data name="Errors.Validation.Rooms.Settings.HideTimeSec.Max" xml:space="preserve">
+    <value>Versteckzeit darf höchstens 600 Sekunden betragen.</value>
+  </data>
+  <data name="Errors.Validation.Rooms.Settings.HuntTimeSec.Min" xml:space="preserve">
+    <value>Jagdzeit muss mindestens 30 Sekunden betragen.</value>
+  </data>
+  <data name="Errors.Validation.Rooms.Settings.HuntTimeSec.Max" xml:space="preserve">
+    <value>Jagdzeit darf höchstens 7200 Sekunden betragen.</value>
+  </data>
+  <data name="Errors.Validation.Rooms.Settings.TagRadiusM.Invalid" xml:space="preserve">
+    <value>Tag-Radius muss eine gültige Zahl sein.</value>
+  </data>
+  <data name="Errors.Validation.Rooms.Settings.TagRadiusM.Min" xml:space="preserve">
+    <value>Tag-Radius muss mindestens 0,5 m betragen.</value>
+  </data>
+  <data name="Errors.Validation.Rooms.Settings.TagRadiusM.Max" xml:space="preserve">
+    <value>Tag-Radius darf höchstens 50 m betragen.</value>
+  </data>
 
   <data name="Errors.Auth.MissingSub" xml:space="preserve">
     <value>Anmeldung erforderlich.</value>
@@ -111,6 +135,9 @@
   </data>
   <data name="Errors.Auth.RoomIdMissing" xml:space="preserve">
     <value>Raum-ID fehlt.</value>
+  </data>
+  <data name="Errors.Rooms.Settings.EditOnlyInLobby" xml:space="preserve">
+    <value>Einstellungen können nur in der Lobby geändert werden.</value>
   </data>
 
   <data name="Errors.Http.Generic" xml:space="preserve">

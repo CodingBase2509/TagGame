@@ -43,5 +43,10 @@ public sealed class GameRoomConfiguration : IEntityTypeConfiguration<GameRoom>
             // Map polygon points as JSON array of value objects
             nb.OwnsMany(p => p.Points);
         });
+
+        builder.Property<uint>("xmin")
+            .HasColumnName("xmin")
+            .IsConcurrencyToken()
+            .ValueGeneratedOnAddOrUpdate();
     }
 }

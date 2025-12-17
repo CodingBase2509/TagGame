@@ -23,5 +23,11 @@ public interface IRoomsService
 
     Task<string> GenerateUniqueAccessCodeAsync(CancellationToken cancellationToken = default);
 
+    Task<(RoomSettings Settings, uint Token)?> GetSettingsWithTokenAsync(Guid roomId, CancellationToken cancellationToken = default);
+
+    Task<RoomSettings?> UpdateSettingsAsync(Guid roomId, int? hideTimeSec, int? huntTimeSec, double? tagRadiusM, CancellationToken cancellationToken = default);
+
+    Task<uint?> GetRoomConcurrencyTokenAsync(Guid roomId, CancellationToken cancellationToken = default);
+
     Task SaveChangesAsync(CancellationToken cancellationToken = default);
 }

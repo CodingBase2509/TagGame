@@ -1,8 +1,12 @@
+using Microsoft.EntityFrameworkCore;
 using TagGame.Api.Core.Abstractions.Rooms;
+using TagGame.Api.Core.Common.Http;
 using TagGame.Api.Core.Common.Security;
+using TagGame.Api.Filters;
 using TagGame.Api.Infrastructure.Auth;
 using TagGame.Shared.Domain.Games.Enums;
 using TagGame.Shared.DTOs.Rooms;
+using TagGame.Shared.DTOs.Settings;
 
 namespace TagGame.Api.Endpoints;
 
@@ -14,6 +18,32 @@ public class RoomsModule : EndpointBase, ICarterModule
             .MapGroup("/rooms")
             .WithTags("rooms")
             .RequireAuthorization();
+
+        rooms.MapGet("/{id:guid}/settings", GetRoomSettingsAsync)
+            .WithName("Rooms_GetSettings")
+            .Produces<RoomSettingsResponseDto>(StatusCodes.Status200OK, MediaTypeNames.Application.Json)
+            .Produces(StatusCodes.Status304NotModified)
+            .ProducesProblem(StatusCodes.Status400BadRequest, MediaTypeNames.Application.Json)
+            .ProducesProblem(StatusCodes.Status401Unauthorized, MediaTypeNames.Application.Json)
+            .ProducesProblem(StatusCodes.Status403Forbidden, MediaTypeNames.Application.Json)
+            .ProducesProblem(StatusCodes.Status404NotFound, MediaTypeNames.Application.Json)
+            .AddEndpointFilter<RoomMembershipFilter>()
+            .RequireAuthorization(AuthPolicyPrefix.RoomMember)
+            .IncludeInOpenApi();
+
+        rooms.MapPatch("/{id:guid}/settings", UpdateRoomSettingsAsync)
+            .WithName("Rooms_PatchSettings")
+            .Accepts<PatchRoomSettingsRequestDto>(MediaTypeNames.Application.Json)
+            .Produces<RoomSettingsResponseDto>()
+            .ProducesProblem(StatusCodes.Status400BadRequest, MediaTypeNames.Application.Json)
+            .ProducesProblem(StatusCodes.Status401Unauthorized, MediaTypeNames.Application.Json)
+            .ProducesProblem(StatusCodes.Status403Forbidden, MediaTypeNames.Application.Json)
+            .ProducesProblem(StatusCodes.Status404NotFound, MediaTypeNames.Application.Json)
+            .ProducesProblem(StatusCodes.Status422UnprocessableEntity, MediaTypeNames.Application.Json)
+            .AddEndpointFilter<RoomMembershipFilter>()
+            .RequireAuthorization(AuthPolicyPrefix.RoomMember)
+            .RequireAuthorization(AuthPolicyPrefix.RoomPermission + nameof(RoomPermission.EditSettings))
+            .IncludeInOpenApi();
 
         rooms.MapPost("/", CreateRoomAsync)
             .WithName("Lobby_CreateRoom")
@@ -32,6 +62,101 @@ public class RoomsModule : EndpointBase, ICarterModule
             .ProducesProblem(StatusCodes.Status403Forbidden, MediaTypeNames.Application.Json)
             .ProducesProblem(StatusCodes.Status404NotFound, MediaTypeNames.Application.Json)
             .IncludeInOpenApi();
+    }
+
+    private static async Task<IResult> GetRoomSettingsAsync(
+        [FromRoute] Guid id,
+        [FromHeader(Name = "If-None-Match")] string? ifNoneMatch,
+        [FromServices] IRoomsService rooms,
+        [FromServices] IHttpContextAccessor httpAccessor,
+        CancellationToken ct)
+    {
+        var http = httpAccessor.HttpContext;
+
+        var result = await rooms.GetSettingsWithTokenAsync(id, ct);
+        if (!result.HasValue)
+            return NotFound("Errors.Rooms.NotFound", "rooms.not_found");
+
+        var decision = EtagUtils.CheckIfNoneMatch(ifNoneMatch, result.Value.Token);
+        switch (decision)
+        {
+            case IfNoneMatchDecision.InvalidIfNoneMatch:
+                return BadRequest("Errors.Http.InvalidIfNoneMatch", "invalid.if_none_match");
+            case IfNoneMatchDecision.NotModified:
+                http?.Response.SetEtag(result.Value.Token);
+                return NotModified();
+            case IfNoneMatchDecision.Proceed:
+            default:
+                http?.Response.SetEtag(result.Value.Token);
+                return Ok(new RoomSettingsResponseDto
+                {
+                    HideTimeSec = result.Value.Settings.HideTimeSec,
+                    HuntTimeSec = result.Value.Settings.HuntTimeSec,
+                    TagRadiusM = result.Value.Settings.TagRadiusM
+                });
+        }
+    }
+
+    private static async Task<IResult> UpdateRoomSettingsAsync(
+        [FromRoute] Guid id,
+        [FromBody] PatchRoomSettingsRequestDto request,
+        [FromServices] IRoomsService rooms,
+        [FromServices] IValidator<PatchRoomSettingsRequestDto> validator,
+        [FromServices] IHttpContextAccessor httpAccessor,
+        [FromHeader(Name = "If-Match")] string? ifMatch,
+        CancellationToken ct)
+    {
+        var http = httpAccessor.HttpContext;
+        if (string.IsNullOrWhiteSpace(ifMatch))
+            return PreconditionRequired("Errors.Http.IfMatchRequired", "missing.if-match");
+
+        await validator.ValidateAndThrowAsync(request, ct);
+
+        var token = await rooms.GetRoomConcurrencyTokenAsync(id, ct);
+        if (token is null)
+            return NotFound("Errors.Rooms.NotFound", "rooms.not_found");
+
+        var result = EtagUtils.CheckIfMatch(ifMatch, token.Value);
+        switch (result)
+        {
+            case IfMatchCheckResult.MissingIfMatch:
+            case IfMatchCheckResult.InvalidIfMatch:
+                return BadRequest("Errors.Http.InvalidIfMatch", "invalid.if-match");
+            case IfMatchCheckResult.EtagMismatch:
+                http?.Response.SetEtag(token.Value);
+                return PreconditionFailed("Errors.Http.IfMatchMismatch", "mismatch.if-match");
+            case IfMatchCheckResult.Ok:
+            case IfMatchCheckResult.Wildcard:
+            default:
+                break;
+        }
+
+        var settings =
+            await rooms.UpdateSettingsAsync(id, request.HideTimeSec, request.HuntTimeSec, request.TagRadiusM, ct);
+        if (settings is null)
+            return NotFound("Errors.Rooms.NotFound", "rooms.not_found");
+
+        try
+        {
+            await rooms.SaveChangesAsync(ct);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            var errorToken = await rooms.GetRoomConcurrencyTokenAsync(id, ct);
+            if (errorToken is not null)
+                http?.Response.SetEtag(errorToken.Value);
+            return PreconditionFailed("Errors.Http.IfMatchMismatch", "mismatch.if-match");
+        }
+
+        var newToken = await rooms.GetRoomConcurrencyTokenAsync(id, ct);
+        if (newToken is not null)
+            http?.Response.SetEtag(newToken.Value);
+        return Ok(new RoomSettingsResponseDto
+        {
+            HideTimeSec = settings.HideTimeSec,
+            HuntTimeSec = settings.HuntTimeSec,
+            TagRadiusM = settings.TagRadiusM
+        });
     }
 
     private static async Task<IResult> CreateRoomAsync(
