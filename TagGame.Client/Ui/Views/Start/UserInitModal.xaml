@@ -35,6 +35,8 @@
             <VerticalStackLayout Grid.Row="1" Spacing="5">
                 <Label Text="{Loc UserInit.DisplayName}"/>
                 <Entry Text="{Binding DisplayName}"
+                       AutomationId="DisplayNameEntry"
+                       SemanticProperties.Description="{Loc UserInit.DisplayName.Description}"
                        Placeholder="{Loc UserInit.DisplayName}"/>
             </VerticalStackLayout>
 
@@ -45,6 +47,9 @@
                                 ItemsSource="{StaticResource AvatarColors}"
                                 SelectionMode="Single"
                                 ItemSizingStrategy="MeasureAllItems"
+                                AutomationId="AvatarColorList"
+                                SemanticProperties.Description="{Loc UserInit.AvatarColor}"
+                                SemanticProperties.Hint="{Loc UserInit.AvatarColor.Hint}"
                                 SelectionChangedCommand="{Binding SelectAvatarColorCommand}"
                                 SelectionChangedCommandParameter="{Binding Path=SelectedItem, Source={x:Reference ColorList}}">
                     <CollectionView.ItemsLayout>
@@ -54,6 +59,7 @@
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
                             <Border Background="{Binding .}"
+                                    SemanticProperties.Description="{Binding .}"
                                     StrokeShape="RoundRectangle 50"
                                     Stroke="{StaticResource BorderBrush}"
                                     Margin="6"
@@ -64,8 +70,10 @@
                 </CollectionView>
             </VerticalStackLayout>
 
-            <Button Grid.Row="4"
+            <Button Grid.Row="3"
                     Text="{Loc UserInit.CreateAccount}"
+                    AutomationId="CreateAccountButton"
+                    SemanticProperties.Description="{Loc UserInit.CreateAccount.Description}"
                     IsEnabled="{Binding IsValid}"
                     Command="{Binding InitializeUserCommand}" />
         </Grid>

@@ -18,4 +18,34 @@
     <resheader name="writer">
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
+  <data name="Start.RoomName" xml:space="preserve">
+    <value>Raumname</value>
+  </data>
+  <data name="Start.CreateGame" xml:space="preserve">
+    <value>Spiel erstellen</value>
+  </data>
+  <data name="Start.AccessCode" xml:space="preserve">
+    <value>Zugangscode</value>
+  </data>
+  <data name="Start.JoinGame" xml:space="preserve">
+    <value>Spiel beitreten</value>
+  </data>
+  <data name="Start.JoinWithQrCode" xml:space="preserve">
+    <value>Mit QR-Code beitreten</value>
+  </data>
+  <data name="Start.QrCode.Error" xml:space="preserve">
+    <value>QR-Code konnte nicht gescannt werden. Bitte versuche es erneut.</value>
+  </data>
+  <data name="Start.Settings" xml:space="preserve">
+    <value>Einstellungen öffnen</value>
+  </data>
+  <data name="Start.RoomName.Description" xml:space="preserve">
+    <value>Gib einen Raumnamen ein, um ein neues Spiel zu erstellen</value>
+  </data>
+  <data name="Start.AccessCode.Description" xml:space="preserve">
+    <value>Gib den 8-stelligen Zugangscode ein, um einem Spiel beizutreten</value>
+  </data>
+  <data name="Start.JoinWithQrCode.Description" xml:space="preserve">
+    <value>Scanne einen QR-Code, um einem Spiel beizutreten</value>
+  </data>
 </root>

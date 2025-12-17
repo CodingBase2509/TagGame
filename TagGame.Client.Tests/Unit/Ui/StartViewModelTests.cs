@@ -115,7 +115,7 @@ public class StartViewModelTests
         nav.Verify(n => n.GoToAsync(
                 Routes.Lobby,
                 It.Is<IReadOnlyDictionary<string, object?>?>(d =>
-                    d["RoomId"]!.Equals(response.RoomId) &&
+                    d!["RoomId"]!.Equals(response.RoomId) &&
                     d["RoomName"]!.Equals(response.Name) &&
                     d["MembershipId"]!.Equals(response.MembershipId)),
                 It.IsAny<CancellationToken>()),
@@ -146,7 +146,7 @@ public class StartViewModelTests
         nav.Verify(n => n.GoToAsync(
                 Routes.Lobby,
                 It.Is<IReadOnlyDictionary<string, object?>?>(d =>
-                    d["RoomId"]!.Equals(response.RoomId) &&
+                    d!["RoomId"]!.Equals(response.RoomId) &&
                     d["RoomName"]!.Equals(response.Name) &&
                     d["MembershipId"]!.Equals(response.MembershipId)),
                 It.IsAny<CancellationToken>()),

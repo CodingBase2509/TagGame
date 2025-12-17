@@ -12,6 +12,8 @@
                      WidthRequest="48"
                      HeightRequest="48"
                      HorizontalOptions="End"
+                     AutomationId="SettingsButton"
+                     SemanticProperties.Description="{Loc Start.Settings}"
                      Command="{Binding OpenSettingsCommand}"/>
 
         <Label Grid.Row="1"
@@ -23,9 +25,13 @@
                              Spacing="10">
 
             <Entry Text="{Binding RoomName}"
+                   AutomationId="RoomNameEntry"
+                   SemanticProperties.Description="{Loc Start.RoomName.Description}"
                    Placeholder="{Loc Start.RoomName}" />
             <Button Text="{Loc Start.CreateGame}"
                     Command="{Binding CreateRoomCommand}"
+                    AutomationId="CreateRoomButton"
+                    SemanticProperties.Description="{Loc Start.CreateGame}"
                     IsEnabled="{Binding CanCreateRoom}"/>
 
         </VerticalStackLayout>
@@ -34,9 +40,13 @@
                              Spacing="10">
 
             <Entry Text="{Binding AccessCode}"
+                   AutomationId="AccessCodeEntry"
+                   SemanticProperties.Description="{Loc Start.AccessCode.Description}"
                    Placeholder="{Loc Start.AccessCode}"/>
             <Button Text="{Loc Start.JoinGame}"
                     Command="{Binding JoinRoomByCodeCommand}"
+                    AutomationId="JoinRoomButton"
+                    SemanticProperties.Description="{Loc Start.JoinGame}"
                     IsEnabled="{Binding CanJoinRoom}"/>
 
         </VerticalStackLayout>
@@ -44,7 +54,9 @@
         <Button Grid.Row="4"
                 Style="{StaticResource SecondaryButton}"
                 Text="{Loc Start.JoinWithQrCode}"
-                Command="{Binding JoinRoomByQrCodeCommand}"/>
+                Command="{Binding JoinRoomByQrCodeCommand}"
+                AutomationId="JoinQrButton"
+                SemanticProperties.Description="{Loc Start.JoinWithQrCode.Description}"/>
     </Grid>
 
 </PageWithModal>
