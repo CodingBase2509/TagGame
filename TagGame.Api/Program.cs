@@ -1,9 +1,6 @@
-using Carter;
-// using Microsoft.AspNetCore.Mvc;
-using Scalar.AspNetCore;
 using TagGame.Api.Core;
-using TagGame.Api.Extensions;
 using TagGame.Api.Hubs;
+using TagGame.Api.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +15,7 @@ builder.Services.AddCarter();
 builder.Services.AddDevCors(builder.Configuration, builder.Environment);
 builder.Services.AddAuth(builder.Configuration);
 builder.Services.AddProblemDetailsSupport(builder.Environment);
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddConfiguredSignalR();
 
 var app = builder.Build();

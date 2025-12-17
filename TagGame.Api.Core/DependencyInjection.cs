@@ -1,7 +1,9 @@
 using FluentValidation;
 using TagGame.Api.Core.Abstractions.Auth;
 using TagGame.Api.Core.Abstractions.Persistence;
+using TagGame.Api.Core.Abstractions.Rooms;
 using TagGame.Api.Core.Features.Auth;
+using TagGame.Api.Core.Features.Game;
 using TagGame.Api.Core.Persistence.Contexts;
 using TagGame.Api.Core.Persistence.Repositories;
 using TagGame.Api.Core.Validation.Users;
@@ -19,6 +21,8 @@ public static class DependencyInjection
 
         // Register validators from this assembly (FluentValidation)
         services.AddValidatorsFromAssemblyContaining<PatchUserAccountValidator>();
+
+        services.AddGameFeatureServices();
 
         return services;
     }
@@ -48,6 +52,13 @@ public static class DependencyInjection
     {
         services.AddOptions<JwtOptions>().BindConfiguration("Jwt");
         services.AddScoped<IAuthTokenService, AuthTokenService>();
+        return services;
+    }
+
+    private static IServiceCollection AddGameFeatureServices(this IServiceCollection services)
+    {
+        services.AddScoped<IRoomsService, RoomService>();
+
         return services;
     }
 }

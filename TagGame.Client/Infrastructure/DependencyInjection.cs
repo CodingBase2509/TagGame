@@ -5,6 +5,7 @@ using TagGame.Client.Infrastructure.Connectivity;
 using TagGame.Client.Infrastructure.Navigation;
 using TagGame.Client.Infrastructure.Localization;
 using TagGame.Client.Infrastructure.Preferences;
+using TagGame.Client.Infrastructure.QrCodes;
 using TagGame.Client.Infrastructure.Storage;
 
 namespace TagGame.Client.Infrastructure;
@@ -27,6 +28,7 @@ public static class DependencyInjection
         services.AddSingleton<INetworkConnectivity, NetworkConnectivity>();
         services.AddSingleton<IAppPreferences, AppPreferences>();
         services.AddSingleton<INavigationService, ShellNavService>();
+        services.AddTransient<IQrCodeService, QrCodeService>();
 
         return services;
     }

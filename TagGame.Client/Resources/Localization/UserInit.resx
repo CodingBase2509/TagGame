@@ -30,4 +30,13 @@
   <data name="UserInit.CreateAccount" xml:space="preserve">
     <value>Create account</value>
   </data>
+  <data name="UserInit.DisplayName.Description" xml:space="preserve">
+    <value>Enter the display name other players should see</value>
+  </data>
+  <data name="UserInit.AvatarColor.Hint" xml:space="preserve">
+    <value>Select a color for your avatar badge</value>
+  </data>
+  <data name="UserInit.CreateAccount.Description" xml:space="preserve">
+    <value>Save your profile and continue</value>
+  </data>
 </root>

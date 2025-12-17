@@ -52,5 +52,11 @@
     <PackageVersion Include="Moq" Version="4.20.72" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.0-rc.2.25502.107" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.0" />
+    <PackageVersion Include="ZXing.Net.Maui" Version="0.6.0" />
+    <PackageVersion Include="ZXing.Net.Maui.Controls" Version="0.6.0" />
+    <PackageVersion Include="Xamarin.AndroidX.Concurrent.Futures" Version="1.3.0.1" />
+    <PackageVersion Include="Xamarin.AndroidX.Concurrent.Futures.Ktx" Version="1.3.0.1" />
+    <PackageVersion Include="Xamarin.AndroidX.Tracing.Tracing" Version="1.3.0.1" />
+    <PackageVersion Include="Xamarin.AndroidX.Tracing.Tracing.Ktx" Version="1.3.0.1" />
   </ItemGroup>
 </Project>

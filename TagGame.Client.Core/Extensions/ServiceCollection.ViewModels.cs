@@ -1,3 +1,4 @@
+using TagGame.Client.Core.Ui.Services;
 using TagGame.Client.Core.Ui.ViewModels.Start;
 
 namespace TagGame.Client.Core.Extensions;
@@ -12,6 +13,7 @@ public static class ServiceCollectionViewModels
         services.AddTransient<UserInitViewModel>();
 
         services.AddTransient<StartViewModel>();
+        services.AddTransient<StartService>();
 
         return services;
     }

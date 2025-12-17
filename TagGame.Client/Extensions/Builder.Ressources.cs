@@ -1,3 +1,5 @@
+using ZXing.Net.Maui.Controls;
+
 namespace TagGame.Client.Extensions;
 
 public static class BuilderResources
@@ -5,6 +7,7 @@ public static class BuilderResources
     public static MauiAppBuilder ConfigureBuilder(this MauiAppBuilder builder)
     {
         builder.UseMauiApp<App>()
+            .UseBarcodeReader()
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("Manrope-ExtraLight.ttf", "ManropeExtraLight");

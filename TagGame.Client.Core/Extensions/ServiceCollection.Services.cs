@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Configuration;
+using TagGame.Client.Core.Features.Rooms;
 using TagGame.Client.Core.Options;
 using TagGame.Client.Core.Security;
 using TagGame.Client.Core.Services;
@@ -15,6 +16,8 @@ public static class ServiceCollectionServices
             .Bind(config.GetSection("Auth"));
 
         services.AddSingleton<ICrypto, Crypto>();
+
+        services.AddSingleton<IRoomsApi, RoomsApi>();
 
         return services;
     }

@@ -35,5 +35,7 @@
 	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>de</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Access Camera for Qr Code scanning</string>
 </dict>
 </plist>

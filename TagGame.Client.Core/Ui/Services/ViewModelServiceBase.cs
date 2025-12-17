@@ -2,7 +2,7 @@ using TagGame.Client.Core.Http;
 using TagGame.Client.Core.Localization;
 using TagGame.Client.Core.Services;
 
-namespace TagGame.Client.Core.Ui.ViewModels;
+namespace TagGame.Client.Core.Ui.Services;
 
 public abstract class ViewModelServiceBase
 {

@@ -1,3 +1,5 @@
+using TagGame.Client.Core.Ui.Services;
+
 namespace TagGame.Client.Core.Ui.ViewModels.Start;
 
 public sealed partial class UserInitViewModel(UserInitService service) : ViewModelBase

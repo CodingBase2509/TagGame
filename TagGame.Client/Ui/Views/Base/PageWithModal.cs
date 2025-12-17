@@ -5,7 +5,8 @@ namespace TagGame.Client.Ui.Views.Base;
 public class PageWithModal : PageBase, IPageWithModal
 {
     public PageWithModal() : base()
-    {}
+    {
+    }
 
     public PageWithModal(ViewModelBase vm) : base(vm)
     { }
