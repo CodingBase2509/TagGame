@@ -12,3 +12,11 @@ public enum Language
     /// <summary>German (de).</summary>
     German = 2,
 }
+
+public static class LanguageExtensions
+{
+    extension(Language lang)
+    {
+        public static IReadOnlyList<Language> Options() => Enum.GetValues<Language>();
+    }
+}

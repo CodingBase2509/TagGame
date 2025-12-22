@@ -12,3 +12,11 @@ public enum ThemeMode
     /// <summary>Dark theme.</summary>
     Dark = 2,
 }
+
+public static class ThemeModeExtensions
+{
+    extension(ThemeMode mode)
+    {
+        public static IReadOnlyList<ThemeMode> Options() => Enum.GetValues<ThemeMode>();
+    }
+}

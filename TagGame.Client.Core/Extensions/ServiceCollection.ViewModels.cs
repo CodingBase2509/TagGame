@@ -1,4 +1,5 @@
 using TagGame.Client.Core.Ui.Services;
+using TagGame.Client.Core.Ui.ViewModels.Settings;
 using TagGame.Client.Core.Ui.ViewModels.Start;
 
 namespace TagGame.Client.Core.Extensions;
@@ -14,6 +15,8 @@ public static class ServiceCollectionViewModels
 
         services.AddTransient<StartViewModel>();
         services.AddTransient<StartService>();
+
+        services.AddTransient<SettingsViewModel>();
 
         return services;
     }
