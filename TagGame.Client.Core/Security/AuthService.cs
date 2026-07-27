@@ -100,7 +100,8 @@ public class AuthService(
 
     public async Task<bool> LoginAsync(string deviceId, CancellationToken ct = default)
     {
-        if (string.IsNullOrWhiteSpace(deviceId)) throw new ArgumentException("DeviceId required", nameof(deviceId));
+        if (string.IsNullOrWhiteSpace(deviceId))
+            throw new ArgumentException("DeviceId required", nameof(deviceId));
 
         try
         {

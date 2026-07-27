@@ -1,11 +1,13 @@
 # syntax=docker/dockerfile:1
 
 # ---------- Build stage ----------
-FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
 # Copy solution and project files for restore layer caching
 COPY TagGame.sln ./
+COPY Directory.Packages.props ./
+COPY Directory.Build.props ./
 COPY TagGame.Api/TagGame.Api.csproj TagGame.Api/
 COPY TagGame.Api.Core/TagGame.Api.Core.csproj TagGame.Api.Core/
 COPY TagGame.Shared/TagGame.Shared.csproj TagGame.Shared/
@@ -18,7 +20,7 @@ RUN dotnet build TagGame.Api/TagGame.Api.csproj -c Release -o /app/build --no-re
 RUN dotnet publish TagGame.Api/TagGame.Api.csproj -c Release -o /app/publish --no-restore /p:UseAppHost=false --nologo
 
 # ---------- Runtime stage ----------
-FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app
 
 # Recommended: explicit port and URLs
@@ -28,4 +30,3 @@ EXPOSE 8080
 COPY --from=build /app/publish .
 
 ENTRYPOINT ["dotnet", "TagGame.Api.dll"]
-

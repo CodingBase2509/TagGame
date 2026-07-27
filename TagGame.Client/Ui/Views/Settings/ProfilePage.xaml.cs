@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TagGame.Client.Ui.Views.Settings;
 
-public partial class ProfilePage : PageBase
+public partial class ProfilePage : ModalBase
 {
     public ProfilePage()
     {

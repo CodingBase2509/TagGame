@@ -51,7 +51,22 @@
     <data name="AppSettings.Settings.Notifications.Enabled" xml:space="preserve">
         <value>Benachrichtigungen aktivieren</value>
     </data>
+    <data name="AppSettings.Settings.InGameNotification" xml:space="preserve">
+        <value>In-Game Benachrichtigungen</value>
+    </data>
     <data name="AppSettings.Settings.Profile" xml:space="preserve">
         <value>Profil</value>
+    </data>
+    <data name="AppSettings.Notifications.SettingsChanged" xml:space="preserve">
+        <value>Einstellungen aktualisiert</value>
+    </data>
+    <data name="AppSettings.Settings.Appearance" xml:space="preserve">
+        <value>Darstellung</value>
+    </data>
+    <data name="AppSettings.Legal.TermsOfUse" xml:space="preserve">
+        <value>Nutzungsbedingungen</value>
+    </data>
+    <data name="AppSettings.Legal.PrivacyPolicy" xml:space="preserve">
+        <value>Datenschutzerklärung</value>
     </data>
 </root>

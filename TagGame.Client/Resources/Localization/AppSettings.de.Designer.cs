@@ -44,5 +44,107 @@ namespace TagGame.Client.Resources.Localization {
                 resourceCulture = value;
             }
         }
+        
+        internal static string AppSettings_Settings_Title {
+            get {
+                return ResourceManager.GetString("AppSettings.Settings.Title", resourceCulture);
+            }
+        }
+        
+        internal static string AppSettings_Settings_Theme {
+            get {
+                return ResourceManager.GetString("AppSettings.Settings.Theme", resourceCulture);
+            }
+        }
+        
+        internal static string AppSettings_Settings_Theme_System {
+            get {
+                return ResourceManager.GetString("AppSettings.Settings.Theme.System", resourceCulture);
+            }
+        }
+        
+        internal static string AppSettings_Settings_Theme_Light {
+            get {
+                return ResourceManager.GetString("AppSettings.Settings.Theme.Light", resourceCulture);
+            }
+        }
+        
+        internal static string AppSettings_Settings_Theme_Dark {
+            get {
+                return ResourceManager.GetString("AppSettings.Settings.Theme.Dark", resourceCulture);
+            }
+        }
+        
+        internal static string AppSettings_Settings_Language {
+            get {
+                return ResourceManager.GetString("AppSettings.Settings.Language", resourceCulture);
+            }
+        }
+        
+        internal static string AppSettings_Settings_Language_System {
+            get {
+                return ResourceManager.GetString("AppSettings.Settings.Language.System", resourceCulture);
+            }
+        }
+        
+        internal static string AppSettings_Settings_Language_English {
+            get {
+                return ResourceManager.GetString("AppSettings.Settings.Language.English", resourceCulture);
+            }
+        }
+        
+        internal static string AppSettings_Settings_Language_German {
+            get {
+                return ResourceManager.GetString("AppSettings.Settings.Language.German", resourceCulture);
+            }
+        }
+        
+        internal static string AppSettings_Settings_Notifications {
+            get {
+                return ResourceManager.GetString("AppSettings.Settings.Notifications", resourceCulture);
+            }
+        }
+        
+        internal static string AppSettings_Settings_Notifications_Enabled {
+            get {
+                return ResourceManager.GetString("AppSettings.Settings.Notifications.Enabled", resourceCulture);
+            }
+        }
+        
+        internal static string AppSettings_Settings_InGameNotification {
+            get {
+                return ResourceManager.GetString("AppSettings.Settings.InGameNotification", resourceCulture);
+            }
+        }
+        
+        internal static string AppSettings_Settings_Profile {
+            get {
+                return ResourceManager.GetString("AppSettings.Settings.Profile", resourceCulture);
+            }
+        }
+        
+        internal static string AppSettings_Notifications_SettingsChanged {
+            get {
+                return ResourceManager.GetString("AppSettings.Notifications.SettingsChanged", resourceCulture);
+            }
+        }
+        
+        internal static string AppSettings_Settings_Appearance {
+            get {
+                return ResourceManager.GetString("AppSettings.Settings.Appearance", resourceCulture);
+            }
+        }
+        
+        internal static string AppSettings_Legal_TermsOfUse {
+            get {
+                return ResourceManager.GetString("AppSettings.Legal.TermsOfUse", resourceCulture);
+            }
+        }
+        
+        internal static string AppSettings_Legal_PrivacyPolicy {
+            get {
+                return ResourceManager.GetString("AppSettings.Legal.PrivacyPolicy", resourceCulture);
+            }
+        }
     }
 }

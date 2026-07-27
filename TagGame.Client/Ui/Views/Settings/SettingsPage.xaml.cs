@@ -1,16 +1,25 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using TagGame.Client.Core.Ui.ViewModels.Settings;
 
 namespace TagGame.Client.Ui.Views.Settings;
 
-public partial class SettingsPage : PageBase
+public partial class SettingsPage : PageWithModal
 {
-    public SettingsPage()
+    public SettingsPage(SettingsViewModel vw)
+        : base(vw)
     {
         InitializeComponent();
+    }
+
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        Shell.SetNavBarIsVisible(this, true);
+    }
+
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+        Shell.SetNavBarIsVisible(this, false);
     }
 }
 

@@ -1,7 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<PageBase xmlns="http://schemas.microsoft.com/dotnet/maui/global"
+<PageWithModal xmlns="http://schemas.microsoft.com/dotnet/maui/global"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="TagGame.Client.Ui.Views.Settings.SettingsPage">
+             xmlns:vm="clr-namespace:TagGame.Client.Core.Ui.ViewModels.Settings;assembly=TagGame.Client.Core"
+             x:Class="TagGame.Client.Ui.Views.Settings.SettingsPage"
+             x:DataType="vm:SettingsViewModel">
 
-</PageBase>
+    <PageBase.Resources>
+        <ResourceDictionary>
+            <Style x:Key="Setting" TargetType="Label">
+                <Setter Property="FontSize" Value="16"/>
+                <Setter Property="FontFamily" Value="ManropeMedium"/>
+                <Setter Property="Margin" Value="10,0,0,0"/>
+            </Style>
+
+            <Style TargetType="Divider">
+                <Setter Property="Margin" Value="0, 8"/>
+                <Setter Property="Orientation" Value="Horizontal"/>
+            </Style>
+        </ResourceDictionary>
+    </PageBase.Resources>
+
+    <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto">
+        <Label Grid.Row="0"
+               Margin="0, 20"
+               Style="{x:StaticResource Headline}"
+               Text="{Loc AppSettings.Settings.Title}"/>
+
+        <!-- Profile  -->
+        <Label Grid.Row="1"
+               Text="{Loc AppSettings.Settings.Profile}"/>
+        <Border Grid.Row="2" Style="{x:StaticResource ElevatedCard}">
+            <HorizontalStackLayout Spacing="20">
+                <Avatar BackgroundColor="{Binding CurrentUser.AvatarColor}"/>
+                <Label Style="{x:StaticResource SubHeadline}"
+                       Text="{Binding CurrentUser.DisplayName}"
+                       VerticalTextAlignment="Center"/>
+            </HorizontalStackLayout>
+        </Border>
+
+        <Label Grid.Row="3"
+               Margin="0, 20, 0, 0"
+               Text="{Loc AppSettings.Settings.Appearance}"/>
+        <Border Grid.Row="4" Style="{x:StaticResource ElevatedCard}">
+            <Grid RowDefinitions="Auto, Auto, Auto">
+                <!-- Theme Settings -->
+                <HorizontalStackLayout Grid.Row="0">
+                    <Label Text="{Loc AppSettings.Settings.Theme}"
+                           Style="{x:StaticResource Setting}"/>
+                </HorizontalStackLayout>
+
+                <Divider Grid.Row="1"/>
+
+                <!-- Language Settings -->
+                <HorizontalStackLayout Grid.Row="2">
+                    <Label Text="{Loc AppSettings.Settings.Language}"
+                           Style="{x:StaticResource Setting}"/>
+                </HorizontalStackLayout>
+            </Grid>
+        </Border>
+
+        <Label Grid.Row="5"
+               Margin="0,20,0,0"
+               Text="{Loc AppSettings.Settings.Notifications}"/>
+        <Border Grid.Row="6">
+            <Label Text="{Loc AppSettings.Settings.InGameNotification}"
+                   Style="{x:StaticResource Setting}"/>
+        </Border>
+
+        <!-- Legal Stuff -->
+        <Border Grid.Row="7"
+                Margin="0, 35, 0, 0"
+                Style="{x:StaticResource ElevatedCard}">
+            <Grid RowDefinitions="Auto, Auto, Auto">
+                <Label Grid.Row="0"
+                       Text="{Loc AppSettings.Legal.TermsOfUse}"
+                       Style="{x:StaticResource Setting}" />
+                <Divider Grid.Row="1"/>
+                <Label Grid.Row="2"
+                       Text="{Loc AppSettings.Legal.PrivacyPolicy}"
+                       Style="{x:StaticResource Setting}"/>
+            </Grid>
+        </Border>
+    </Grid>
+
+</PageWithModal>

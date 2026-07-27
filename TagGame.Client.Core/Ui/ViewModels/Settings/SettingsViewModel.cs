@@ -22,8 +22,17 @@ public partial class SettingsViewModel(IAppPreferences prefs, IUserApi api) : Vi
     [ObservableProperty]
     private bool _notificationsEnabled;
 
-    public override async Task InitializeAsync(CancellationToken cancellationToken = default) =>
+    public override async Task InitializeAsync(CancellationToken cancellationToken = default)
+    {
         CurrentUser = await api.GetProfileAsync(ViewModelCancellationToken);
+        prefs.PreferencesChanged += NotifySettingsChanged;
+    }
+
+    public override Task OnDisappearingAsync(CancellationToken cancellationToken = default)
+    {
+        prefs.PreferencesChanged -= NotifySettingsChanged;
+        return base.OnDisappearingAsync(cancellationToken);
+    }
 
     public async Task UpdateTheme() => await prefs.ChangeThemeAsync(Theme, ViewModelCancellationToken);
 
@@ -31,4 +40,7 @@ public partial class SettingsViewModel(IAppPreferences prefs, IUserApi api) : Vi
 
     public async Task UpdateNotifications() =>
         await prefs.SetNotificationsEnabledAsync(NotificationsEnabled, ViewModelCancellationToken);
+
+    private async void NotifySettingsChanged(object? sender, AppPreferencesSnapshot _) =>
+        await Toast.Success("AppSettings.Notifications.SettingsChanged");
 }
